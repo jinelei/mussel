@@ -8,8 +8,8 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "generate-api-file": "openapi --input ./src/docs/openapi.json --output src/api --client axios",
-    "generate-api-url": "node scripts/generate-api.js"
+    "generate-api": "node scripts/generate-api.js",
+    "generate-api:file": "openapi --input ./src/docs/openapi.json --output src/api --client axios"
   },
   "dependencies": {
     "antd": "^6.2.2",
