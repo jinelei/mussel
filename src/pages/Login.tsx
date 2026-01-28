@@ -54,7 +54,7 @@ const Login: React.FC = () => {
                 .then((res) => {
                     console.log("res", res);
                     if (res.code === 200) {
-                        localStorage.setItem('token', JSON.stringify(res.data));
+                        localStorage.setItem('token', res.data);
                         message.success('登录成功！');
                         navigate('/', {replace: true});
                     } else {
