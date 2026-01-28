@@ -9,7 +9,7 @@ export type BookmarkDomain = {
     /**
      * 主键ID
      */
-    id?: number;
+    ID?: number;
     /**
      * 父级ID
      */

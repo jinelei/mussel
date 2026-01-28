@@ -10,7 +10,8 @@ import {
     EyeInvisibleOutlined
 } from '@ant-design/icons';
 import zhCN from 'antd/locale/zh_CN'; // 引入中文语言包
-import 'antd/dist/reset.css'; // AntD v5 样式文件
+import 'antd/dist/reset.css';
+import {Service} from "../api"; // AntD v5 样式文件
 
 const {Title, Text, Link} = Typography;
 const {Content} = Layout;
@@ -49,29 +50,24 @@ const Login: React.FC = () => {
     const onFinish: FormProps<LoginFormValues>['onFinish'] = async (values) => {
         try {
             setLoading(true);
-            // 模拟登录请求（实际项目替换为真实接口）
-            await new Promise<void>((resolve) => setTimeout(resolve, 1000));
-
-            // 模拟校验账号密码
-            if (values.username === 'admin' && values.password === '123456') {
-                // 记住密码逻辑（类型安全的 localStorage 操作）
-                if (values.remember) {
-                    const userInfo: SavedUserInfo = {
-                        username: values.username,
-                        password: values.password
-                    };
-                    localStorage.setItem('loginUser', JSON.stringify(userInfo));
-                } else {
-                    localStorage.removeItem('loginUser');
-                }
-
-                // 存储token
-                localStorage.setItem('token', 'your-real-token-here');
-                message.success('登录成功！');
-                navigate('/', {replace: true});
-            } else {
+            Service.postLogin({...values})
+                .then((res) => {
+                    console.log("res", res);
+                    if (res.code === 200) {
+                        localStorage.setItem('token', JSON.stringify(res.data));
+                        message.success('登录成功！');
+                        navigate('/', {replace: true});
+                    } else {
+                        localStorage.removeItem('token');
+                        message.error('账号或密码错误，请重试！');
+                    }
+                }).catch((err) => {
+                console.log("err", err);
+                localStorage.removeItem('token');
                 message.error('账号或密码错误，请重试！');
-            }
+            }).finally(() => {
+                setLoading(false);
+            })
         } catch (error) {
             message.error('登录失败，请稍后再试！');
             console.error('登录请求失败：', error);

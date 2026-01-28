@@ -7,9 +7,9 @@ export { CancelablePromise, CancelError } from './core/CancelablePromise';
 export { OpenAPI } from './core/OpenAPI';
 export type { OpenAPIConfig } from './core/OpenAPI';
 
-export type {  } from './models/';
 export { BookmarkDomain } from './models/BookmarkDomain';
 export type { CreateRequest } from './models/CreateRequest';
+export type { GenericResult } from './models/GenericResult';
 export type { UpdateRequest } from './models/UpdateRequest';
 
 export { Service } from './services/Service';
