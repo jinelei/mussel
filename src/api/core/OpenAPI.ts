@@ -2,7 +2,7 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type {ApiRequestOptions} from './ApiRequestOptions';
+import type { ApiRequestOptions } from './ApiRequestOptions';
 
 type Resolver<T> = (options: ApiRequestOptions) => Promise<T>;
 type Headers = Record<string, string>;
@@ -24,7 +24,7 @@ export const OpenAPI: OpenAPIConfig = {
     VERSION: '1.0.0',
     WITH_CREDENTIALS: false,
     CREDENTIALS: 'include',
-    TOKEN: localStorage.getItem('token') || undefined,
+    TOKEN: undefined,
     USERNAME: undefined,
     PASSWORD: undefined,
     HEADERS: undefined,

@@ -128,6 +128,18 @@ export class Service {
         });
     }
     /**
+     * 我收藏的书签
+     * 我收藏的书签
+     * @returns GenericResult OK
+     * @throws ApiError
+     */
+    public static myFavoriteBookmarks(): CancelablePromise<GenericResult> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/bookmark/myFavoriteBookmarks',
+        });
+    }
+    /**
      * 查询书签列表
      * 查询书签列表
      * @param requestBody

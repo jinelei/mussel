@@ -17,7 +17,7 @@ const __dirname = path.dirname(__filename);
 async function generateApiFromUrl() {
     // 配置项（根据你的项目修改）
     const config = {
-        openApiUrl: 'http://localhost:8082/api-docs', // 远程文档地址
+        openApiUrl: 'http://192.168.3.90:8082/api-docs', // 远程文档地址
         docSavePath: path.resolve(__dirname, '../src/docs/openapi.json'), // 本地保存路径
         apiOutputDir: path.resolve(__dirname, '../src/api'), // API 代码输出目录
         // 你验证过的 CLI 命令模板（仅替换 input 参数为绝对路径）

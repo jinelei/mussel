@@ -16,7 +16,7 @@
   },
   "servers": [
     {
-      "url": "http://localhost:8082",
+      "url": "http://192.168.3.90:8082",
       "description": "Generated server url"
     }
   ],
@@ -231,6 +231,28 @@
           },
           "required": true
         },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/GenericResult"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/bookmark/myFavoriteBookmarks": {
+      "post": {
+        "tags": [
+          "书签管理"
+        ],
+        "summary": "我收藏的书签",
+        "description": "我收藏的书签",
+        "operationId": "myFavoriteBookmarks",
         "responses": {
           "200": {
             "description": "OK",

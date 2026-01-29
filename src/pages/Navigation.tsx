@@ -2,6 +2,7 @@ import {useEffect, useState} from "react";
 import {Input, message} from 'antd';
 import dayjs from 'dayjs';
 import type {GetProps} from 'antd';
+import {Service} from "../api";
 
 const {Search} = Input;
 
@@ -57,6 +58,16 @@ const Navigation: React.FC = () => {
             setCurrentTime(dayjs());
         }, 1000);
         return () => clearInterval(timer);
+    }, []);
+
+    useEffect(() => {
+        Service.myFavoriteBookmarks()
+            .then(res => {
+                console.log("success ", res);
+            })
+            .catch(err => {
+                console.error("error ", err);
+            })
     }, []);
 
     return (
