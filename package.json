@@ -12,6 +12,7 @@
     "generate-api:file": "openapi --input ./src/docs/openapi.json --output src/api --client axios"
   },
   "dependencies": {
+    "@ant-design/icons": "6.x",
     "antd": "^6.2.2",
     "axios": "^1.13.4",
     "dayjs": "^1.11.19",

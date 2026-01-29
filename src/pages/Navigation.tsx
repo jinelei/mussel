@@ -1,8 +1,12 @@
-import {useEffect, useState} from "react";
-import {Input, message} from 'antd';
+import React, {useEffect, useState} from "react";
+import {Input, message, Space, Tooltip, Typography} from 'antd';
 import dayjs from 'dayjs';
 import type {GetProps} from 'antd';
-import {Service} from "../api";
+import {type BookmarkDomain, Service} from "../api";
+import Footer from "./Footer.tsx";
+
+const {Text} = Typography;
+import DynamicIcon from "../components/DynamicIcon.tsx";
 
 const {Search} = Input;
 
@@ -10,6 +14,7 @@ type SearchProps = GetProps<typeof Input.Search>;
 
 const Navigation: React.FC = () => {
     const [currentTime, setCurrentTime] = useState(dayjs());
+    const [bookmarks, setBookmarks] = useState<BookmarkDomain[] | string>();
     const formattedTime = currentTime.format('HH:mm:ss');
     const formattedDate = currentTime.format('YYYY年MM月DD日');
 
@@ -19,7 +24,6 @@ const Navigation: React.FC = () => {
                 await navigator.clipboard.writeText(text);
                 message.success("复制成功")
             } else {
-                // 兼容低版本浏览器/非HTTPS环境
                 const textArea = document.createElement('textarea');
                 textArea.value = text;
                 // 隐藏textarea（避免页面闪烁）
@@ -63,7 +67,10 @@ const Navigation: React.FC = () => {
     useEffect(() => {
         Service.myFavoriteBookmarks()
             .then(res => {
-                console.log("success ", res);
+                if (401 === res.code) {
+                    window.location.href = '/login';
+                }
+                setBookmarks(res?.data);
             })
             .catch(err => {
                 console.error("error ", err);
@@ -76,8 +83,10 @@ const Navigation: React.FC = () => {
             height: '100vh',
             overflowY: 'hidden',
             backgroundImage: 'url(/images/background.jpg)',
-            backgroundRepeat: 'repeat',
-            backgroundPosition: 'center',
+            backgroundRepeat: 'no-repeat',
+            backgroundPosition: 'center center',
+            backgroundSize: 'cover',
+            backgroundAttachment: 'fixed',
             backgroundClip: 'content-box',
             display: 'flex',
             flexDirection: 'column',
@@ -87,7 +96,7 @@ const Navigation: React.FC = () => {
             <p style={{
                 margin: '5rem 0 1rem 0',
                 fontSize: '3rem',
-                color: '#3bf1be',
+                color: '#ffffff',
                 fontWeight: 'bold'
             }}
                onClick={() => copyToClipboard(formattedTime)}
@@ -117,6 +126,32 @@ const Navigation: React.FC = () => {
                     button: {}
                 }}
             />
+            <Space style={{position: 'fixed', bottom: '6rem'}}>
+                {(bookmarks as BookmarkDomain[])?.map((item: BookmarkDomain, index: number) => {
+                    return (<a href={item.url} key={index}>
+                            <Space style={{
+                                margin: '5px',
+                                backgroundColor: '#333333',
+                                padding: '6px',
+                                borderRadius: '10px'
+                            }}>
+                                <Tooltip title={<Text>{item.name}</Text>} color={'orange'}>
+                                    <DynamicIcon iconName={item.icon} style={{fontSize: '1.5rem', padding: '5px'}}/>
+                                </Tooltip>
+                            </Space>
+                        </a>
+                    );
+                })}
+            </Space>
+            <Footer
+                styles={{
+                    color: '#cccccc',
+                    position: 'fixed',
+                    bottom: '1rem',
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center'
+                }}></Footer>
         </div>
     )
 }
