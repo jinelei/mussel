@@ -115,11 +115,12 @@ const Login: React.FC = () => {
             ? '0 2px 8px rgba(0,0,0,0.1)'
             : '0 10px 30px rgba(0,0,0,0.2)',
         borderRadius: 12,
+        marginTop: '5rem',
         overflow: 'hidden'
     };
 
     const formItemStyle: React.CSSProperties = {
-        marginBottom: '16px'
+        margin: '2rem 0'
     };
 
     return (
@@ -130,18 +131,15 @@ const Login: React.FC = () => {
                         {/* 登录页头部 */}
                         <div style={{
                             textAlign: 'center',
-                            padding: isMobile ? '20px 0' : '30px 0',
-                            marginBottom: isMobile ? '10px' : '20px'
+                            padding: isMobile ? '20px 0' : '1rem 0',
+                            marginBottom: isMobile ? '10px' : '1rem'
                         }}>
                             <Title level={2} style={{margin: 0, color: '#1890ff'}}>
-                                系统管理后台
+                                自留地
                             </Title>
-                            <Text type="secondary" style={{marginTop: 8, display: 'block'}}>
-                                欢迎登录，体验高效的管理系统
-                            </Text>
                         </div>
 
-                        <Divider style={{margin: '0 0 20px 0'}}/>
+                        <Divider style={{margin: '0 0 2rem 0'}}/>
 
                         {/* 登录表单（绑定类型） */}
                         <Form<LoginFormValues>
@@ -181,21 +179,7 @@ const Login: React.FC = () => {
                                 />
                             </Form.Item>
 
-                            <Form.Item
-                                name="remember"
-                                valuePropName="checked"
-                                initialValue={false}
-                                style={{marginBottom: '24px'}}
-                            >
-                                <Space>
-                                    <Checkbox>记住密码</Checkbox>
-                                    <Link href="#" style={{marginLeft: 'auto'}}>
-                                        忘记密码？
-                                    </Link>
-                                </Space>
-                            </Form.Item>
-
-                            <Form.Item style={{marginBottom: 0}}>
+                            <Form.Item style={{margin: '1rem 0'}}>
                                 <Button
                                     type="primary"
                                     htmlType="submit"
@@ -212,17 +196,6 @@ const Login: React.FC = () => {
                                 </Button>
                             </Form.Item>
                         </Form>
-
-                        {/* 底部链接 */}
-                        <div style={{
-                            textAlign: 'center',
-                            marginTop: '20px',
-                            paddingBottom: '20px'
-                        }}>
-                            <Text type="secondary">
-                                还没有账号？<Link href="#">立即注册</Link>
-                            </Text>
-                        </div>
                     </Card>
                 </Content>
             </Layout>
