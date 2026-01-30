@@ -1,5 +1,5 @@
-import React, {useState} from 'react';
-import {useNavigate} from 'react-router-dom';
+import React, {useEffect, useState} from 'react';
+import {useNavigate} from "react-router-dom";
 import {
     Form, Input, Button, Typography, Layout,
     Card, Divider, message, ConfigProvider
@@ -24,8 +24,8 @@ interface LoginFormValues {
 
 const Login: React.FC = () => {
     const [form] = Form.useForm<LoginFormValues>();
-    const navigate = useNavigate();
     const [loading, setLoading] = useState<boolean>(false);
+    const navigate = useNavigate();
 
     const onFinish: FormProps<LoginFormValues>['onFinish'] = async (values) => {
         try {
@@ -54,6 +54,14 @@ const Login: React.FC = () => {
             setLoading(false);
         }
     };
+
+    useEffect(() => {
+        if (localStorage.getItem('token')) {
+            setTimeout(() => {
+                navigate('/', {replace: true});
+            }, 100);
+        }
+    }, [])
 
     return (
         <ConfigProvider locale={zhCN}>

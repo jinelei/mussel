@@ -2,7 +2,7 @@ import {Outlet, Link, useLocation} from 'react-router-dom';
 import {useEffect} from 'react';
 import {FaHome, FaUser, FaCog, FaSignOutAlt} from 'react-icons/fa';
 
-import {routes} from '@/router';
+import {routes} from '../router';
 
 const BaseLayout = () => {
     const location = useLocation();

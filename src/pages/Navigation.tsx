@@ -15,7 +15,7 @@ type SearchProps = GetProps<typeof Input.Search>;
 
 const Navigation: React.FC = () => {
     const [currentTime, setCurrentTime] = useState(dayjs());
-    const [bookmarks, setBookmarks] = useState<BookmarkDomain[] | string>();
+    const [bookmarks, setBookmarks] = useState<BookmarkDomain[] | string>([]);
     const formattedTime = currentTime.format('HH:mm:ss');
     const formattedDate = currentTime.format('YYYY年MM月DD日');
 
@@ -70,9 +70,12 @@ const Navigation: React.FC = () => {
         Service.myFavoriteBookmarks()
             .then(res => {
                 if (401 === res.code) {
-                    window.location.href = '/login';
+                    localStorage.removeItem('token');
+                    setTimeout(() => {
+                        navigate('/login', {replace: true});
+                    }, 100);
                 }
-                setBookmarks(res?.data);
+                setBookmarks(res?.data || []);
             })
             .catch(err => {
                 console.error("error ", err);
