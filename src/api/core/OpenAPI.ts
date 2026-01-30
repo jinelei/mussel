@@ -20,11 +20,19 @@ export type OpenAPIConfig = {
 };
 
 export const OpenAPI: OpenAPIConfig = {
-    BASE: 'http://192.168.3.90:8082',
+    // BASE: 'http://192.168.3.90:8082',
+    BASE: 'https://api.jinelei.com:9443',
     VERSION: '1.0.0',
     WITH_CREDENTIALS: false,
     CREDENTIALS: 'include',
-    TOKEN: localStorage.getItem('token') || undefined,
+    TOKEN: async () => {
+        const token = localStorage.getItem('token');
+        if (!token) {
+            console.warn('未检测到token，请先登录');
+            return '';
+        }
+        return token;
+    },
     USERNAME: undefined,
     PASSWORD: undefined,
     HEADERS: undefined,
