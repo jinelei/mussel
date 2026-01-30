@@ -1,11 +1,13 @@
-import {Outlet, Link, useLocation} from 'react-router-dom';
+import {Outlet, Link, useLocation, useNavigate} from 'react-router-dom';
 import {useEffect} from 'react';
 import {FaHome, FaUser, FaCog, FaSignOutAlt} from 'react-icons/fa';
 
 import {routes} from '../router';
+import {Typography} from "antd";
 
 const BaseLayout = () => {
     const location = useLocation();
+    const navigate = useNavigate();
 
     useEffect(() => {
         console.log('当前页面路径：', location.pathname);
@@ -17,9 +19,9 @@ const BaseLayout = () => {
     }, [location]);
 
     const menuList = [
-        {path: '/', label: '首页', icon: <FaHome/>},
-        {path: '/dashboard', label: '仪表盘', icon: <FaUser/>},
-        {path: '/settings', label: '系统设置', icon: <FaCog/>},
+        {path: '/memo', label: '备忘', icon: <FaHome/>},
+        {path: '/bookmark', label: '书签', icon: <FaUser/>},
+        {path: '/about', label: '关于我', icon: <FaCog/>},
     ];
 
     return (
@@ -29,12 +31,25 @@ const BaseLayout = () => {
                     width: '200px',
                     background: '#2c3e50',
                     color: 'white',
-                    padding: '20px 0',
+                    padding: '10px 0',
                 }}
             >
-                <div style={{padding: '0 20px', fontSize: '18px', fontWeight: 'bold', marginBottom: '30px'}}>
-                    系统管理后台
-                </div>
+                <Typography.Text onClick={() => navigate("/")}
+                                 style={{
+                                     fontSize: '2.5rem',
+                                     fontWeight: 'bold',
+                                     background: 'linear-gradient(90deg, #6366f1, #8b5cf6, #ec4899)',
+                                     backgroundClip: 'text',
+                                     color: 'transparent',
+                                     letterSpacing: '0.5px',
+                                     textAlign: 'center',
+                                     cursor: 'pointer',
+                                     width: '100%',
+                                     display: 'flex',
+                                     alignItems: 'center',
+                                     justifyContent: 'center',
+                                 }}
+                >自留地</Typography.Text>
 
                 <ul style={{listStyle: 'none', padding: 0, margin: 0}}>
                     {menuList.map((item) => (
@@ -44,12 +59,11 @@ const BaseLayout = () => {
                                 style={{
                                     display: 'flex',
                                     alignItems: 'center',
-                                    padding: '12px 20px',
+                                    padding: '12px 2rem',
                                     color: 'white',
                                     textDecoration: 'none',
                                     background: location.pathname === item.path ? '#34495e' : 'transparent',
                                 }}
-                                onClick={(e) => e.preventDefault()}
                             >
                                 <span style={{marginRight: '10px'}}>{item.icon}</span>
                                 <span>{item.label}</span>
@@ -95,7 +109,7 @@ const BaseLayout = () => {
                     <div style={{fontSize: '16px', fontWeight: 'bold'}}>
                         当前页面：{menuList.find(item => item.path === location.pathname)?.label || '未知页面'}
                     </div>
-                    <div>用户名：管理员</div>
+                    <Typography.Text>用户名：管理员</Typography.Text>
                 </header>
 
                 <main style={{flex: 1, padding: '20px', overflow: 'auto'}}>
@@ -112,7 +126,7 @@ const BaseLayout = () => {
                         color: '#666',
                     }}
                 >
-                    © 2026 系统管理后台 - 版权所有
+                    <Typography.Text> © 2026 系统管理后台 - 版权所有 </Typography.Text>
                 </footer>
             </div>
         </div>

@@ -7,6 +7,7 @@ import Login from "../pages/Login";
 import Memo from "../pages/Memo.tsx";
 import EmptyLayout from "../layouts/EmptyLayout.tsx";
 import {FaBook, FaHome, FaUser} from "react-icons/fa";
+import Bookmark from "../pages/Bookmark.tsx";
 
 const routes = [
     {
@@ -15,7 +16,6 @@ const routes = [
         icon: <FaHome/>,
         children: [
             {index: true, element: <Navigation/>, icon: <FaHome/>},
-            {path: 'about', element: <About/>, icon: <FaUser/>},
         ],
     },
     {
@@ -24,6 +24,22 @@ const routes = [
         icon: <FaBook/>,
         children: [
             {index: true, element: <Memo/>, icon: <FaBook/>},
+        ],
+    },
+    {
+        path: '/bookmark',
+        element: <BaseLayout/>,
+        icon: <FaBook/>,
+        children: [
+            {index: true, element: <Bookmark/>, icon: <FaBook/>},
+        ],
+    },
+    {
+        path: '/about',
+        element: <BaseLayout/>,
+        icon: <FaBook/>,
+        children: [
+            {index: true, element: <About/>, icon: <FaBook/>},
         ],
     },
     {
