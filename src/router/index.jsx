@@ -6,21 +6,24 @@ import BaseLayout from "../layouts/BaseLayout";
 import Login from "../pages/Login";
 import Memo from "../pages/Memo.tsx";
 import EmptyLayout from "../layouts/EmptyLayout.tsx";
+import {FaBook, FaHome, FaUser} from "react-icons/fa";
 
-const router = createBrowserRouter([
+const routes = [
     {
         path: '/',
         element: <EmptyLayout/>,
+        icon: <FaHome/>,
         children: [
-            {index: true, element: <Navigation/>},
-            {path: 'about', element: <About/>},
+            {index: true, element: <Navigation/>, icon: <FaHome/>},
+            {path: 'about', element: <About/>, icon: <FaUser/>},
         ],
     },
     {
         path: '/memo',
         element: <BaseLayout/>,
+        icon: <FaBook/>,
         children: [
-            {index: true, element: <Memo/>},
+            {index: true, element: <Memo/>, icon: <FaBook/>},
         ],
     },
     {
@@ -28,6 +31,8 @@ const router = createBrowserRouter([
         element: <Login/>,
     },
     {path: '*', element: <NotFound/>}, // 404 路由
-]);
+];
 
-export default router;
+export {routes};
+
+export default createBrowserRouter(routes);

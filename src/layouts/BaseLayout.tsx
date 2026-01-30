@@ -2,6 +2,8 @@ import {Outlet, Link, useLocation} from 'react-router-dom';
 import {useEffect} from 'react';
 import {FaHome, FaUser, FaCog, FaSignOutAlt} from 'react-icons/fa';
 
+import {routes} from '@/router';
+
 const BaseLayout = () => {
     const location = useLocation();
 
@@ -11,6 +13,7 @@ const BaseLayout = () => {
         if (!isLogin && location.pathname !== '/login') {
             window.location.href = '/login';
         }
+        console.log('获取路由', routes);
     }, [location]);
 
     const menuList = [
