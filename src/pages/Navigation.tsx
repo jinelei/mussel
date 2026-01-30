@@ -129,13 +129,22 @@ const Navigation: React.FC = () => {
                 {(bookmarks as BookmarkDomain[])?.map((item: BookmarkDomain, index: number) => {
                     return (<a href={item.url} key={index}>
                             <Space style={{
-                                margin: '5px',
-                                backgroundColor: '#333333',
-                                padding: '6px',
-                                borderRadius: '10px'
+                                margin: '0 5px',
+                                background: 'rgba(17, 24, 39, 0.6',
+                                backdropFilter: 'blur(10px)',
+                                border: '1px solid rgba(75, 85, 99, 0.2)',
+                                borderRadius: '5px',
+                                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15',
+                                textAlign: 'center',
+                                width: '3rem',
+                                height: '3rem',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
                             }}>
                                 <Tooltip title={<Text>{item.name}</Text>} color={'orange'}>
-                                    <DynamicIcon iconName={item.icon} style={{fontSize: '1.5rem', padding: '5px'}}/>
+                                    <DynamicIcon iconName={item.icon} size={'1.5rem'}
+                                                 style={{color: 'white'}}/>
                                 </Tooltip>
                             </Space>
                         </a>

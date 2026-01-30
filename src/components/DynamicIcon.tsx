@@ -1,45 +1,42 @@
-import React, {useState, useEffect} from 'react';
-import {Spin} from 'antd';
+import React from 'react';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-expect-error
-import type {IconProps} from '@ant-design/icons';
+import {CSSProperties} from 'react';
+import * as AntdIcons from '@ant-design/icons';
 
+interface DynamicIconProps {
+    iconName?: string | undefined;
+    size?: number | string;
+    style?: CSSProperties;
+    onClick?: () => void;
+}
 
-const DynamicIcon = ({iconName, ...props}: { iconName: string } & IconProps) => {
-    const [IconComponent, setIconComponent] = useState<React.FC<IconProps> | null>(null);
-    const [loading, setLoading] = useState(true);
+const DynamicIcon: React.FC<DynamicIconProps> = ({iconName, size = 16, style, onClick}) => {
+    const getIconComponentName = (name: string | undefined) => {
+        if (!name) {
+            return undefined;
+        }
+        if (name.startsWith('-')) {
+            return name.split('-')
+                .map(p => p.charAt(0).toUpperCase() + p.slice(1))
+                .join("") + 'Outlined';
+        }
+        if (name === name.toLocaleUpperCase() && !name.includes('Outlined')) {
+            return name.charAt(0).toUpperCase() + name.slice(1) + 'Outlined';
+        }
+        return name;
+    }
+    const componentName = getIconComponentName(iconName);
+    const IconComponent = componentName ? AntdIcons[componentName as keyof typeof AntdIcons] || AntdIcons.QuestionCircleFilled : AntdIcons.QuestionCircleFilled;
+    const mergedStyle: CSSProperties = {
+        fontSize: typeof size === 'number' ? `${size}px` : size,
+        cursor: onClick ? 'pointer' : 'default',
+        ...style
+    }
 
-    useEffect(() => {
-        const loadIcon = async () => {
-            try {
-                const module = await import('@ant-design/icons');
-                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                // @ts-expect-error
-                const Icon = module[iconName];
-                if (Icon) {
-                    setIconComponent(Icon);
-                } else {
-                    const {QuestionOutlined} = await import('@ant-design/icons');
-                    setIconComponent(QuestionOutlined);
-                }
-            } catch (error) {
-                const {QuestionOutlined} = await import('@ant-design/icons');
-                setIconComponent(QuestionOutlined);
-                console.warn(`图标 ${iconName} 加载失败:`, error);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        loadIcon();
-    }, [iconName]);
-
-    if (loading) return <Spin size="small"/>;
-    if (!IconComponent) return null;
-
-    console.log(iconName, props)
-
-    return <IconComponent  {...props} />;
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-expect-error
+    return <IconComponent style={mergedStyle} onClick={onClick}></IconComponent>;
 };
 
 export default DynamicIcon;
