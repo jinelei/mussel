@@ -6,7 +6,7 @@ import BaseLayout from "../layouts/BaseLayout";
 import Login from "../pages/Login";
 import Memo from "../pages/Memo.tsx";
 import EmptyLayout from "../layouts/EmptyLayout.tsx";
-import {FaBook, FaHome, FaUser} from "react-icons/fa";
+import {FaBook, FaHome} from "react-icons/fa";
 import Bookmark from "../pages/Bookmark.tsx";
 
 const routes = [
