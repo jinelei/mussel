@@ -4,6 +4,7 @@ import dayjs from 'dayjs';
 import type {GetProps} from 'antd';
 import {type BookmarkDomain, Service} from "../api";
 import Footer from "./Footer.tsx";
+import {useNavigate} from "react-router-dom";
 
 const {Text} = Typography;
 import DynamicIcon from "../components/DynamicIcon.tsx";
@@ -17,6 +18,8 @@ const Navigation: React.FC = () => {
     const [bookmarks, setBookmarks] = useState<BookmarkDomain[] | string>();
     const formattedTime = currentTime.format('HH:mm:ss');
     const formattedDate = currentTime.format('YYYY年MM月DD日');
+
+    const navigate = useNavigate();
 
     const copyToClipboard = async (text: string) => {
         try {
@@ -127,7 +130,19 @@ const Navigation: React.FC = () => {
             />
             <Space style={{position: 'fixed', bottom: '6rem'}}>
                 {(bookmarks as BookmarkDomain[])?.map((item: BookmarkDomain, index: number) => {
-                    return (<a href={item.url} key={index}>
+                    return (<a key={index}
+                               onClick={() => {
+                                   if (!item.url) {
+                                       message.error("敬请期待");
+                                   } else if (item.url.startsWith('http')) {
+                                       window.open(item.url, '_blank');
+                                   } else if (item.url.startsWith('/')) {
+                                       navigate(item.url);
+                                   } else {
+                                       message.error("敬请期待");
+                                   }
+                               }}
+                        >
                             <Space style={{
                                 margin: '0 5px',
                                 background: 'rgba(17, 24, 39, 0.6',
