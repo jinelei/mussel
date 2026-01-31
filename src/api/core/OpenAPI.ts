@@ -25,7 +25,7 @@ export const OpenAPI: OpenAPIConfig = {
     VERSION: '1.0.0',
     WITH_CREDENTIALS: false,
     CREDENTIALS: 'include',
-    TOKEN: store.getState().auth.token,
+    TOKEN: async () => store.getState().auth.token,
     USERNAME: undefined,
     PASSWORD: undefined,
     HEADERS: undefined,

@@ -8,7 +8,6 @@ import {useLocation, useNavigate} from "react-router-dom";
 
 const {Text} = Typography;
 import DynamicIcon from "../components/DynamicIcon.tsx";
-import {store} from "../store";
 
 const {Search} = Input;
 
@@ -68,7 +67,6 @@ const Navigation: React.FC = () => {
     }, [currentTime]);
 
     useEffect(() => {
-        console.log('bookmarks', store.getState().auth.token);
         Service.myFavoriteBookmarks()
             .then(res => {
                 if (200 === res.code) {
