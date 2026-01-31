@@ -74,8 +74,9 @@ const Navigation: React.FC = () => {
                 }
             })
             .catch(err => {
-                console.error("error ", err);
-            })
+                console.error("获取收藏书签失败", err);
+                message.error("获取收藏书签失败");
+            });
     }, [location.pathname]);
 
     return (

@@ -2,7 +2,7 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type {ApiRequestOptions} from './ApiRequestOptions';
+import type { ApiRequestOptions } from './ApiRequestOptions';
 import {store} from "../../store";
 
 type Resolver<T> = (options: ApiRequestOptions) => Promise<T>;

@@ -17,6 +17,6 @@ export type GenericResult = {
     /**
      * 响应数据
      */
-    data?: Record<string, any>;
+    data?: any;
 };
 

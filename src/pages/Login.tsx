@@ -13,7 +13,7 @@ import zhCN from 'antd/locale/zh_CN';
 import 'antd/dist/reset.css';
 import {Service} from "../api";
 import {useDispatch} from "react-redux";
-import {clearToken, setToken, store} from '../store';
+import {clearToken, setPermissions, setRoles, setToken, setUserName, store} from '../store';
 
 
 const {Title} = Typography;
@@ -33,23 +33,25 @@ const Login: React.FC = () => {
     const onFinish: FormProps<LoginFormValues>['onFinish'] = async (values) => {
         try {
             setLoading(true);
-            Service.postLogin({...values})
-                .then((res) => {
-                    if (res.code === 200) {
-                        dispatch(setToken(res.data));
-                        message.success('登录成功！');
-                        navigate('/', {replace: true});
-                    } else {
-                        dispatch(clearToken());
-                        message.error('账号或密码错误，请重试！');
-                    }
-                }).catch((err) => {
-                console.error("err", err);
+            const token = await Service.postLogin({...values});
+            if (token.code !== 200) {
                 dispatch(clearToken());
                 message.error('账号或密码错误，请重试！');
-            }).finally(() => {
-                setLoading(false);
-            })
+            } else {
+                dispatch(setToken(token.data));
+                const userInfo = await Service.getUserInfo();
+                if (userInfo.code !== 200) {
+                    dispatch(clearToken());
+                    message.error('获取用户信息失败');
+                } else {
+                    dispatch(setUserName(userInfo.data.username));
+                    dispatch(setRoles(userInfo.data.roles));
+                    dispatch(setPermissions(userInfo.data.permissions));
+                    message.success('登录成功！');
+                    navigate('/', {replace: true});
+                }
+            }
+            setLoading(false);
         } catch (err) {
             console.error("err", err);
             message.error('登录失败，请稍后再试！');

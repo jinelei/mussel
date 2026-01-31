@@ -18,16 +18,7 @@ export class Service {
      * @throws ApiError
      */
     public static postLogin(
-        formData: {
-            /**
-             * 用户名
-             */
-            username?: string;
-            /**
-             * 密码
-             */
-            password?: string;
-        },
+        formData: any,
     ): CancelablePromise<any> {
         return __request(OpenAPI, {
             method: 'POST',
@@ -54,18 +45,18 @@ export class Service {
     /**
      * 更新备忘
      * 根据id更新备忘
-     * @param arg0
+     * @param req
      * @returns GenericResult OK
      * @throws ApiError
      */
     public static memoUpdate(
-        arg0: UpdateRequest,
+        req: UpdateRequest,
     ): CancelablePromise<GenericResult> {
         return __request(OpenAPI, {
             method: 'POST',
             url: '/memo/update',
             query: {
-                'arg0': arg0,
+                'req': req,
             },
         });
     }
@@ -90,18 +81,18 @@ export class Service {
     /**
      * 新增备忘
      * 新增备忘
-     * @param arg0
+     * @param req
      * @returns GenericResult OK
      * @throws ApiError
      */
     public static memoCreate(
-        arg0: CreateRequest,
+        req: CreateRequest,
     ): CancelablePromise<GenericResult> {
         return __request(OpenAPI, {
             method: 'POST',
             url: '/memo/create',
             query: {
-                'arg0': arg0,
+                'req': req,
             },
         });
     }

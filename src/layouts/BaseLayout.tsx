@@ -112,7 +112,7 @@ const BaseLayout = () => {
                     <div style={{fontSize: '16px', fontWeight: 'bold'}}>
                         当前页面：{menuList.find(item => item.path === location.pathname)?.label || '未知页面'}
                     </div>
-                    <Typography.Text>用户名：管理员</Typography.Text>
+                    <Typography.Text>{store.getState().auth.userInfo.username}</Typography.Text>
                 </header>
 
                 <main style={{flex: 1, padding: '20px', overflow: 'auto'}}>

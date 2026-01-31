@@ -1,5 +1,5 @@
 {
-  "openapi": "3.0.1",
+  "openapi": "3.1.0",
   "info": {
     "title": "Bitterling项目API文档",
     "description": "Bitterling项目接口文档，包含所有业务接口",
@@ -47,7 +47,6 @@
           "content": {
             "application/x-www-form-urlencoded": {
               "schema": {
-                "type": "object",
                 "properties": {
                   "username": {
                     "type": "string",
@@ -62,7 +61,6 @@
             },
             "application/json": {
               "schema": {
-                "type": "object",
                 "properties": {
                   "username": {
                     "type": "string",
@@ -120,7 +118,7 @@
         "operationId": "memoUpdate",
         "parameters": [
           {
-            "name": "arg0",
+            "name": "req",
             "in": "query",
             "required": true,
             "schema": {
@@ -185,7 +183,7 @@
         "operationId": "memoCreate",
         "parameters": [
           {
-            "name": "arg0",
+            "name": "req",
             "in": "query",
             "required": true,
             "schema": {
@@ -394,31 +392,23 @@
     "schemas": {
       "GenericResult": {
         "type": "object",
+        "description": "通用响应对象",
         "properties": {
           "code": {
             "type": "integer",
-            "description": "错误代码",
-            "format": "int32"
+            "format": "int32",
+            "description": "错误代码"
           },
           "message": {
             "type": "string",
             "description": "错误信息"
           },
           "data": {
-            "type": "object",
             "description": "响应数据"
           }
-        },
-        "description": "通用响应对象"
+        }
       },
       "UpdateRequest": {
-        "required": [
-          "content",
-          "id",
-          "orderNumber",
-          "subTitle",
-          "title"
-        ],
         "type": "object",
         "properties": {
           "id": {
@@ -426,13 +416,16 @@
             "format": "int64"
           },
           "title": {
-            "type": "string"
+            "type": "string",
+            "minLength": 1
           },
           "subTitle": {
-            "type": "string"
+            "type": "string",
+            "minLength": 1
           },
           "content": {
-            "type": "string"
+            "type": "string",
+            "minLength": 1
           },
           "orderNumber": {
             "type": "integer",
@@ -445,65 +438,76 @@
               "format": "int64"
             }
           }
-        }
+        },
+        "required": [
+          "content",
+          "id",
+          "orderNumber",
+          "subTitle",
+          "title"
+        ]
       },
       "CreateRequest": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "minLength": 1
+          },
+          "subTitle": {
+            "type": "string",
+            "minLength": 1
+          },
+          "content": {
+            "type": "string",
+            "minLength": 1
+          },
+          "orderNumber": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "tagIds": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        },
         "required": [
           "content",
           "subTitle",
           "title"
-        ],
-        "type": "object",
-        "properties": {
-          "title": {
-            "type": "string"
-          },
-          "subTitle": {
-            "type": "string"
-          },
-          "content": {
-            "type": "string"
-          },
-          "orderNumber": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "tagIds": {
-            "type": "array",
-            "items": {
-              "type": "integer",
-              "format": "int64"
-            }
-          }
-        }
+        ]
       },
       "BookmarkDomain": {
         "type": "object",
+        "description": "书签领域对象",
         "properties": {
           "ID": {
             "type": "integer",
-            "description": "主键ID",
-            "format": "int64"
+            "format": "int64",
+            "description": "主键ID"
           },
           "parentId": {
             "type": "integer",
-            "description": "父级ID",
-            "format": "int64"
+            "format": "int64",
+            "description": "父级ID"
           },
           "createTime": {
             "type": "string",
-            "description": "创建时间",
-            "format": "date-time"
+            "format": "date-time",
+            "description": "创建时间"
           },
           "updateTime": {
             "type": "string",
-            "description": "更新时间",
-            "format": "date-time"
+            "format": "date-time",
+            "description": "更新时间"
           },
           "orderNumber": {
             "type": "integer",
-            "description": "排序值",
-            "format": "int32"
+            "format": "int32",
+            "description": "排序值"
           },
           "name": {
             "type": "string",
@@ -535,8 +539,7 @@
               "$ref": "#/components/schemas/BookmarkDomain"
             }
           }
-        },
-        "description": "书签领域对象"
+        }
       }
     }
   }
