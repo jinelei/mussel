@@ -8,6 +8,8 @@ import Memo from "../pages/Memo.tsx";
 import EmptyLayout from "../layouts/EmptyLayout.tsx";
 import {FaBook, FaHome} from "react-icons/fa";
 import Bookmark from "../pages/Bookmark.tsx";
+import PrivateRoute from "../components/PrivateRoute.tsx";
+
 
 const routes = [
     {
@@ -15,7 +17,7 @@ const routes = [
         element: <EmptyLayout/>,
         icon: <FaHome/>,
         children: [
-            {index: true, element: <Navigation/>, icon: <FaHome/>},
+            {index: true, element: <PrivateRoute><Navigation/></PrivateRoute>, icon: <FaHome/>},
         ],
     },
     {
@@ -23,7 +25,7 @@ const routes = [
         element: <BaseLayout/>,
         icon: <FaBook/>,
         children: [
-            {index: true, element: <Memo/>, icon: <FaBook/>},
+            {index: true, element: <PrivateRoute><Memo/></PrivateRoute>, icon: <FaBook/>},
         ],
     },
     {
@@ -31,7 +33,7 @@ const routes = [
         element: <BaseLayout/>,
         icon: <FaBook/>,
         children: [
-            {index: true, element: <Bookmark/>, icon: <FaBook/>},
+            {index: true, element: <PrivateRoute><Bookmark/></PrivateRoute>, icon: <FaBook/>},
         ],
     },
     {
@@ -39,7 +41,7 @@ const routes = [
         element: <BaseLayout/>,
         icon: <FaBook/>,
         children: [
-            {index: true, element: <About/>, icon: <FaBook/>},
+            {index: true, element: <PrivateRoute><About/></PrivateRoute>, icon: <FaBook/>},
         ],
     },
     {

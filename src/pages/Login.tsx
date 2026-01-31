@@ -12,6 +12,9 @@ import {
 import zhCN from 'antd/locale/zh_CN';
 import 'antd/dist/reset.css';
 import {Service} from "../api";
+import {useDispatch} from "react-redux";
+import {clearToken, setToken, store} from '../store';
+
 
 const {Title} = Typography;
 const {Content} = Layout;
@@ -26,23 +29,23 @@ const Login: React.FC = () => {
     const [form] = Form.useForm<LoginFormValues>();
     const [loading, setLoading] = useState<boolean>(false);
     const navigate = useNavigate();
-
+    const dispatch = useDispatch();
     const onFinish: FormProps<LoginFormValues>['onFinish'] = async (values) => {
         try {
             setLoading(true);
             Service.postLogin({...values})
                 .then((res) => {
                     if (res.code === 200) {
-                        localStorage.setItem('token', res.data);
+                        dispatch(setToken(res.data));
                         message.success('登录成功！');
                         navigate('/', {replace: true});
                     } else {
-                        localStorage.removeItem('token');
+                        dispatch(clearToken());
                         message.error('账号或密码错误，请重试！');
                     }
                 }).catch((err) => {
                 console.error("err", err);
-                localStorage.removeItem('token');
+                dispatch(clearToken());
                 message.error('账号或密码错误，请重试！');
             }).finally(() => {
                 setLoading(false);
@@ -56,12 +59,10 @@ const Login: React.FC = () => {
     };
 
     useEffect(() => {
-        if (localStorage.getItem('token')) {
-            setTimeout(() => {
-                navigate('/', {replace: true});
-            }, 100);
+        if (store.getState().auth.token) {
+            navigate('/');
         }
-    }, [])
+    })
 
     return (
         <ConfigProvider locale={zhCN}>

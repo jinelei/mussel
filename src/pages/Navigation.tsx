@@ -4,10 +4,11 @@ import dayjs from 'dayjs';
 import type {GetProps} from 'antd';
 import {type BookmarkDomain, Service} from "../api";
 import Footer from "./Footer.tsx";
-import {useNavigate} from "react-router-dom";
+import {useLocation, useNavigate} from "react-router-dom";
 
 const {Text} = Typography;
 import DynamicIcon from "../components/DynamicIcon.tsx";
+import {store} from "../store";
 
 const {Search} = Input;
 
@@ -20,6 +21,7 @@ const Navigation: React.FC = () => {
     const formattedDate = currentTime.format('YYYY年MM月DD日');
 
     const navigate = useNavigate();
+    const location = useLocation();
 
     const copyToClipboard = async (text: string) => {
         try {
@@ -63,23 +65,20 @@ const Navigation: React.FC = () => {
             setCurrentTime(dayjs());
         }, 1000);
         return () => clearInterval(timer);
-    }, []);
+    }, [currentTime]);
 
     useEffect(() => {
+        console.log('bookmarks', store.getState().auth.token);
         Service.myFavoriteBookmarks()
             .then(res => {
-                if (401 === res.code) {
-                    localStorage.removeItem('token');
-                    setTimeout(() => {
-                        navigate('/login', {replace: true});
-                    }, 100);
+                if (200 === res.code) {
+                    setBookmarks(res?.data as BookmarkDomain[] || []);
                 }
-                setBookmarks(res?.data as BookmarkDomain[] || []);
             })
             .catch(err => {
                 console.error("error ", err);
             })
-    }, []);
+    }, [location.pathname]);
 
     return (
         <div style={{

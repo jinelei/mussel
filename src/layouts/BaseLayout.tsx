@@ -4,19 +4,22 @@ import {FaHome, FaUser, FaCog, FaSignOutAlt} from 'react-icons/fa';
 
 import {routes} from '../router';
 import {Typography} from "antd";
+import {clearToken, store} from "../store";
+import {useDispatch} from "react-redux";
 
 const BaseLayout = () => {
     const location = useLocation();
     const navigate = useNavigate();
+    const dispatch = useDispatch();
 
     useEffect(() => {
         console.log('当前页面路径：', location.pathname);
-        const isLogin = localStorage.getItem('token');
+        const isLogin = store.getState().auth.token;
         if (!isLogin && location.pathname !== '/login') {
             window.location.href = '/login';
         }
         console.log('获取路由', routes);
-    }, [location]);
+    });
 
     const menuList = [
         {path: '/memo', label: '备忘', icon: <FaHome/>},
@@ -85,7 +88,7 @@ const BaseLayout = () => {
                             cursor: 'pointer',
                         }}
                         onClick={() => {
-                            localStorage.removeItem('token');
+                            dispatch(clearToken());
                             window.location.href = '/login';
                         }}
                     >
