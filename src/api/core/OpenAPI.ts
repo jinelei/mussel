@@ -3,6 +3,7 @@
 /* tslint:disable */
 /* eslint-disable */
 import type {ApiRequestOptions} from './ApiRequestOptions';
+import {getLocalToken} from "../../utils/token.ts";
 
 type Resolver<T> = (options: ApiRequestOptions) => Promise<T>;
 type Headers = Record<string, string>;
@@ -20,19 +21,11 @@ export type OpenAPIConfig = {
 };
 
 export const OpenAPI: OpenAPIConfig = {
-    // BASE: 'http://192.168.3.90:8082',
-    BASE: 'https://api.jinelei.com:9443',
+    BASE: '/api',
     VERSION: '1.0.0',
     WITH_CREDENTIALS: false,
     CREDENTIALS: 'include',
-    TOKEN: async () => {
-        const token = localStorage.getItem('token');
-        if (!token) {
-            console.warn('未检测到token，请先登录');
-            return '';
-        }
-        return token;
-    },
+    TOKEN: await getLocalToken(),
     USERNAME: undefined,
     PASSWORD: undefined,
     HEADERS: undefined,

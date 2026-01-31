@@ -31,12 +31,12 @@ const BaseLayout = () => {
                     width: '200px',
                     background: '#2c3e50',
                     color: 'white',
-                    padding: '10px 0',
                 }}
             >
                 <Typography.Text onClick={() => navigate("/")}
                                  style={{
-                                     fontSize: '2.5rem',
+                                     margin: '0.5rem 0',
+                                     fontSize: '1.5rem',
                                      fontWeight: 'bold',
                                      background: 'linear-gradient(90deg, #6366f1, #8b5cf6, #ec4899)',
                                      backgroundClip: 'text',

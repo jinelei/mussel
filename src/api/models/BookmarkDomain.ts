@@ -2,9 +2,6 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-// @ts-ignore
-// @ts-ignore
-
 /**
  * 书签领域对象
  */
@@ -51,12 +48,10 @@ export type BookmarkDomain = {
     color?: string;
     children?: Array<BookmarkDomain>;
 };
-// @ts-ignore
 export namespace BookmarkDomain {
     /**
      * 书签类型
      */
-// @ts-ignore
     export enum type {
         FOLDER = 'FOLDER',
         ITEM = 'ITEM',

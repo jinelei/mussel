@@ -40,6 +40,18 @@ export class Service {
         });
     }
     /**
+     * 用户信息
+     * 获取当前登录用户相关信息
+     * @returns GenericResult OK
+     * @throws ApiError
+     */
+    public static getUserInfo(): CancelablePromise<GenericResult> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/user/info',
+        });
+    }
+    /**
      * 更新备忘
      * 根据id更新备忘
      * @param arg0
