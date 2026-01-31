@@ -11,6 +11,5 @@ export { BookmarkDomain } from './models/BookmarkDomain';
 export type { CreateRequest } from './models/CreateRequest';
 export type { GenericResult } from './models/GenericResult';
 export type { UpdateRequest } from './models/UpdateRequest';
-export type { UserInfoResponse } from './models/UserInfoResponse';
 
 export { Service } from './services/Service';

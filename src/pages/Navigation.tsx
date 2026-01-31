@@ -74,7 +74,7 @@ const Navigation: React.FC = () => {
                         navigate('/login', {replace: true});
                     }, 100);
                 }
-                setBookmarks(res?.data || []);
+                setBookmarks(res?.data as BookmarkDomain[] || []);
             })
             .catch(err => {
                 console.error("error ", err);

@@ -2,9 +2,6 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-// @ts-ignore
-// @ts-ignore
-
 /**
  * 书签领域对象
  */

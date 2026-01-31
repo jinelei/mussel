@@ -405,38 +405,11 @@
             "description": "错误信息"
           },
           "data": {
-            "$ref": "#/components/schemas/UserInfoResponse"
+            "type": "object",
+            "description": "响应数据"
           }
         },
         "description": "通用响应对象"
-      },
-      "UserInfoResponse": {
-        "type": "object",
-        "properties": {
-          "username": {
-            "type": "string",
-            "description": "用户名称"
-          },
-          "permissions": {
-            "uniqueItems": true,
-            "type": "array",
-            "description": "权限集合",
-            "items": {
-              "type": "string",
-              "description": "权限集合"
-            }
-          },
-          "roles": {
-            "uniqueItems": true,
-            "type": "array",
-            "description": "角色集合",
-            "items": {
-              "type": "string",
-              "description": "角色集合"
-            }
-          }
-        },
-        "description": "用户信息"
       },
       "UpdateRequest": {
         "required": [
