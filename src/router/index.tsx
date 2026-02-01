@@ -9,13 +9,28 @@ import EmptyLayout from "../layouts/EmptyLayout.tsx";
 import {FaBook, FaHome} from "react-icons/fa";
 import Bookmark from "../pages/Bookmark.tsx";
 import PrivateRoute from "../components/PrivateRoute.tsx";
+import type {ReactNode} from "react";
+import {store} from "../store";
+
+type Resolver<T> = () => Promise<T>;
+
+interface RouteProperty {
+    index?: boolean
+    path?: string;
+    component?: ReactNode;
+    element?: ReactNode;
+    icon?: ReactNode;
+    permissions?: boolean | Resolver<boolean>;
+    children?: RouteProperty[];
+}
 
 
-const routes = [
+const routes: RouteProperty[] = [
     {
         path: '/',
         element: <EmptyLayout/>,
         icon: <FaHome/>,
+        permissions: async () => store.getState()?.auth?.userInfo?.permissions?.includes("PAGE_/"),
         children: [
             {index: true, element: <PrivateRoute><Navigation/></PrivateRoute>, icon: <FaHome/>},
         ],
