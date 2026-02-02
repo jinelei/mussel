@@ -1,4 +1,4 @@
-import {createBrowserRouter} from 'react-router-dom';
+import {createBrowserRouter, type RouteObject} from 'react-router-dom';
 import About from '../pages/About';
 import NotFound from '../pages/NotFound';
 import Navigation from "../pages/Navigation";
@@ -14,11 +14,7 @@ import {store} from "../store";
 
 type Resolver<T> = () => Promise<T>;
 
-interface RouteProperty {
-    index?: boolean
-    path?: string;
-    component?: ReactNode;
-    element?: ReactNode;
+type RouteProperty = RouteObject & {
     icon?: ReactNode;
     permissions?: boolean | Resolver<boolean>;
     children?: RouteProperty[];
@@ -30,7 +26,7 @@ const routes: RouteProperty[] = [
         path: '/',
         element: <EmptyLayout/>,
         icon: <FaHome/>,
-        permissions: async () => store.getState()?.auth?.userInfo?.permissions?.includes("PAGE_/"),
+        permissions: async () => (store.getState()?.auth?.userInfo?.permissions || []).includes('PAGE_/'),
         children: [
             {index: true, element: <PrivateRoute><Navigation/></PrivateRoute>, icon: <FaHome/>},
         ],

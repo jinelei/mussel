@@ -1,5 +1,14 @@
 import {configureStore, createSlice} from '@reduxjs/toolkit';
 
+interface AuthState {
+    token: string;
+    userInfo: {
+        username: string;
+        roles: string[];
+        permissions: string[];
+    };
+}
+
 const authSlice = createSlice({
     name: 'auth',
     initialState: {
@@ -9,7 +18,7 @@ const authSlice = createSlice({
             roles: localStorage.getItem('roles') || [],
             permissions: localStorage.getItem('permissions') || [],
         },
-    },
+    } as AuthState,
     reducers: {
         setToken: (state, action) => {
             state.token = action.payload;
