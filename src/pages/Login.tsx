@@ -69,16 +69,17 @@ const Login: React.FC = () => {
     return (
         <ConfigProvider locale={zhCN}>
             <Layout style={{
-                minHeight: '100vh',
+                minHeight: 'clamp(600px, 100dvh, 1000px)',
+                height: 'auto',
+                overflowY: 'hidden',
                 background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                padding: '20px'
             }}>
                 <Content>
                     <Card styles={{header: {border: 0}}} style={{
-                        width: 400,
+                        width: 'clamp(20rem, 80vw, 600px)',
                         boxShadow: '0 10px 30px rgba(0,0,0,0.2)',
                         borderRadius: 12,
                         marginTop: '5rem',
@@ -103,7 +104,6 @@ const Login: React.FC = () => {
                             name="loginForm"
                             onFinish={onFinish}
                             autoComplete="off"
-                            size={'middle'}
                         >
                             <Form.Item
                                 name="username"
