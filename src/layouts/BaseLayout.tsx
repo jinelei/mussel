@@ -1,26 +1,21 @@
 import {Outlet, Link, useLocation, useNavigate} from 'react-router-dom';
-import {FaHome, FaUser, FaCog, FaSignOutAlt} from 'react-icons/fa';
+import {FaSignOutAlt} from 'react-icons/fa';
 
 import {clearToken, store} from "../store";
 import {useDispatch} from "react-redux";
 import {Typography} from "antd";
-import {useEffect} from "react";
-import {originRoutes} from "../router";
+import {useEffect, useState} from "react";
+import {authorizedRoutes, type MenuItem} from "../router";
 
 const BaseLayout = () => {
+    const [menuList, setMenuList] = useState<MenuItem[]>([]);
     const location = useLocation();
     const navigate = useNavigate();
     const dispatch = useDispatch();
 
     useEffect(() => {
-        console.log('获取路由', originRoutes);
-    });
-
-    const menuList = [
-        {path: '/memo', label: '备忘', icon: <FaHome/>},
-        {path: '/bookmark', label: '书签', icon: <FaUser/>},
-        {path: '/about', label: '关于我', icon: <FaCog/>},
-    ];
+        setMenuList(authorizedRoutes());
+    }, [location.pathname]);
 
     return (
         <div style={{display: 'flex', height: '100vh', margin: 0, padding: 0}}>
@@ -64,7 +59,7 @@ const BaseLayout = () => {
                                 }}
                             >
                                 <span style={{marginRight: '10px'}}>{item.icon}</span>
-                                <span>{item.label}</span>
+                                <span>{item.title}</span>
                             </Link>
                         </li>
                     ))}
@@ -84,7 +79,7 @@ const BaseLayout = () => {
                     }}
                 >
                     <div style={{fontSize: '16px', fontWeight: 'bold'}}>
-                        当前页面：{menuList.find(item => item.path === location.pathname)?.label || '未知页面'}
+                        当前页面：{menuList.find(item => item.path === location.pathname)?.title || '未知页面'}
                     </div>
                     <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
                         <Typography.Text>{store.getState().auth.userInfo.username}</Typography.Text>

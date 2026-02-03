@@ -1,4 +1,7 @@
-import {createBrowserRouter, redirect, type RouteObject} from 'react-router-dom';
+import {
+    createBrowserRouter,
+    type RouteObject
+} from 'react-router-dom';
 import About from '../pages/About';
 import NotFound from '../pages/NotFound';
 import Navigation from "../pages/Navigation";
@@ -8,141 +11,204 @@ import Memo from "../pages/Memo.tsx";
 import EmptyLayout from "../layouts/EmptyLayout.tsx";
 import {FaBook, FaHome} from "react-icons/fa";
 import Bookmark from "../pages/Bookmark.tsx";
-import PrivateRoute from "../components/PrivateRoute.tsx";
+import AuthorizedGuard from "../components/AuthorizedGuard.tsx";
+import Forbidden from "../pages/Forbidden.tsx";
 import type {ReactNode} from "react";
 import {store} from "../store";
-import Forbidden from "../pages/Forbidden.tsx";
 
-type Resolver<T> = () => Promise<T>;
-
-type RouteProperty = RouteObject & {
+export interface MenuItem {
+    path: string;
+    title: string;
     icon?: ReactNode;
-    permissions?: boolean | Resolver<boolean>;
-    children?: RouteProperty[];
+    children?: MenuItem[];
 }
 
-const isStrictStringArray = (value: unknown): value is string[] => {
-    // 第一层校验：排除 null/undefined，且必须是数组类型
-    if (value === null || value === undefined || !Array.isArray(value)) {
-        return false;
-    }
+export interface AuthRouteHandle {
+    title?: string | undefined;
+    icon?: ReactNode | undefined;
+    showInMenu?: boolean | undefined;
+    requireLogin: boolean | undefined;
+    roles?: string[] | undefined;
+    permissions?: string[] | undefined;
+}
 
-    // 第二层校验：数组中每一个元素都必须是字符串类型（排除数字、对象、布尔值等）
-    // every() 会遍历所有元素，全部满足才返回true
-    return value.every((item) => {
-        // 严格判断类型：typeof item === 'string'
-        // 排除类似 new String('xxx') 这种字符串对象（可选，根据你的需求）
-        return typeof item === 'string' && item !== ''; // 如需允许空字符串，去掉 && item !== ''
-    });
-};
-
-const hasIntersection = (arr1: string[] | string | undefined, arr2: string[] | string | undefined): boolean => {
-    if (typeof arr1 === 'string') {
-        arr1 = JSON.parse(arr1) || [];
-    }
-    if (typeof arr2 === 'string') {
-        arr2 = [arr2];
-    }
-    if (!isStrictStringArray(arr1) || !isStrictStringArray(arr2)) {
-        console.error('入参必须是纯字符串数组', arr1, arr2)
-        throw new Error('入参必须是纯字符串数组');
-    }
-
-    // 优化：遍历较短的数组，减少循环次数
-    const [shortArr, longArr] = arr1.length <= arr2.length ? [arr1, arr2] : [arr2, arr1];
-
-    // some() 找到第一个匹配项就会终止遍历，性能最优
-    return shortArr.some(item => longArr.includes(item));
-};
-
-const authorizeLoader = (checkLogin: boolean | undefined, hasAnyRoles: string[] | undefined, hasAnyPermissions: string[] | undefined) => {
-    return () => {
-        if (typeof checkLogin === 'boolean') {
-            if (checkLogin) {
-                if (!store.getState()?.auth?.token) {
-                    console.log('用户未登录', hasAnyPermissions);
-                    return redirect('/login');
-                }
-            } else {
-                if (store.getState()?.auth?.token) {
-                    console.log('用户已登录', hasAnyPermissions);
-                    return redirect('/');
-                }
-            }
-        }
-        if (isStrictStringArray(hasAnyRoles)) {
-            console.log('hasAnyRoles', hasAnyRoles);
-            if (!hasIntersection(store.getState()?.auth?.userInfo?.roles, hasAnyRoles)) {
-                console.log('暂无访问角色', hasAnyPermissions);
-                return redirect('/403');
-            }
-        }
-        if (isStrictStringArray(hasAnyPermissions)) {
-            console.log('hasAnyPermissions', hasAnyPermissions);
-            if (!hasIntersection(store.getState()?.auth?.userInfo?.permissions, hasAnyPermissions)) {
-                console.log('暂无访问权限', hasAnyPermissions);
-                return redirect('/403');
-            }
-        }
-    };
-};
-
-const originRoutes: RouteProperty[] = [
+const originRoutes: RouteObject[] = [
     {
         path: '/',
         element: <EmptyLayout/>,
-        icon: <FaHome/>,
-        loader: authorizeLoader(true, undefined, ['PAGE_/']),
+        handle: {
+            showInMenu: true,
+        },
         children: [
-            {index: true, element: <PrivateRoute><Navigation/></PrivateRoute>, icon: <FaHome/>},
+            {
+                index: true,
+                handle: {
+                    title: '首页',
+                    icon: <FaHome/>,
+                    showInMenu: true,
+                    requireLogin: true,
+                    hasAnyRoles: [],
+                    hasAnyPermissions: ['PAGE_/'],
+                },
+                element: <AuthorizedGuard><Navigation/></AuthorizedGuard>,
+            },
         ],
     },
     {
         path: '/memo',
         element: <BaseLayout/>,
-        icon: <FaBook/>,
-        loader: authorizeLoader(true, undefined, ['PAGE_/memo']),
+        handle: {
+            showInMenu: true,
+        },
         children: [
-            {index: true, element: <PrivateRoute><Memo/></PrivateRoute>, icon: <FaBook/>},
-        ],
+            {
+                index: true,
+                handle: {
+                    title: '备忘',
+                    icon: <FaBook/>,
+                    showInMenu: true,
+                    requireLogin: true,
+                    hasAnyRoles: [],
+                    hasAnyPermissions: ['PAGE_/memo'],
+                },
+                element: <AuthorizedGuard><Memo/></AuthorizedGuard>,
+            }
+        ]
     },
     {
         path: '/bookmark',
         element: <BaseLayout/>,
-        icon: <FaBook/>,
-        loader: authorizeLoader(true, undefined, ['PAGE_/bookmark']),
+        handle: {
+            showInMenu: true,
+        },
         children: [
-            {index: true, element: <PrivateRoute><Bookmark/></PrivateRoute>, icon: <FaBook/>},
-        ],
+            {
+                index: true,
+                handle: {
+                    title: '书签',
+                    icon: <FaBook/>,
+                    showInMenu: true,
+                    requireLogin: true,
+                    hasAnyRoles: [],
+                    hasAnyPermissions: ['PAGE_/bookmark'],
+                },
+                element: <AuthorizedGuard><Bookmark/></AuthorizedGuard>,
+            }
+        ]
     },
     {
         path: '/about',
         element: <BaseLayout/>,
-        icon: <FaBook/>,
-        loader: authorizeLoader(true, ['PAGE_/bookmark'], undefined),
+        handle: {
+            showInMenu: true,
+        },
         children: [
-            {index: true, element: <PrivateRoute><About/></PrivateRoute>, icon: <FaBook/>},
-        ],
+            {
+                index: true,
+                handle: {
+                    title: '关于',
+                    icon: <FaBook/>,
+                    showInMenu: true,
+                    requireLogin: true,
+                    hasAnyRoles: [],
+                    hasAnyPermissions: ['PAGE_/about'],
+                },
+                element: <AuthorizedGuard><About/></AuthorizedGuard>,
+            }
+        ]
     },
     {
         path: '/login',
-        element: <Login/>,
-        loader: authorizeLoader(false, undefined, undefined),
+        handle: {
+            showInMenu: false,
+            requireLogin: false,
+        },
+        element: <AuthorizedGuard><Login/></AuthorizedGuard>,
     },
     {
         path: '/403',
-        loader: authorizeLoader(true, undefined, undefined),
-        element: <Forbidden/>,
+        handle: {
+            showInMenu: false,
+            requireLogin: true,
+        },
+        element: <AuthorizedGuard><Forbidden/></AuthorizedGuard>,
     },
     {
         path: '*',
-        loader: authorizeLoader(true, undefined, undefined),
-        element: <NotFound/>
+        handle: {
+            showInMenu: false,
+            requireLogin: true,
+        },
+        element: <AuthorizedGuard><NotFound/></AuthorizedGuard>
     },
 ];
 
-export {originRoutes};
+// 获取当前登录用户下所有有权限的路由集合,并转成菜单的方式返回.
+// 判断条件
+// 1. 如果有showInMenu才处理,否则不处理
+// 2. 如果requireLogin存在,且值为true,则检查store.getState().auth.token是否存在,不存在则不满足,满足则返回,不满足则继续往下判断
+// 3. 如果requireLogin存在,且值为false,则检查store.getState().auth.token是否存在,存在则不满足,满足则返回,不满足则继续往下判断
+// 4. 如果roles存在,且值不为空字符串数组,则检查store.getState().auth.roles是否包含roles,包含则满足,满足则返回,不满足则继续往下判断
+// 5. 如果permissions存在,且值不为空字符串数组,则检查store.getState().auth.permissions是否包含permissions,包含则满足,满足则返回,不满足则继续往下判断
+const authorizedRoutes = () => {
+    const {
+        auth: {
+            token = '',
+            userInfo: {roles = [], permissions = []} = {}
+        } = {}
+    } = store.getState();
+    const traverseRoutes = (routeList: RouteObject[], parentPath = ''): MenuItem[] => {
+        const currentLevelMenu: MenuItem[] = [];
+        routeList.forEach(it => {
+            let route = it;
+            let filter = (route.children || []).filter(it => it.index === true);
+            let handle = route.handle as AuthRouteHandle | undefined;
+            if (filter.length == 1) {
+                parentPath = typeof it.path === 'string' ? it.path : '/';
+                handle = filter[0].handle;
+            }
+            if (handle?.showInMenu !== true) return;
+            const fullPath = route.index
+                ? parentPath
+                : (parentPath + route.path).replace(/\/+/g, '/');
+            let hasPermission = false;
+            if (handle?.requireLogin !== undefined) {
+                if (handle.requireLogin) {
+                    if (token) hasPermission = true;
+                    else return;
+                } else {
+                    if (!token) hasPermission = true;
+                    else return;
+                }
+            }
+            if (hasPermission && handle?.roles && handle.roles.length > 0) {
+                hasPermission = handle.roles.some(role => roles.includes(role));
+                if (!hasPermission) return;
+            }
+            if (hasPermission && handle?.permissions && handle.permissions.length > 0) {
+                hasPermission = handle.permissions.some(perm => permissions.includes(perm));
+                if (!hasPermission) return;
+            }
+            if (hasPermission && handle?.title) {
+                const menuItem: MenuItem = {
+                    path: fullPath,
+                    title: handle.title,
+                    icon: handle.icon,
+                };
+                if (route.children && route.children.length > 0) {
+                    const childMenu = traverseRoutes(route.children, fullPath);
+                    if (childMenu.length > 0) {
+                        menuItem.children = childMenu;
+                    }
+                }
+                currentLevelMenu.push(menuItem);
+            }
+        });
+        return currentLevelMenu;
+    };
+    return traverseRoutes(originRoutes);
+}
 
 const router = createBrowserRouter(originRoutes);
 
-export default router;
+export {router, originRoutes, authorizedRoutes};
