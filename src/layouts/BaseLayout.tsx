@@ -1,11 +1,11 @@
 import {Outlet, Link, useLocation, useNavigate} from 'react-router-dom';
-import {useEffect} from 'react';
 import {FaHome, FaUser, FaCog, FaSignOutAlt} from 'react-icons/fa';
 
-import {routes} from '../router';
-import {Typography} from "antd";
 import {clearToken, store} from "../store";
 import {useDispatch} from "react-redux";
+import {Typography} from "antd";
+import {useEffect} from "react";
+import {originRoutes} from "../router";
 
 const BaseLayout = () => {
     const location = useLocation();
@@ -13,12 +13,7 @@ const BaseLayout = () => {
     const dispatch = useDispatch();
 
     useEffect(() => {
-        console.log('当前页面路径：', location.pathname);
-        const isLogin = store.getState().auth.token;
-        if (!isLogin && location.pathname !== '/login') {
-            window.location.href = '/login';
-        }
-        console.log('获取路由', routes);
+        console.log('获取路由', originRoutes);
     });
 
     const menuList = [
@@ -74,27 +69,6 @@ const BaseLayout = () => {
                         </li>
                     ))}
                 </ul>
-
-                <div style={{position: 'absolute', bottom: '20px', width: '200px'}}>
-                    <button
-                        style={{
-                            width: '80%',
-                            margin: '0 10%',
-                            padding: '8px',
-                            background: '#e74c3c',
-                            color: 'white',
-                            border: 'none',
-                            borderRadius: '4px',
-                            cursor: 'pointer',
-                        }}
-                        onClick={() => {
-                            dispatch(clearToken());
-                            window.location.href = '/login';
-                        }}
-                    >
-                        <FaSignOutAlt style={{marginRight: '5px'}}/> 退出登录
-                    </button>
-                </div>
             </aside>
 
             <div style={{flex: 1, display: 'flex', flexDirection: 'column'}}>
@@ -112,7 +86,13 @@ const BaseLayout = () => {
                     <div style={{fontSize: '16px', fontWeight: 'bold'}}>
                         当前页面：{menuList.find(item => item.path === location.pathname)?.label || '未知页面'}
                     </div>
-                    <Typography.Text>{store.getState().auth.userInfo.username}</Typography.Text>
+                    <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                        <Typography.Text>{store.getState().auth.userInfo.username}</Typography.Text>
+                        <FaSignOutAlt style={{marginLeft: '5px', color: 'gray'}} onClick={() => {
+                            dispatch(clearToken());
+                            window.location.href = '/login';
+                        }}/>
+                    </div>
                 </header>
 
                 <main style={{flex: 1, padding: '20px', overflow: 'auto'}}>

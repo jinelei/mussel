@@ -40,11 +40,11 @@ const authSlice = createSlice({
         },
         setRoles: (state, action) => {
             state.userInfo.roles = action.payload;
-            localStorage.setItem('roles', action.payload);
+            localStorage.setItem('roles', JSON.stringify(action.payload));
         },
         setPermissions: (state, action) => {
             state.userInfo.permissions = action.payload;
-            localStorage.setItem('permissions', action.payload);
+            localStorage.setItem('permissions', JSON.stringify(action.payload));
         }
     }
 });
