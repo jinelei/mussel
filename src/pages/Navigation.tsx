@@ -8,6 +8,8 @@ import {useLocation, useNavigate} from "react-router-dom";
 
 const {Text} = Typography;
 import DynamicIcon from "../components/DynamicIcon.tsx";
+import {useDispatch} from "react-redux";
+import {clearToken} from "../store";
 
 const {Search} = Input;
 
@@ -21,6 +23,7 @@ const Navigation: React.FC = () => {
 
     const navigate = useNavigate();
     const location = useLocation();
+    const dispatch = useDispatch();
 
     const copyToClipboard = async (text: string) => {
         try {
@@ -69,7 +72,10 @@ const Navigation: React.FC = () => {
     useEffect(() => {
         Service.myFavoriteBookmarks()
             .then(res => {
-                if (200 === res.code) {
+                if (401 === res.code) {
+                    dispatch(clearToken());
+                    navigate('/login', {replace: true});
+                } else if (200 === res.code) {
                     setBookmarks(res?.data as BookmarkDomain[] || []);
                 }
             })
