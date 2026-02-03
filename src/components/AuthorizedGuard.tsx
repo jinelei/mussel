@@ -9,7 +9,9 @@ const AuthorizedGuard = ({children}) => {
     const currentMatch = matches[matches.length - 1];
     const routeHandle: AuthRouteHandle = currentMatch.handle as AuthRouteHandle || {};
     const {requireLogin, roles, permissions} = routeHandle;
+    console.log(requireLogin, roles, permissions)
     if (typeof requireLogin === 'boolean') {
+        console.log('require login', requireLogin);
         if (requireLogin) {
             if (!store.getState()?.auth?.token) {
                 return <Navigate to="/login" replace/>;
@@ -20,10 +22,10 @@ const AuthorizedGuard = ({children}) => {
             }
         }
     }
-    if (isStrictStringArray(roles) && !hasIntersection(store.getState()?.auth?.userInfo?.roles, roles)) {
+    if (isStrictStringArray(roles) && roles.length > 0 && !hasIntersection(store.getState()?.auth?.userInfo?.roles, roles)) {
         return <Navigate to="/403" replace/>;
     }
-    if (isStrictStringArray(permissions) && !hasIntersection(store.getState()?.auth?.userInfo?.permissions, permissions)) {
+    if (isStrictStringArray(permissions) && permissions.length > 0 && !hasIntersection(store.getState()?.auth?.userInfo?.permissions, permissions)) {
         return <Navigate to="/403" replace/>;
     }
     return children;

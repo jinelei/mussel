@@ -47,8 +47,8 @@ const originRoutes: RouteObject[] = [
                     icon: <FaHome/>,
                     showInMenu: true,
                     requireLogin: true,
-                    hasAnyRoles: [],
-                    hasAnyPermissions: ['PAGE_/'],
+                    roles: [],
+                    permissions: ['PAGE_/'],
                 },
                 element: <AuthorizedGuard><Navigation/></AuthorizedGuard>,
             },
@@ -68,8 +68,8 @@ const originRoutes: RouteObject[] = [
                     icon: <FaBook/>,
                     showInMenu: true,
                     requireLogin: true,
-                    hasAnyRoles: [],
-                    hasAnyPermissions: ['PAGE_/memo'],
+                    roles: [],
+                    permissions: ['PAGE_/memo'],
                 },
                 element: <AuthorizedGuard><Memo/></AuthorizedGuard>,
             }
@@ -89,8 +89,8 @@ const originRoutes: RouteObject[] = [
                     icon: <FaBook/>,
                     showInMenu: true,
                     requireLogin: true,
-                    hasAnyRoles: [],
-                    hasAnyPermissions: ['PAGE_/bookmark'],
+                    roles: [],
+                    permissions: ['PAGE_/bookmark'],
                 },
                 element: <AuthorizedGuard><Bookmark/></AuthorizedGuard>,
             }
@@ -110,8 +110,8 @@ const originRoutes: RouteObject[] = [
                     icon: <FaBook/>,
                     showInMenu: true,
                     requireLogin: true,
-                    hasAnyRoles: [],
-                    hasAnyPermissions: ['PAGE_/about'],
+                    roles: [],
+                    permissions: ['PAGE_/about'],
                 },
                 element: <AuthorizedGuard><About/></AuthorizedGuard>,
             }
@@ -164,7 +164,6 @@ const authorizedRoutes = () => {
             let filter = (route.children || []).filter(it => it.index === true);
             let handle = route.handle as AuthRouteHandle | undefined;
             if (filter.length == 1) {
-                parentPath = typeof it.path === 'string' ? it.path : '/';
                 handle = filter[0].handle;
             }
             if (handle?.showInMenu !== true) return;
@@ -196,7 +195,7 @@ const authorizedRoutes = () => {
                     icon: handle.icon,
                 };
                 if (route.children && route.children.length > 0) {
-                    const childMenu = traverseRoutes(route.children, fullPath);
+                    const childMenu = traverseRoutes(route.children.filter(it => !it.index), fullPath);
                     if (childMenu.length > 0) {
                         menuItem.children = childMenu;
                     }

@@ -14,7 +14,9 @@ const BaseLayout = () => {
     const dispatch = useDispatch();
 
     useEffect(() => {
-        setMenuList(authorizedRoutes());
+        let menuItems = authorizedRoutes();
+        console.log('menu items', menuItems);
+        setMenuList(menuItems);
     }, [location.pathname]);
 
     return (
