@@ -1,12 +1,12 @@
 import React, {useEffect, useState} from "react";
-import {Input, message, Space, Tooltip, Typography} from 'antd';
+import {Input, message, Space} from 'antd';
 import dayjs from 'dayjs';
 import type {GetProps} from 'antd';
 import {type BookmarkDomain, Service} from "../api";
 import Footer from "./Footer.tsx";
 import {useLocation, useNavigate} from "react-router-dom";
+import styles from './Navigation.module.css';
 
-const {Text} = Typography;
 import DynamicIcon from "../components/DynamicIcon.tsx";
 import {useDispatch} from "react-redux";
 import {clearToken} from "../store";
@@ -62,6 +62,20 @@ const Navigation: React.FC = () => {
         }
     }
 
+    const onNavItemClick = (item: BookmarkDomain) => {
+        if (!item.url) {
+            message.error("敬请期待").then(_ => {
+            });
+        } else if (item.url.startsWith('http')) {
+            window.open(item.url, '_blank');
+        } else if (item.url.startsWith('/')) {
+            navigate(item.url);
+        } else {
+            message.error("敬请期待").then(_ => {
+            });
+        }
+    }
+
     useEffect(() => {
         const timer = setInterval(() => {
             setCurrentTime(dayjs());
@@ -81,39 +95,17 @@ const Navigation: React.FC = () => {
             })
             .catch(err => {
                 console.error("获取收藏书签失败", err);
-                message.error("获取收藏书签失败");
+                message.error("获取收藏书签失败").then(_ => {
+                });
             });
     }, [location.pathname]);
 
     return (
-        <div style={{
-            width: '100vw',
-            height: '100vh',
-            overflowY: 'hidden',
-            backgroundImage: 'url(/images/background.jpg)',
-            backgroundRepeat: 'no-repeat',
-            backgroundPosition: 'center center',
-            backgroundSize: 'cover',
-            backgroundAttachment: 'fixed',
-            backgroundClip: 'content-box',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'flex-start'
-        }}>
-            <p style={{
-                margin: '5rem 0 1rem 0',
-                fontSize: '3rem',
-                color: '#ffffff',
-                fontWeight: 'bold'
-            }}
+        <div className={styles.container}>
+            <p className={styles.time}
                onClick={() => copyToClipboard(formattedTime)}
             >{formattedTime}</p>
-            <p style={{
-                margin: '0 0 2rem 0',
-                color: 'rgba(255,255,255,0.6)',
-                fontSize: '1rem'
-            }}
+            <p className={styles.date}
                onClick={() => copyToClipboard(formattedDate)}
             >{formattedDate}</p>
             <Search
@@ -122,65 +114,19 @@ const Navigation: React.FC = () => {
                 enterButton
                 size="large"
                 onSearch={onSearch}
-                styles={{
-                    root: {
-                        minWidth: 'max(20rem,40vw)',
-                        maxWidth: 'min(40rem,40vw)',
-                    },
-                    input: {
-                        color: '#4DA8DA',
-                        backgroundColor: 'transparent',
-                    },
-                    button: {}
-                }}
+                className={styles.search}
             />
-            <Space style={{position: 'fixed', bottom: '6rem'}}>
+            <Space className={styles.navContainer}>
                 {(bookmarks as BookmarkDomain[])?.map((item: BookmarkDomain, index: number) => {
-                    return (<a key={index}
-                               onClick={() => {
-                                   if (!item.url) {
-                                       message.error("敬请期待");
-                                   } else if (item.url.startsWith('http')) {
-                                       window.open(item.url, '_blank');
-                                   } else if (item.url.startsWith('/')) {
-                                       navigate(item.url);
-                                   } else {
-                                       message.error("敬请期待");
-                                   }
-                               }}
-                        >
-                            <Space style={{
-                                margin: '0 5px',
-                                background: 'rgba(17, 24, 39, 0.6',
-                                backdropFilter: 'blur(10px)',
-                                border: '1px solid rgba(75, 85, 99, 0.2)',
-                                borderRadius: '5px',
-                                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15',
-                                textAlign: 'center',
-                                width: '3rem',
-                                height: '3rem',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                            }}>
-                                <Tooltip title={<Text>{item.name}</Text>} color={'orange'}>
-                                    <DynamicIcon iconName={item.icon} size={'1.5rem'}
-                                                 style={{color: 'white'}}/>
-                                </Tooltip>
+                    return (<div key={index} onClick={() => onNavItemClick(item)}>
+                            <Space className={styles.navItem}>
+                                <DynamicIcon iconName={item.icon} size={'1.5rem'}/>
                             </Space>
-                        </a>
+                        </div>
                     );
                 })}
             </Space>
-            <Footer
-                styles={{
-                    color: '#cccccc',
-                    position: 'fixed',
-                    bottom: '1rem',
-                    display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'center'
-                }}></Footer>
+            <Footer className={styles.footer}></Footer>
         </div>
     )
 }
