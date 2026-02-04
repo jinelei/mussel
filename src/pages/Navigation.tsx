@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from "react";
-import {Input, message, Space} from 'antd';
+import {Input, message, Typography} from 'antd';
 import dayjs from 'dayjs';
 import type {GetProps} from 'antd';
 import {type BookmarkDomain, Service} from "../api";
@@ -18,7 +18,7 @@ type SearchProps = GetProps<typeof Input.Search>;
 const Navigation: React.FC = () => {
     const [currentTime, setCurrentTime] = useState(dayjs());
     const [isSearchFocused, setIsSearchFocused] = useState(false);
-    const [bookmarks, setBookmarks] = useState<BookmarkDomain[] | string>([]);
+    const [bookmarks, setBookmarks] = useState<BookmarkDomain[]>();
     const formattedTime = currentTime.format('HH:mm:ss');
     const formattedDate = currentTime.format('YYYY年MM月DD日');
 
@@ -85,25 +85,22 @@ const Navigation: React.FC = () => {
     }, [currentTime]);
 
     useEffect(() => {
-        Service.myFavoriteBookmarks()
+        Service.bookmarkTree({})
             .then(res => {
                 if (401 === res.code) {
                     dispatch(clearToken());
                     navigate('/login', {replace: true});
                 } else if (200 === res.code) {
-                    setBookmarks(res?.data as BookmarkDomain[] || []);
+                    setBookmarks(res.data);
                 }
-            })
-            .catch(err => {
-                console.error("获取收藏书签失败", err);
-                message.error("获取收藏书签失败").then(_ => {
-                });
-            });
+            }).catch(_ => {
+        })
     }, [location.pathname]);
 
     return (
         <div className={styles.container}>
-            <div className={`${styles.containerBackground} ${isSearchFocused ? styles.containerBackgroundFocus : styles.containerBackground}`}></div>
+            <div
+                className={`${styles.containerBackground} ${isSearchFocused ? styles.containerBackgroundFocus : styles.containerBackground}`}></div>
             <p className={styles.time}
                onClick={() => copyToClipboard(formattedTime)}
             >{formattedTime}</p>
@@ -120,16 +117,23 @@ const Navigation: React.FC = () => {
                 onFocus={() => setIsSearchFocused(true)}
                 onBlur={() => setIsSearchFocused(false)}
             />
-            <Space className={styles.navContainer}>
-                {(bookmarks as BookmarkDomain[])?.map((item: BookmarkDomain, index: number) => {
-                    return (<div key={index} onClick={() => onNavItemClick(item)}>
-                            <Space className={styles.navItem}>
-                                <DynamicIcon iconName={item.icon} size={'1.5rem'}/>
-                            </Space>
+            <div className={styles.container}>
+                {bookmarks?.map(it => {
+                    return (<div className={styles.group}>
+                        <Typography.Text className={styles.groupTitle}>{it.name}</Typography.Text>
+                        <div className={styles.list}>
+                            {(it.children || []).map(iit => {
+                                return <div className={styles.listItem}
+                                            style={{color: `${iit.color}`}}
+                                            onClick={() => onNavItemClick(iit)}>
+                                    <DynamicIcon iconName={iit.icon} size={'1rem'}/>
+                                    <Typography.Text>{iit.name}</Typography.Text>
+                                </div>
+                            })}
                         </div>
-                    );
+                    </div>)
                 })}
-            </Space>
+            </div>
             <Footer className={styles.footer}></Footer>
         </div>
     )

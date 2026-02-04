@@ -2,6 +2,8 @@ import {useEffect, useState} from "react";
 import {BookmarkDomain, Service} from "../api";
 import {useLocation} from "react-router-dom";
 import {Typography} from "antd";
+import styles from './Bookmark.module.css';
+import DynamicIcon from "../components/DynamicIcon.tsx";
 
 const Bookmark: React.FC = () => {
     const location = useLocation();
@@ -17,42 +19,23 @@ const Bookmark: React.FC = () => {
             console.warn(reason)
         })
     }, [location.pathname]);
+
     return (
-        <div>
+        <div className={styles.container}>
             {bookmarks?.map(it => {
-                return (
-                    <div style={{
-                        backgroundColor: 'gray',
-                        margin: '1rem',
-                        padding: '1rem',
-                    }}>
-                        <Typography.Text>{it.name}</Typography.Text>
-                        <hr/>
-                        <div style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                        }}>
-                            {(it.children || []).map(iit => {
-                                return <div style={{
-                                    display: 'flex',
-                                    flexDirection: 'column',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    backgroundColor: 'white',
-                                    margin: '1rem',
-                                    padding: '1rem',
-                                }}
-                                >
-                                    <Typography.Text type={'success'}>{iit.name}</Typography.Text>
-                                    <Typography.Text type={'secondary'}>{iit.url}</Typography.Text>
-                                    <Typography.Text type={'secondary'}>{iit.icon}</Typography.Text>
-                                    <br/>
-                                </div>
-                            })}
-                        </div>
+                return (<div className={styles.group}>
+                    <Typography.Text className={styles.groupTitle}>{it.name}</Typography.Text>
+                    <div className={styles.list}>
+                        {(it.children || []).map(iit => {
+                            return <div className={styles.listItem}
+                                        style={{color: `${iit.color}`}}
+                                        onClick={() => window.open(iit.url, '_blank')}>
+                                <DynamicIcon iconName={iit.icon} size={'1rem'}/>
+                                <Typography.Text>{iit.name}</Typography.Text>
+                            </div>
+                        })}
                     </div>
-                )
+                </div>)
             })}
         </div>
     )

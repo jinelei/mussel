@@ -1,0 +1,48 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+.group {
+    width: 100%;
+    background: #fefefe;
+}
+
+.groupTitle {
+    color: gray;
+    font-size: 1rem;
+}
+
+.list {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 10px;
+    padding: 10px;
+}
+
+.listItem {
+    background-color: rgba(33, 150, 243, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    padding: 1rem 0;
+    transition: all 100ms ease-in-out;
+
+    & span {
+        color: #323232;
+        margin-left: 7px;
+    }
+}
+
+.listItem:hover {
+    background-color: rgba(33, 150, 243, 0.9);
+    transform: translateY(-2px);
+
+    & span {
+        color: white;
+    }
+}
