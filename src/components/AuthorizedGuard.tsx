@@ -9,9 +9,7 @@ const AuthorizedGuard = ({children}) => {
     const currentMatch = matches[matches.length - 1];
     const routeHandle: AuthRouteHandle = currentMatch.handle as AuthRouteHandle || {};
     const {requireLogin, roles, permissions} = routeHandle;
-    console.log(requireLogin, roles, permissions)
     if (typeof requireLogin === 'boolean') {
-        console.log('require login', requireLogin);
         if (requireLogin) {
             if (!store.getState()?.auth?.token) {
                 return <Navigate to="/login" replace/>;

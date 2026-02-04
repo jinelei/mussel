@@ -15,7 +15,6 @@ const BaseLayout = () => {
 
     useEffect(() => {
         let menuItems = authorizedRoutes();
-        console.log('menu items', menuItems);
         setMenuList(menuItems);
     }, [location.pathname]);
 

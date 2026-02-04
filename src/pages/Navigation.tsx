@@ -18,6 +18,7 @@ type SearchProps = GetProps<typeof Input.Search>;
 const Navigation: React.FC = () => {
     const [currentTime, setCurrentTime] = useState(dayjs());
     const [isSearchFocused, setIsSearchFocused] = useState(false);
+    const [value, setValue] = useState<string>();
     const [bookmarks, setBookmarks] = useState<BookmarkDomain[]>();
     const formattedTime = currentTime.format('HH:mm:ss');
     const formattedDate = currentTime.format('YYYY年MM月DD日');
@@ -47,19 +48,17 @@ const Navigation: React.FC = () => {
         }
     };
 
-    const onSearch: SearchProps['onSearch'] = (value, _e, info) => {
-        if (info?.source === 'input') {
-            const keyword = encodeURIComponent(value.trim());
-            if (keyword) {
-                const actionJson = JSON.stringify({
-                    pluginId: "Send_Message",
-                    payload: {text: decodeURIComponent(keyword)}
-                });
-                const encodedAction = encodeURIComponent(actionJson);
-                const url = `https://www.doubao.com/chat/url-action?action=${encodedAction}`;
-                console.log("url", url);
-                window.open(url, '_blank');
-            }
+    const onSearch: SearchProps['onSearch'] = (value, _e, _) => {
+        const keyword = encodeURIComponent(value.trim());
+        if (keyword) {
+            const actionJson = JSON.stringify({
+                pluginId: "Send_Message",
+                payload: {text: decodeURIComponent(keyword)}
+            });
+            const encodedAction = encodeURIComponent(actionJson);
+            const url = `https://www.doubao.com/chat/url-action?action=${encodedAction}`;
+            setValue('');
+            window.open(url, '_blank');
         }
     }
 
@@ -114,6 +113,7 @@ const Navigation: React.FC = () => {
                 size="large"
                 onSearch={onSearch}
                 className={styles.search}
+                value={value}
                 onFocus={() => setIsSearchFocused(true)}
                 onBlur={() => setIsSearchFocused(false)}
             />

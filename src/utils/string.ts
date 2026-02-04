@@ -28,8 +28,6 @@ const hasIntersection = (arr1: string[] | string | undefined, arr2: string[] | s
     // 优化：遍历较短的数组，减少循环次数
     const [shortArr, longArr] = arr1.length <= arr2.length ? [arr1, arr2] : [arr2, arr1];
 
-    console.log('contain',arr1, arr2)
-
     // some() 找到第一个匹配项就会终止遍历，性能最优
     return shortArr.some(item => longArr.includes(item));
 };
