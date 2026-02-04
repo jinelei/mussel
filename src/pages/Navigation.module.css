@@ -20,11 +20,11 @@
     background-size: cover;
     background-attachment: fixed;
     background-clip: content-box;
-    transition: all 0.2s ease;
+    transition: all 0.2s ease-in-out;
     z-index: -1;
 }
 
-.containerBackgroundFocus {
+.containerBackgroundBlur {
     filter: blur(10px);
 }
 
@@ -53,6 +53,11 @@
 
 .group {
     width: clamp(30rem, 80vw, 70rem);
+    transition: all 0.2s ease-in-out;
+}
+
+.groupBlur {
+    filter: blur(10px);
 }
 
 .groupTitle {

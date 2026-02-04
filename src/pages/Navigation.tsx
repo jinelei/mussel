@@ -100,7 +100,7 @@ const Navigation: React.FC = () => {
     return (
         <div className={styles.container}>
             <div
-                className={`${styles.containerBackground} ${isSearchFocused ? styles.containerBackgroundFocus : styles.containerBackground}`}></div>
+                className={`${styles.containerBackground} ${isSearchFocused ? styles.containerBackgroundBlur : styles.containerBackground}`}></div>
             <p className={styles.time}
                onClick={() => copyToClipboard(formattedTime)}
             >{formattedTime}</p>
@@ -119,19 +119,23 @@ const Navigation: React.FC = () => {
             />
             <div className={styles.container}>
                 {bookmarks?.map(it => {
-                    return (<div className={styles.group}>
-                        <Typography.Text className={styles.groupTitle}>{it.name}</Typography.Text>
-                        <div className={styles.list}>
-                            {(it.children || []).map(iit => {
-                                return <div className={styles.listItem}
-                                            style={{color: `${iit.color}`}}
-                                            onClick={() => onNavItemClick(iit)}>
-                                    <DynamicIcon iconName={iit.icon} size={'1rem'}/>
-                                    <Typography.Text>{iit.name}</Typography.Text>
-                                </div>
-                            })}
-                        </div>
-                    </div>)
+                    return (
+                        <div className={`${styles.group} ${isSearchFocused ? styles.groupBlur : ''}`}>
+                            <Typography.Text className={styles.groupTitle}>{it.name}</Typography.Text>
+                            <div className={styles.list}>
+                                {(it.children || []).map(iit => {
+                                    return <div className={styles.listItem}
+                                                style={{
+                                                    color: `${iit.color}`,
+                                                    pointerEvents: `${isSearchFocused ? 'none' : 'auto'}`
+                                                }}
+                                                onClick={() => onNavItemClick(iit)}>
+                                        <DynamicIcon iconName={iit.icon} size={'1rem'}/>
+                                        <Typography.Text>{iit.name}</Typography.Text>
+                                    </div>
+                                })}
+                            </div>
+                        </div>)
                 })}
             </div>
             <Footer className={styles.footer}></Footer>
