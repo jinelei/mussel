@@ -17,6 +17,7 @@ type SearchProps = GetProps<typeof Input.Search>;
 
 const Navigation: React.FC = () => {
     const [currentTime, setCurrentTime] = useState(dayjs());
+    const [isSearchFocused, setIsSearchFocused] = useState(false);
     const [bookmarks, setBookmarks] = useState<BookmarkDomain[] | string>([]);
     const formattedTime = currentTime.format('HH:mm:ss');
     const formattedDate = currentTime.format('YYYY年MM月DD日');
@@ -102,6 +103,7 @@ const Navigation: React.FC = () => {
 
     return (
         <div className={styles.container}>
+            <div className={`${styles.containerBackground} ${isSearchFocused ? styles.containerBackgroundFocus : styles.containerBackground}`}></div>
             <p className={styles.time}
                onClick={() => copyToClipboard(formattedTime)}
             >{formattedTime}</p>
@@ -115,6 +117,8 @@ const Navigation: React.FC = () => {
                 size="large"
                 onSearch={onSearch}
                 className={styles.search}
+                onFocus={() => setIsSearchFocused(true)}
+                onBlur={() => setIsSearchFocused(false)}
             />
             <Space className={styles.navContainer}>
                 {(bookmarks as BookmarkDomain[])?.map((item: BookmarkDomain, index: number) => {
