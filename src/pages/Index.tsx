@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import {Input, message, Typography} from 'antd';
 import dayjs from 'dayjs';
 import type {GetProps} from 'antd';
@@ -22,6 +22,7 @@ const Index: React.FC = () => {
     const [bookmarks, setBookmarks] = useState<BookmarkDomain[]>();
     const formattedTime = currentTime.format('HH:mm:ss');
     const formattedDate = currentTime.format('YYYY年MM月DD日');
+    const searchInputRef = useRef<React.ElementRef<typeof Input>>(null);
 
     const navigate = useNavigate();
     const location = useLocation();
@@ -48,22 +49,22 @@ const Index: React.FC = () => {
         }
     };
 
-    const onSearch: SearchProps['onSearch'] = (value, e) => {
+    const onSearch: SearchProps['onSearch'] = (value) => {
         const keyword = encodeURIComponent(value.trim());
         if (keyword) {
-            const actionJson = JSON.stringify({
+            const encodedAction = encodeURIComponent(JSON.stringify({
                 pluginId: "Send_Message",
                 payload: {text: decodeURIComponent(keyword)}
-            });
-            const encodedAction = encodeURIComponent(actionJson);
+            }));
             const url = `https://www.doubao.com/chat/url-action?action=${encodedAction}`;
-            setValue('');
-            let inputElement = e?.currentTarget?.parentElement?.parentElement;
-            if (inputElement?.tagName !== 'INPUT') {
-                inputElement = inputElement?.querySelector('.ant-input');
+            try {
+                setTimeout(() => {
+                    searchInputRef.current?.blur();
+                    setValue('');
+                }, 100);
+            } catch (error) {
+                console.error('失焦操作失败:', error);
             }
-            // 触发失焦
-            inputElement?.blur();
             window.open(url, '_blank');
         }
     }
@@ -113,13 +114,15 @@ const Index: React.FC = () => {
                onClick={() => copyToClipboard(formattedDate)}
             >{formattedDate}</p>
             <Search
+                ref={searchInputRef}
                 placeholder="请输入"
                 allowClear
                 enterButton
                 size="large"
-                onSearch={onSearch}
                 className={styles.search}
                 value={value}
+                onChange={e => setValue(e.target.value)}
+                onSearch={onSearch}
                 onFocus={() => setIsSearchFocused(true)}
                 onBlur={() => setIsSearchFocused(false)}
             />
