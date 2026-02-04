@@ -4,7 +4,7 @@ import {
 } from 'react-router-dom';
 import About from '../pages/About';
 import NotFound from '../pages/NotFound';
-import Navigation from "../pages/Navigation";
+import Index from "../pages/Index.tsx";
 import BaseLayout from "../layouts/BaseLayout";
 import Login from "../pages/Login";
 import Memo from "../pages/Memo.tsx";
@@ -50,7 +50,7 @@ const originRoutes: RouteObject[] = [
                     roles: [],
                     permissions: ['PAGE_/'],
                 },
-                element: <AuthorizedGuard><Navigation/></AuthorizedGuard>,
+                element: <AuthorizedGuard><Index/></AuthorizedGuard>,
             },
         ],
     },

@@ -5,7 +5,7 @@ import type {GetProps} from 'antd';
 import {type BookmarkDomain, Service} from "../api";
 import Footer from "./Footer.tsx";
 import {useLocation, useNavigate} from "react-router-dom";
-import styles from './Navigation.module.css';
+import styles from './Index.module.css';
 
 import DynamicIcon from "../components/DynamicIcon.tsx";
 import {useDispatch} from "react-redux";
@@ -15,7 +15,7 @@ const {Search} = Input;
 
 type SearchProps = GetProps<typeof Input.Search>;
 
-const Navigation: React.FC = () => {
+const Index: React.FC = () => {
     const [currentTime, setCurrentTime] = useState(dayjs());
     const [isSearchFocused, setIsSearchFocused] = useState(false);
     const [value, setValue] = useState<string>();
@@ -48,7 +48,7 @@ const Navigation: React.FC = () => {
         }
     };
 
-    const onSearch: SearchProps['onSearch'] = (value, _e, _) => {
+    const onSearch: SearchProps['onSearch'] = (value, e) => {
         const keyword = encodeURIComponent(value.trim());
         if (keyword) {
             const actionJson = JSON.stringify({
@@ -58,6 +58,12 @@ const Navigation: React.FC = () => {
             const encodedAction = encodeURIComponent(actionJson);
             const url = `https://www.doubao.com/chat/url-action?action=${encodedAction}`;
             setValue('');
+            let inputElement = e?.currentTarget?.parentElement?.parentElement;
+            if (inputElement?.tagName !== 'INPUT') {
+                inputElement = inputElement?.querySelector('.ant-input');
+            }
+            // 触发失焦
+            inputElement?.blur();
             window.open(url, '_blank');
         }
     }
@@ -143,4 +149,4 @@ const Navigation: React.FC = () => {
     )
 }
 
-export default Navigation;
+export default Index;
