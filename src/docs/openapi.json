@@ -303,7 +303,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/BookmarkDomain"
+                "$ref": "#/components/schemas/ListRequest"
               }
             }
           },
@@ -570,6 +570,29 @@
             "items": {
               "$ref": "#/components/schemas/BookmarkDomain"
             }
+          }
+        }
+      },
+      "ListRequest": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "name": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string",
+            "description": "书签类型",
+            "enum": [
+              "FOLDER",
+              "ITEM"
+            ]
+          },
+          "url": {
+            "type": "string"
           }
         }
       },

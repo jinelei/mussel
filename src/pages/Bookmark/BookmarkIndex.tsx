@@ -1,20 +1,41 @@
-import {useEffect, useState} from "react";
+import {useEffect, useMemo, useState} from "react";
 import {BookmarkDomain, Service} from "../../api";
 import {useLocation} from "react-router-dom";
-import {Flex, Form, Input, message, Modal, Select, Typography} from "antd";
+import {Flex, FloatButton, Form, Input, message, Modal, Select, Typography} from "antd";
 import styles from './BookmarkIndex.module.css';
 import DynamicIcon from "../../components/DynamicIcon.tsx";
 import {useDispatch} from "react-redux";
 import {setLoading} from "../../store";
+import {PlusOutlined} from "@ant-design/icons";
 
 const BookmarkIndex: React.FC = () => {
     const location = useLocation();
     const dispatch = useDispatch();
     const [bookmarks, setBookmarks] = useState<BookmarkDomain[]>();
+    const [bookmarkFolder, setBookmarkFolder] = useState<BookmarkDomain[]>();
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [operateType, setOperateType] = useState<('create' | 'update')>('create');
     const [form] = Form.useForm();
 
-    const init = () => {
+    const folderList = useMemo(() => {
+        return (bookmarkFolder || [])
+            .filter(i => i.name)
+            .filter(i => i.id)
+            .map(item => ({value: item.id, label: item.name}));
+    }, [bookmarkFolder]);
+
+    const fetchFolder = () => {
+        Service.bookmarkList({type: BookmarkDomain.type.FOLDER})
+            .then(res => {
+                if (200 === res.code) {
+                    setBookmarkFolder(res.data);
+                }
+            }).catch(reason => {
+            console.warn(reason)
+        });
+    };
+
+    const fetchList = () => {
         dispatch(setLoading(true));
         Service.bookmarkTree({})
             .then(res => {
@@ -25,19 +46,26 @@ const BookmarkIndex: React.FC = () => {
             console.warn(reason)
         }).finally(() => dispatch(setLoading(false)));
     };
-    const showModal = (id: number) => {
-        Service.bookmarkGet({id}).then(res => {
-            if (200 === res.code) {
-                form.setFieldsValue({...res.data});
-                setIsModalOpen(true);
-            } else {
-                message.error("获取书签详情失败");
-            }
-        })
+
+    const showModal = (id: number | undefined) => {
+        setOperateType(!!id ? 'update' : 'create');
+        if (id) {
+            Service.bookmarkGet({id}).then(res => {
+                if (200 === res.code) {
+                    form.setFieldsValue({...res.data});
+                    setIsModalOpen(true);
+                } else {
+                    message.error("获取书签详情失败");
+                }
+            })
+        } else {
+            form.resetFields();
+            setIsModalOpen(true);
+        }
     };
 
     const handleOk = () => {
-        if (form.getFieldValue('id')) {
+        if (operateType === 'update') {
             Service.bookmarkUpdate({...form.getFieldsValue()})
                 .then(res => {
                     message.open({
@@ -46,7 +74,7 @@ const BookmarkIndex: React.FC = () => {
                     });
                 }).finally(() => {
                 setIsModalOpen(false);
-                init();
+                fetchList();
             })
         } else {
             Service.bookmarkCreate({...form.getFieldsValue()})
@@ -54,20 +82,23 @@ const BookmarkIndex: React.FC = () => {
                     message.open({
                         content: res.code === 200 ? '添加成功' : '添加失败',
                         type: res.code === 200 ? 'success' : 'error'
+                    }).then(_ => {
                     });
                 }).finally(() => {
                 setIsModalOpen(false);
-                init();
+                fetchList();
             })
         }
     };
 
     const handleCancel = () => {
+        form.resetFields();
         setIsModalOpen(false);
     };
 
     useEffect(() => {
-        init();
+        fetchFolder();
+        fetchList();
     }, [location.pathname]);
 
     return (
@@ -100,8 +131,8 @@ const BookmarkIndex: React.FC = () => {
                     form={form}
                     style={{maxWidth: 600}}
                 >
-                    <Form.Item name="id" label="ID" rules={[{required: true}]}
-                               style={{display: form.getFieldValue('id') ? 'none' : 'block'}}
+                    <Form.Item name="id" label="ID" rules={[{required: operateType === 'create'}]}
+                               style={{display: 'none'}}
                     >
                         <Input/>
                     </Form.Item>
@@ -125,8 +156,17 @@ const BookmarkIndex: React.FC = () => {
                                 ]}
                         />
                     </Form.Item>
+                    <Form.Item name="parentId" label="所属上级" rules={[{required: false}]}>
+                        <Select placeholder="请选择上级" options={folderList}/>
+                    </Form.Item>
                 </Form>
             </Modal>
+            <FloatButton
+                onClick={() => showModal(undefined)}
+                shape="circle"
+                type="primary"
+                icon={<PlusOutlined/>}
+            />
         </Flex>
     )
 }

@@ -7,6 +7,7 @@ import type { CreateRequest } from '../models/CreateRequest';
 import type { DeleteRequest } from '../models/DeleteRequest';
 import type { GenericResult } from '../models/GenericResult';
 import type { GetRequest } from '../models/GetRequest';
+import type { ListRequest } from '../models/ListRequest';
 import type { UpdateRequest } from '../models/UpdateRequest';
 import type { CancelablePromise } from '../core/CancelablePromise';
 import { OpenAPI } from '../core/OpenAPI';
@@ -152,7 +153,7 @@ export class Service {
      * @throws ApiError
      */
     public static bookmarkList(
-        requestBody: BookmarkDomain,
+        requestBody: ListRequest,
     ): CancelablePromise<GenericResult> {
         return __request(OpenAPI, {
             method: 'POST',
