@@ -1,17 +1,19 @@
 import {Outlet, Link, useLocation, useNavigate} from 'react-router-dom';
 import {FaSignOutAlt} from 'react-icons/fa';
 
-import {clearToken, store} from "../store";
-import {useDispatch} from "react-redux";
-import {Typography} from "antd";
+import {clearToken, type RootState, store} from "../store";
+import {useDispatch, useSelector} from "react-redux";
+import {Spin, Typography} from "antd";
 import {useEffect, useState} from "react";
 import {authorizedRoutes, type MenuItem} from "../router";
+import {LoadingOutlined} from "@ant-design/icons";
 
 const BaseLayout = () => {
     const [menuList, setMenuList] = useState<MenuItem[]>([]);
     const location = useLocation();
     const navigate = useNavigate();
     const dispatch = useDispatch();
+    const isLoading = useSelector(state => (state as RootState)?.global?.loading);
 
     useEffect(() => {
         let menuItems = authorizedRoutes();
@@ -80,7 +82,7 @@ const BaseLayout = () => {
                     }}
                 >
                     <div style={{fontSize: '16px', fontWeight: 'bold'}}>
-                        当前页面：{menuList.find(item => item.path === location.pathname)?.title || '未知页面'}
+                        {menuList.find(item => item.path === location.pathname)?.title || '未知页面'}
                     </div>
                     <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
                         <Typography.Text>{store.getState().auth.userInfo.username}</Typography.Text>
@@ -92,6 +94,8 @@ const BaseLayout = () => {
                 </header>
 
                 <main style={{flex: 1, padding: '20px', overflow: 'auto'}}>
+                    <Spin spinning={isLoading} fullscreen tip="加载中..."
+                          indicator={<LoadingOutlined spin/>}/>
                     <Outlet/>
                 </main>
 

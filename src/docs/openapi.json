@@ -217,7 +217,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/BookmarkDomain"
+                "$ref": "#/components/schemas/UpdateRequest"
               }
             }
           },
@@ -323,6 +323,38 @@
         }
       }
     },
+    "/bookmark/get": {
+      "post": {
+        "tags": [
+          "书签管理"
+        ],
+        "summary": "查询书签列表",
+        "description": "查询书签列表",
+        "operationId": "bookmarkGet",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GetRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/GenericResult"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/bookmark/delete": {
       "post": {
         "tags": [
@@ -335,7 +367,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/BookmarkDomain"
+                "$ref": "#/components/schemas/DeleteRequest"
               }
             }
           },
@@ -367,7 +399,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/BookmarkDomain"
+                "$ref": "#/components/schemas/CreateRequest"
               }
             }
           },
@@ -484,7 +516,7 @@
         "type": "object",
         "description": "书签领域对象",
         "properties": {
-          "ID": {
+          "id": {
             "type": "integer",
             "format": "int64",
             "description": "主键ID"
@@ -540,6 +572,30 @@
             }
           }
         }
+      },
+      "GetRequest": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          }
+        },
+        "required": [
+          "id"
+        ]
+      },
+      "DeleteRequest": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          }
+        },
+        "required": [
+          "id"
+        ]
       }
     }
   }

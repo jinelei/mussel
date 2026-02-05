@@ -1,8 +1,4 @@
 .container {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: flex-start;
 }
 
 .group {
@@ -31,6 +27,7 @@
     border-radius: 4px;
     padding: 1rem 0;
     transition: all 100ms ease-in-out;
+    cursor: pointer;
 
     & span {
         color: #323232;

@@ -4,7 +4,9 @@
 /* eslint-disable */
 import type { BookmarkDomain } from '../models/BookmarkDomain';
 import type { CreateRequest } from '../models/CreateRequest';
+import type { DeleteRequest } from '../models/DeleteRequest';
 import type { GenericResult } from '../models/GenericResult';
+import type { GetRequest } from '../models/GetRequest';
 import type { UpdateRequest } from '../models/UpdateRequest';
 import type { CancelablePromise } from '../core/CancelablePromise';
 import { OpenAPI } from '../core/OpenAPI';
@@ -104,7 +106,7 @@ export class Service {
      * @throws ApiError
      */
     public static bookmarkUpdate(
-        requestBody: BookmarkDomain,
+        requestBody: UpdateRequest,
     ): CancelablePromise<GenericResult> {
         return __request(OpenAPI, {
             method: 'POST',
@@ -160,6 +162,23 @@ export class Service {
         });
     }
     /**
+     * 查询书签列表
+     * 查询书签列表
+     * @param requestBody
+     * @returns GenericResult OK
+     * @throws ApiError
+     */
+    public static bookmarkGet(
+        requestBody: GetRequest,
+    ): CancelablePromise<GenericResult> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/bookmark/get',
+            body: requestBody,
+            mediaType: 'application/json',
+        });
+    }
+    /**
      * 删除书签
      * 根据id删除书签
      * @param requestBody
@@ -167,7 +186,7 @@ export class Service {
      * @throws ApiError
      */
     public static bookmarkDelete(
-        requestBody: BookmarkDomain,
+        requestBody: DeleteRequest,
     ): CancelablePromise<GenericResult> {
         return __request(OpenAPI, {
             method: 'POST',
@@ -184,7 +203,7 @@ export class Service {
      * @throws ApiError
      */
     public static bookmarkCreate(
-        requestBody: BookmarkDomain,
+        requestBody: CreateRequest,
     ): CancelablePromise<GenericResult> {
         return __request(OpenAPI, {
             method: 'POST',

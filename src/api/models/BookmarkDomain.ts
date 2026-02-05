@@ -9,7 +9,7 @@ export type BookmarkDomain = {
     /**
      * 主键ID
      */
-    ID?: number;
+    id?: number;
     /**
      * 父级ID
      */
@@ -48,14 +48,13 @@ export type BookmarkDomain = {
     color?: string;
     children?: Array<BookmarkDomain>;
 };
-// @ts-ignore
 export namespace BookmarkDomain {
     /**
      * 书签类型
      */
-        // @ts-ignore
     export enum type {
         FOLDER = 'FOLDER',
         ITEM = 'ITEM',
     }
 }
+

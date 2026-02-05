@@ -2,12 +2,36 @@
 import axios from 'axios';
 import fs from 'fs';
 import path from 'path';
-import { fileURLToPath } from 'url';
-import { execSync } from 'child_process'; // 用于执行 CLI 命令
+import {fileURLToPath} from 'url';
+import {execSync} from 'child_process'; // 用于执行 CLI 命令
 
 // 模拟 __dirname（ES 模块必备）
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
+const SOURCE_FILE_PATH = path.resolve(__dirname, '../src/api/core/OpenAPI.ts');
+const BACKUP_FILE_PATH_OLD = path.resolve(__dirname, './OpenAPI.ts.old');
+const BACKUP_FILE_PATH_NEW = path.resolve(__dirname, './OpenAPI.ts.new');
+
+/**
+ * 备份文件：同步复制源文件到当前目录（备份后缀 .bak）
+ */
+function backupFile(source, target) {
+    try {
+        // 检查源文件是否存在（同步）
+        fs.accessSync(source, fs.constants.F_OK);
+        // 同步复制文件（覆盖已存在的备份文件）
+        fs.copyFileSync(source, target);
+        console.log(`✅ 备份成功：${source} -> ${target}`);
+    } catch (err) {
+        if (err.code === 'ENOENT') {
+            console.error(`❌ 备份失败：源文件不存在 ${source}`);
+        } else {
+            console.error(`❌ 备份失败：${err.message}`);
+        }
+        throw err;
+    }
+}
 
 /**
  * 核心逻辑：
@@ -28,7 +52,7 @@ async function generateApiFromUrl() {
         // ========== 步骤 1：创建保存文档的目录（src/docs） ==========
         const docDir = path.dirname(config.docSavePath);
         if (!fs.existsSync(docDir)) {
-            fs.mkdirSync(docDir, { recursive: true });
+            fs.mkdirSync(docDir, {recursive: true});
             console.log(`📁 已创建文档保存目录：${docDir}`);
         }
 
@@ -51,10 +75,13 @@ async function generateApiFromUrl() {
 
         // ========== 步骤 4：保存文档到本地 src/docs/openapi.json ==========
         const formattedDoc = JSON.stringify(openApiDoc, null, 2);
-        fs.writeFileSync(config.docSavePath, formattedDoc, { encoding: 'utf8' });
+        fs.writeFileSync(config.docSavePath, formattedDoc, {encoding: 'utf8'});
         console.log(`✅ 远程文档已保存到本地：${config.docSavePath}`);
 
-        // ========== 步骤 5：调用 CLI 命令生成 API 代码（核心：复用你验证过的命令） ==========
+        // ========== 步骤 5：备份原来的OpenAPI文件 ==========
+        await backupFile(SOURCE_FILE_PATH, BACKUP_FILE_PATH_OLD);
+
+        // ========== 步骤 6：调用 CLI 命令生成 API 代码（核心：复用你验证过的命令） ==========
         // 替换命令模板中的占位符为绝对路径（避免相对路径问题）
         const finalCommand = config.cliCommand
             .replace('{{INPUT_FILE}}', config.docSavePath)
@@ -66,6 +93,10 @@ async function generateApiFromUrl() {
             stdio: 'inherit', // 继承父进程的输入输出（显示 CLI 命令的日志）
             cwd: path.resolve(__dirname, '..') // 执行命令的工作目录（项目根目录）
         });
+
+        // ========== 步骤 7：恢复原来的OpenAPI文件 ==========
+        await backupFile(SOURCE_FILE_PATH, BACKUP_FILE_PATH_NEW);
+        await backupFile(BACKUP_FILE_PATH_OLD, SOURCE_FILE_PATH);
 
         console.log('\n🎉 完整流程执行成功！');
         console.log(`📄 本地文档路径：${config.docSavePath}`);

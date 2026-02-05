@@ -1,58 +1,21 @@
-import {configureStore, createSlice} from '@reduxjs/toolkit';
-
-interface AuthState {
-    token: string;
-    userInfo: {
-        username: string;
-        roles: string[];
-        permissions: string[];
-    };
-}
-
-const authSlice = createSlice({
-    name: 'auth',
-    initialState: {
-        token: localStorage.getItem('token') || '',
-        userInfo: {
-            username: localStorage.getItem('username') || '',
-            roles: localStorage.getItem('roles') || [],
-            permissions: localStorage.getItem('permissions') || [],
-        },
-    } as AuthState,
-    reducers: {
-        setToken: (state, action) => {
-            state.token = action.payload;
-            localStorage.setItem('token', action.payload);
-        },
-        clearToken: (state) => {
-            state.token = '';
-            state.userInfo.username = '';
-            state.userInfo.roles = [];
-            state.userInfo.permissions = [];
-            localStorage.removeItem('token');
-            localStorage.removeItem('username');
-            localStorage.removeItem('roles');
-            localStorage.removeItem('permissions');
-        },
-        setUserName: (state, action) => {
-            state.userInfo.username = action.payload;
-            localStorage.setItem('username', action.payload);
-        },
-        setRoles: (state, action) => {
-            state.userInfo.roles = action.payload;
-            localStorage.setItem('roles', JSON.stringify(action.payload));
-        },
-        setPermissions: (state, action) => {
-            state.userInfo.permissions = action.payload;
-            localStorage.setItem('permissions', JSON.stringify(action.payload));
-        }
-    }
-});
-
-export const {setToken, clearToken, setUserName, setRoles, setPermissions} = authSlice.actions;
+import {configureStore} from '@reduxjs/toolkit';
+import {reducer as globalReducer, actions as globalActions} from './global.ts';
+import {reducer as authReducer, actions as authActions} from './auth.ts';
 
 export const store = configureStore({
     reducer: {
-        auth: authSlice.reducer
+        global: globalReducer,
+        auth: authReducer,
     }
 });
+
+export const {setToken, clearToken, setUserName, setRoles, setPermissions} = authActions;
+export const {setLoading} = globalActions;
+
+// 🔴 核心1：定义Store根状态类型 RootState（自动推导，无需手动写所有属性）
+// ReturnType<typeof store.getState> 会自动提取store.getState()的返回值类型
+export type RootState = ReturnType<typeof store.getState>;
+
+// 🔴 核心2：定义Store调度函数类型 AppDispatch（自动推导，支持异步Action）
+// store.dispatch 的类型，包含Redux Toolkit内置的thunk中间件类型
+export type AppDispatch = typeof store.dispatch;

@@ -9,7 +9,9 @@ export type { OpenAPIConfig } from './core/OpenAPI';
 
 export { BookmarkDomain } from './models/BookmarkDomain';
 export type { CreateRequest } from './models/CreateRequest';
+export type { DeleteRequest } from './models/DeleteRequest';
 export type { GenericResult } from './models/GenericResult';
+export type { GetRequest } from './models/GetRequest';
 export type { UpdateRequest } from './models/UpdateRequest';
 
 export { Service } from './services/Service';
