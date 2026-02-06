@@ -43,3 +43,11 @@
         color: white;
     }
 }
+
+.modalContainer {
+    width: 600px;
+}
+
+.modalForm {
+    margin: 1rem;
+}

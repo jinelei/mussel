@@ -10,8 +10,7 @@ import Login from "../pages/Login";
 import Memo from "../pages/Memo.tsx";
 import EmptyLayout from "../layouts/EmptyLayout.tsx";
 import {FaBook, FaHome} from "react-icons/fa";
-import BookmarkIndex from "../pages/Bookmark/BookmarkIndex.tsx";
-import BookmarkEdit from "../pages/Bookmark/BookmarkEdit.tsx";
+import Bookmark from "../pages/Bookmark.tsx";
 import AuthorizedGuard from "../components/AuthorizedGuard.tsx";
 import Forbidden from "../pages/Forbidden.tsx";
 import type {ReactNode} from "react";
@@ -93,20 +92,8 @@ const originRoutes: RouteObject[] = [
                     roles: [],
                     permissions: ['PAGE_/bookmark'],
                 },
-                element: <AuthorizedGuard><BookmarkIndex/></AuthorizedGuard>,
+                element: <AuthorizedGuard><Bookmark/></AuthorizedGuard>,
             },
-            {
-                path: ":bookmarkId",
-                handle: {
-                    title: '书签-编辑',
-                    icon: <FaBook/>,
-                    showInMenu: false,
-                    requireLogin: true,
-                    roles: [],
-                    permissions: ['PAGE_/bookmark'],
-                },
-                element: <AuthorizedGuard><BookmarkEdit/></AuthorizedGuard>
-            }
         ]
     },
     {

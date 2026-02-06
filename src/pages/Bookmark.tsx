@@ -1,14 +1,14 @@
 import {useEffect, useMemo, useState} from "react";
-import {BookmarkDomain, Service} from "../../api";
+import {BookmarkDomain, Service} from "../api";
 import {useLocation} from "react-router-dom";
-import {Flex, FloatButton, Form, Input, message, Modal, Select, Typography} from "antd";
-import styles from './BookmarkIndex.module.css';
-import DynamicIcon from "../../components/DynamicIcon.tsx";
+import {Button, Flex, FloatButton, Form, Input, message, Modal, Select, Typography} from "antd";
+import styles from './Bookmark.module.css';
+import DynamicIcon from "../components/DynamicIcon.tsx";
 import {useDispatch} from "react-redux";
-import {setLoading} from "../../store";
+import {setLoading} from "../store";
 import {PlusOutlined} from "@ant-design/icons";
 
-const BookmarkIndex: React.FC = () => {
+const Bookmark: React.FC = () => {
     const location = useLocation();
     const dispatch = useDispatch();
     const [bookmarks, setBookmarks] = useState<BookmarkDomain[]>();
@@ -63,6 +63,19 @@ const BookmarkIndex: React.FC = () => {
             setIsModalOpen(true);
         }
     };
+
+    const handleDelete = () => {
+        Service.bookmarkDelete({...form.getFieldsValue()})
+            .then(res => {
+                message.open({
+                    content: res.code === 200 ? '删除成功' : '删除失败',
+                    type: res.code === 200 ? 'success' : 'error'
+                });
+            }).finally(() => {
+            setIsModalOpen(false);
+            fetchList();
+        })
+    }
 
     const handleOk = () => {
         if (operateType === 'update') {
@@ -119,17 +132,28 @@ const BookmarkIndex: React.FC = () => {
                 </div>)
             })}
             <Modal
+                className={styles.modalContainer}
                 maskClosable={false}
-                title={form.getFieldValue('id') ? '修改书签' : "添加书签"}
-                okText={form.getFieldValue('id') ? '更新' : "添加"}
+                title={operateType === 'update' ? '修改书签' : "添加书签"}
+                okText={operateType === 'update' ? '更新' : "添加"}
                 cancelText={'取消'}
                 open={isModalOpen}
-                onOk={handleOk}
-                onCancel={handleCancel}
+                footer={
+                    <>
+                        <Button onClick={handleDelete} type={"primary"}
+                                style={{
+                                    display: operateType === 'update' ? 'inline-flex' : 'none',
+                                    justifyItems: 'flex-start', alignSelf: 'flex-end'
+                                }} danger>删除</Button>
+                        <Button onClick={handleCancel}>取消</Button>
+                        <Button onClick={handleOk}
+                                type={"primary"}>{operateType === 'update' ? '更新' : "添加"}</Button>
+                    </>
+                }
             >
                 <Form
                     form={form}
-                    style={{maxWidth: 600}}
+                    className={styles.modalForm}
                 >
                     <Form.Item name="id" label="ID" rules={[{required: operateType === 'create'}]}
                                style={{display: 'none'}}
@@ -171,4 +195,4 @@ const BookmarkIndex: React.FC = () => {
     )
 }
 
-export default BookmarkIndex;
+export default Bookmark;
