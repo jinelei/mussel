@@ -1,7 +1,7 @@
 import {useEffect, useMemo, useState} from "react";
 import {BookmarkDomain, Service} from "../api";
 import {useLocation} from "react-router-dom";
-import {Button, Flex, FloatButton, Form, Input, message, Modal, Select, Typography} from "antd";
+import {Button, Flex, FloatButton, Form, Input, message, Modal, Popconfirm, Select, Typography} from "antd";
 import styles from './Bookmark.module.css';
 import DynamicIcon from "../components/DynamicIcon.tsx";
 import {useDispatch} from "react-redux";
@@ -140,11 +140,18 @@ const Bookmark: React.FC = () => {
                 open={isModalOpen}
                 footer={
                     <>
-                        <Button onClick={handleDelete} type={"primary"}
-                                style={{
-                                    display: operateType === 'update' ? 'inline-flex' : 'none',
-                                    justifyItems: 'flex-start', alignSelf: 'flex-end'
-                                }} danger>删除</Button>
+                        <Popconfirm
+                            title="确认删除"
+                            description="删除后将不可恢复!"
+                            okText="确定"
+                            cancelText="取消"
+                            onConfirm={handleDelete}
+                        >
+                            <Button type={"primary"}
+                                    style={{
+                                        display: operateType === 'update' ? 'inline-flex' : 'none',
+                                    }} danger>删除</Button>
+                        </Popconfirm>
                         <Button onClick={handleCancel}>取消</Button>
                         <Button onClick={handleOk}
                                 type={"primary"}>{operateType === 'update' ? '更新' : "添加"}</Button>
