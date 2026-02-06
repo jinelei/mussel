@@ -1,12 +1,87 @@
 import {useEffect, useMemo, useState} from "react";
 import {BookmarkDomain, Service} from "../api";
 import {useLocation} from "react-router-dom";
-import {Button, Flex, FloatButton, Form, Input, message, Modal, Popconfirm, Select, Typography} from "antd";
+import {
+    Button,
+    Card,
+    Divider,
+    Flex,
+    FloatButton,
+    Form,
+    Input,
+    message,
+    Modal,
+    Popconfirm,
+    Select, Space,
+    Typography
+} from "antd";
 import styles from './Bookmark.module.css';
 import DynamicIcon from "../components/DynamicIcon.tsx";
 import {useDispatch} from "react-redux";
 import {setLoading} from "../store";
-import {PlusOutlined} from "@ant-design/icons";
+import {MenuOutlined, PlusOutlined} from "@ant-design/icons";
+import {SortableContext, useSortable, verticalListSortingStrategy} from "@dnd-kit/sortable";
+import {closestCorners, DndContext, type DragEndEvent} from "@dnd-kit/core";
+
+import {CSS} from '@dnd-kit/utilities';
+
+// 定义卡片数据类型
+interface CardItem {
+    id: string | number;
+    title: string;
+    content: string;
+}
+
+// 封装可排序的Card组件
+const SortableCard = ({item}: { item: CardItem }) => {
+    // 使用dnd-kit的useSortable hook
+    const {
+        attributes,
+        listeners,
+        setNodeRef,
+        transform,
+        transition,
+        isDragging
+    } = useSortable({
+        id: item.id, // 唯一标识（必须）
+        data: {
+            type: 'card',
+            item
+        }
+    });
+
+    // 拖拽时的样式（半透明+提升层级）
+    const style = {
+        transform: CSS.Transform.toString(transform),
+        transition,
+        opacity: isDragging ? 0.5 : 1,
+        marginBottom: 16,
+        cursor: 'grab',
+        // 拖拽时提升z-index，避免被遮挡
+        zIndex: isDragging ? 1000 : 1,
+        // 防止拖拽时卡片变形
+        boxShadow: isDragging ? '0 4px 12px rgba(0,0,0,0.15)' : 'none'
+    };
+
+    return (
+        <Card
+            ref={setNodeRef} // 绑定拖拽节点
+            title={item.title}
+            style={style}
+            headStyle={{paddingRight: 16}}
+            // 拖拽手柄（仅点击图标可拖拽）
+            extra={
+                <MenuOutlined
+                    style={{cursor: 'grab'}}
+                    {...attributes} // 绑定拖拽属性
+                    {...listeners} // 绑定拖拽事件
+                />
+            }
+        >
+            <Typography.Paragraph>{item.content}</Typography.Paragraph>
+        </Card>
+    );
+};
 
 const Bookmark: React.FC = () => {
     const location = useLocation();
@@ -16,6 +91,33 @@ const Bookmark: React.FC = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [operateType, setOperateType] = useState<('create' | 'update')>('create');
     const [form] = Form.useForm();
+
+    const [cardItems, setCardItems] = useState<CardItem[]>([
+        {id: 1, title: '卡片 1', content: '这是基于dnd-kit的可拖拽卡片 1'},
+        {id: 2, title: '卡片 2', content: '这是基于dnd-kit的可拖拽卡片 2'},
+        {id: 3, title: '卡片 3', content: '这是基于dnd-kit的可拖拽卡片 3'},
+        {id: 4, title: '卡片 4', content: '这是基于dnd-kit的可拖拽卡片 4'},
+    ]);
+
+    const handleDragEnd = (event: DragEndEvent) => {
+        const {active, over} = event;
+
+        // 拖拽到自身位置，不处理
+        if (active.id === over?.id) return;
+
+        // 更新卡片顺序
+        setCardItems(prevItems => {
+            const oldIndex = prevItems.findIndex(item => item.id === active.id);
+            const newIndex = prevItems.findIndex(item => item.id === over?.id);
+
+            // 数组重排（原生实现，无需额外依赖）
+            const newItems = [...prevItems];
+            [newItems[oldIndex], newItems[newIndex]] = [newItems[newIndex], newItems[oldIndex]];
+
+            console.log('排序后的卡片:', newItems.map(item => item.id));
+            return newItems;
+        });
+    };
 
     const folderList = useMemo(() => {
         return (bookmarkFolder || [])
@@ -41,6 +143,17 @@ const Bookmark: React.FC = () => {
             .then(res => {
                 if (200 === res.code) {
                     setBookmarks(res.data);
+                    const result = res.data.filter(it => it.name === '收藏');
+                    if (result.length == 1) {
+                        console.log("result", result[0].children);
+                        setCardItems(result[0].children.map(it => {
+                            return {
+                                id: it.id,
+                                title: it.name,
+                                content: it.url
+                            };
+                        }))
+                    }
                 }
             }).catch(reason => {
             console.warn(reason)
@@ -116,6 +229,39 @@ const Bookmark: React.FC = () => {
 
     return (
         <Flex gap="middle" align="flex-start" justify="center" vertical className={styles.container}>
+            <div style={{maxWidth: 800, margin: '0 auto', padding: '20px 0'}}>
+                <Typography.Title level={3} style={{textAlign: 'center', margin: '24px 0'}}>
+                    Antd Card + @dnd-kit 拖拽排序示例
+                </Typography.Title>
+                <Divider/>
+
+                {/* DndContext 提供拖拽上下文 */}
+                <DndContext
+                    collisionDetection={closestCorners} // 碰撞检测策略
+                    // keyboardCoordinates={sortableKeyboardCoordinates} // 支持键盘操作
+                    onDragEnd={handleDragEnd} // 拖拽结束回调
+                >
+                    {/* SortableContext 管理可排序列表 */}
+                    <SortableContext
+                        items={cardItems.map(item => item.id)} // 可排序项ID列表
+                        strategy={verticalListSortingStrategy} // 垂直排序策略
+                    >
+                        <div style={{padding: 24}}>
+                            {cardItems.map(item => (
+                                <SortableCard key={item.id} item={item}/>
+                            ))}
+                        </div>
+                    </SortableContext>
+                </DndContext>
+
+                {/* 显示当前排序 */}
+                <Space direction="vertical" style={{marginTop: 24, width: '100%', padding: '0 24px'}}>
+                    <Typography.Text strong>当前排序ID：</Typography.Text>
+                    <Typography.Text>
+                        {cardItems.map(item => item.id).join(' → ')}
+                    </Typography.Text>
+                </Space>
+            </div>
             {bookmarks?.map(it => {
                 return (<div className={styles.group}>
                     <Typography.Text className={styles.groupTitle}>{it.name}</Typography.Text>
