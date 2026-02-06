@@ -3,8 +3,8 @@ import {FaSignOutAlt} from 'react-icons/fa';
 
 import {clearToken, type RootState, store} from "../store";
 import {useDispatch, useSelector} from "react-redux";
-import {Spin, Typography} from "antd";
-import {useEffect, useState} from "react";
+import {Breadcrumb, Spin, Typography} from "antd";
+import {useEffect, useMemo, useState} from "react";
 import {authorizedRoutes, type MenuItem} from "../router";
 import {LoadingOutlined} from "@ant-design/icons";
 
@@ -14,6 +14,19 @@ const BaseLayout = () => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const isLoading = useSelector(state => (state as RootState)?.global?.loading);
+    const getBreadcrumb = useMemo(() => {
+        const root = {
+            title: <Link to={"/"}>首页</Link>
+        };
+        let map = menuList
+            .filter(it => it.path === location.pathname)
+            .map((item) => {
+                return {
+                    title: item.title,
+                }
+            });
+        return [root, ...map];
+    }, [menuList]);
 
     useEffect(() => {
         let menuItems = authorizedRoutes();
@@ -82,7 +95,8 @@ const BaseLayout = () => {
                     }}
                 >
                     <div style={{fontSize: '16px', fontWeight: 'bold'}}>
-                        {menuList.find(item => item.path === location.pathname)?.title || '未知页面'}
+                        <Breadcrumb items={getBreadcrumb}/>
+                        {/*{menuList.find(item => item.path === location.pathname)?.title || '未知页面'}*/}
                     </div>
                     <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
                         <Typography.Text>{store.getState().auth.userInfo.username}</Typography.Text>
