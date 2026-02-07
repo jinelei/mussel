@@ -91,7 +91,7 @@ const Index: React.FC = () => {
     }, [currentTime]);
 
     useEffect(() => {
-        Service.bookmarkTree({})
+        Service.bookmarkTree()
             .then(res => {
                 if (401 === res.code) {
                     dispatch(clearToken());
