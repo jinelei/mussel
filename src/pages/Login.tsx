@@ -69,7 +69,7 @@ const Login: React.FC = () => {
     return (
         <ConfigProvider locale={zhCN}>
             <Layout style={{
-                minHeight: 'clamp(600px, 100dvh, 1000px)',
+                minHeight: 'clamp(600px, 100dvh, 100vh)',
                 height: 'auto',
                 overflowY: 'hidden',
                 background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
@@ -79,7 +79,7 @@ const Login: React.FC = () => {
             }}>
                 <Content>
                     <Card styles={{header: {border: 0}}} style={{
-                        width: 'clamp(20rem, 80vw, 600px)',
+                        width: 'clamp(20rem, 80vw, 500px)',
                         boxShadow: '0 10px 30px rgba(0,0,0,0.2)',
                         borderRadius: 12,
                         marginTop: '5rem',
