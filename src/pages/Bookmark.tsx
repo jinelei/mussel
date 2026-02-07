@@ -3,8 +3,6 @@ import {BookmarkDomain, Service} from "../api";
 import {useLocation} from "react-router-dom";
 import {
     Button,
-    Card,
-    Divider,
     Flex,
     FloatButton,
     Form,
@@ -12,29 +10,23 @@ import {
     message,
     Modal,
     Popconfirm,
-    Select, Space,
-    Typography
+    Select, Typography
 } from "antd";
 import styles from './Bookmark.module.css';
 import DynamicIcon from "../components/DynamicIcon.tsx";
 import {useDispatch} from "react-redux";
 import {setLoading} from "../store";
-import {MenuOutlined, PlusOutlined} from "@ant-design/icons";
-import {SortableContext, useSortable, verticalListSortingStrategy} from "@dnd-kit/sortable";
+import {CheckOutlined, CloseOutlined, DragOutlined, PlusOutlined} from "@ant-design/icons";
+import {
+    horizontalListSortingStrategy,
+    SortableContext,
+    useSortable
+} from "@dnd-kit/sortable";
 import {closestCorners, DndContext, type DragEndEvent} from "@dnd-kit/core";
 
 import {CSS} from '@dnd-kit/utilities';
 
-// 定义卡片数据类型
-interface CardItem {
-    id: string | number;
-    title: string;
-    content: string;
-}
-
-// 封装可排序的Card组件
-const SortableCard = ({item}: { item: CardItem }) => {
-    // 使用dnd-kit的useSortable hook
+const SortableCard = ({item, className}: { item: BookmarkDomain, className: string }) => {
     const {
         attributes,
         listeners,
@@ -43,9 +35,9 @@ const SortableCard = ({item}: { item: CardItem }) => {
         transition,
         isDragging
     } = useSortable({
-        id: item.id,
+        id: item.id as number,
         data: {
-            type: 'card',
+            type: 'custom-div',
             item
         }
     });
@@ -54,29 +46,23 @@ const SortableCard = ({item}: { item: CardItem }) => {
         transform: CSS.Transform.toString(transform),
         transition,
         opacity: isDragging ? 0.5 : 1,
-        marginBottom: 16,
-        cursor: 'grab',
         zIndex: isDragging ? 1000 : 1,
-        boxShadow: isDragging ? '0 4px 12px rgba(0,0,0,0.15)' : 'none'
+        boxShadow: isDragging ? '0 4px 16px rgba(0,0,0,0.15)' : '0 1px 2px rgba(0,0,0,0.08)',
+        backgroundColor: 'rgba(37,128,38,0.5)',
+        cursor: 'grab'
     };
 
     return (
-        <Card
+        <div
             ref={setNodeRef}
-            title={item.title}
             style={style}
-            headStyle={{paddingRight: 16}}
-            // 拖拽手柄（仅点击图标可拖拽）
-            extra={
-                <MenuOutlined
-                    style={{cursor: 'grab'}}
-                    {...attributes}
-                    {...listeners}
-                />
-            }
+            className={className}
+            {...attributes}
+            {...listeners}
         >
-            <Typography.Paragraph>{item.content}</Typography.Paragraph>
-        </Card>
+            <DynamicIcon iconName={item.icon} size={'1rem'}/>
+            <Typography.Text>{item.name}</Typography.Text>
+        </div>
     );
 };
 
@@ -89,14 +75,10 @@ const Bookmark: React.FC = () => {
     const [operateType, setOperateType] = useState<('create' | 'update')>('create');
     const [form] = Form.useForm();
 
-    const [cardItems, setCardItems] = useState<CardItem[]>([
-        {id: 1, title: '卡片 1', content: '这是基于dnd-kit的可拖拽卡片 1'},
-        {id: 2, title: '卡片 2', content: '这是基于dnd-kit的可拖拽卡片 2'},
-        {id: 3, title: '卡片 3', content: '这是基于dnd-kit的可拖拽卡片 3'},
-        {id: 4, title: '卡片 4', content: '这是基于dnd-kit的可拖拽卡片 4'},
-    ]);
+    const [sortBookmark, setSortBookmark] = useState<number>();
+    const [cardItems, setCardItems] = useState<BookmarkDomain[]>([]);
 
-    const handleDragEnd = (event: DragEndEvent) => {
+    const handleDragEnd = async (event: DragEndEvent) => {
         const {active, over} = event;
         if (active.id === over?.id) return;
         setCardItems(prevItems => {
@@ -129,20 +111,14 @@ const Bookmark: React.FC = () => {
 
     const fetchList = () => {
         dispatch(setLoading(true));
-        Service.bookmarkTree({})
+        Service.bookmarkTree()
             .then(res => {
                 if (200 === res.code) {
                     setBookmarks(res.data);
-                    const result = res.data.filter(it => it.name === '收藏');
+                    const result = res.data.filter((it: BookmarkDomain) => it.name === '收藏');
                     if (result.length == 1) {
                         console.log("result", result[0].children);
-                        setCardItems(result[0].children.map(it => {
-                            return {
-                                id: it.id,
-                                title: it.name,
-                                content: it.url
-                            };
-                        }))
+                        setCardItems(result[0].children);
                     }
                 }
             }).catch(reason => {
@@ -212,6 +188,40 @@ const Bookmark: React.FC = () => {
         setIsModalOpen(false);
     };
 
+    const onSortStart = (id: number | undefined, children: BookmarkDomain[] | undefined) => {
+        setSortBookmark(id as number);
+        setCardItems(children || []);
+    }
+
+    const onSortEnd = (type: 'ok' | 'cancel') => {
+        if (type === 'ok') {
+            Service.bookmarkSort(cardItems.map(it => it.id as number))
+                .then(res => {
+                    message.open({
+                        type: res.code === 200 ? 'success' : 'error',
+                        content: res.message
+                    })
+                }).finally(() => {
+                setSortBookmark(undefined);
+                setCardItems([]);
+                fetchList();
+            })
+        } else {
+            setSortBookmark(undefined);
+            setCardItems([]);
+        }
+    }
+
+    useEffect(() => {
+        // Service.bookmarkSort(cardItems.map(i => i.id as number))
+        //     .then(res => {
+        //         message.open({
+        //             type: res.code === 200 ? 'success' : 'error',
+        //             content: res.code === 200 ? "排序成功" : "排序失败"
+        //         })
+        //     })
+    }, [cardItems]);
+
     useEffect(() => {
         fetchFolder();
         fetchList();
@@ -219,47 +229,50 @@ const Bookmark: React.FC = () => {
 
     return (
         <Flex gap="middle" align="flex-start" justify="center" vertical className={styles.container}>
-            <div style={{maxWidth: 800, margin: '0 auto', padding: '20px 0'}}>
-                <Typography.Title level={3} style={{textAlign: 'center', margin: '24px 0'}}>
-                    Antd Card + @dnd-kit 拖拽排序示例
-                </Typography.Title>
-                <Divider/>
-
-                <DndContext
-                    collisionDetection={closestCorners}
-                    onDragEnd={handleDragEnd}
-                >
-                    <SortableContext
-                        items={cardItems.map(item => item.id)}
-                        strategy={verticalListSortingStrategy}
-                    >
-                        <div style={{padding: 24}}>
-                            {cardItems.map(item => (
-                                <SortableCard key={item.id} item={item}/>
-                            ))}
-                        </div>
-                    </SortableContext>
-                </DndContext>
-
-                <Space direction="vertical" style={{marginTop: 24, width: '100%', padding: '0 24px'}}>
-                    <Typography.Text strong>当前排序ID：</Typography.Text>
-                    <Typography.Text>
-                        {cardItems.map(item => item.id).join(' → ')}
-                    </Typography.Text>
-                </Space>
-            </div>
             {bookmarks?.map(it => {
                 return (<div className={styles.group}>
-                    <Typography.Text className={styles.groupTitle}>{it.name}</Typography.Text>
+                    <Flex align="center" justify="space-between">
+                        <Typography.Text className={styles.groupTitle}>{it.name}</Typography.Text>
+                        {
+                            sortBookmark === it.id
+                                ?
+                                <div>
+                                    <CloseOutlined onClick={() => onSortEnd("cancel")}
+                                                   className={styles.groupOperateSortCancel}/>
+                                    <CheckOutlined onClick={() => onSortEnd("ok")}
+                                                   className={styles.groupOperateSortOk}/>
+                                </div>
+                                :
+                                <DragOutlined onClick={() => onSortStart(it.id, it.children)}
+                                              className={styles.groupOperateSort}/>
+                        }
+                    </Flex>
                     <div className={styles.list}>
-                        {(it.children || []).map(iit => {
-                            return <div onClick={() => showModal(iit?.id as number)}
-                                        className={styles.listItem}
-                                        style={{color: `${iit.color}`}}>
-                                <DynamicIcon iconName={iit.icon} size={'1rem'}/>
-                                <Typography.Text>{iit.name}</Typography.Text>
-                            </div>
-                        })}
+                        {sortBookmark === it.id
+                            ?
+                            <DndContext
+                                collisionDetection={closestCorners}
+                                onDragEnd={handleDragEnd}
+                            >
+                                <SortableContext
+                                    items={cardItems.map(item => item.id as number)}
+                                    strategy={horizontalListSortingStrategy}
+                                >
+                                    {cardItems.map(item => (
+                                        <SortableCard className={styles.listItem} key={item.id} item={item}/>
+                                    ))}
+                                </SortableContext>
+                            </DndContext>
+                            :
+                            (it.children || []).map(iit => {
+                                return <div onClick={() => showModal(iit?.id as number)}
+                                            className={styles.listItem}
+                                            style={{color: `${iit.color}`}}>
+                                    <DynamicIcon iconName={iit.icon} size={'1rem'}/>
+                                    <Typography.Text>{iit.name}</Typography.Text>
+                                </div>
+                            })
+                        }
                     </div>
                 </div>)
             })}

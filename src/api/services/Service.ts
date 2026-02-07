@@ -2,7 +2,6 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { BookmarkDomain } from '../models/BookmarkDomain';
 import type { CreateRequest } from '../models/CreateRequest';
 import type { DeleteRequest } from '../models/DeleteRequest';
 import type { GenericResult } from '../models/GenericResult';
@@ -119,16 +118,45 @@ export class Service {
     /**
      * 查询书签树
      * 查询书签树
+     * @returns GenericResult OK
+     * @throws ApiError
+     */
+    public static bookmarkTree(): CancelablePromise<GenericResult> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/bookmark/tree',
+        });
+    }
+    /**
+     * 书签排序
+     * 书签排序
      * @param requestBody
      * @returns GenericResult OK
      * @throws ApiError
      */
-    public static bookmarkTree(
-        requestBody: BookmarkDomain,
+    public static bookmarkSort(
+        requestBody: Array<number>,
     ): CancelablePromise<GenericResult> {
         return __request(OpenAPI, {
             method: 'POST',
-            url: '/bookmark/tree',
+            url: '/bookmark/sort',
+            body: requestBody,
+            mediaType: 'application/json',
+        });
+    }
+    /**
+     * 书签排序&返回树
+     * 书签排序&返回树
+     * @param requestBody
+     * @returns GenericResult OK
+     * @throws ApiError
+     */
+    public static bookmarkSortAndTree(
+        requestBody: Array<number>,
+    ): CancelablePromise<GenericResult> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/bookmark/sortAndTree',
             body: requestBody,
             mediaType: 'application/json',
         });

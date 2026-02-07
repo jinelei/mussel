@@ -11,12 +11,10 @@ export type ListRequest = {
     type?: ListRequest.type;
     url?: string;
 };
-// @ts-ignore
 export namespace ListRequest {
     /**
      * 书签类型
      */
-        // @ts-ignore
     export enum type {
         FOLDER = 'FOLDER',
         ITEM = 'ITEM',

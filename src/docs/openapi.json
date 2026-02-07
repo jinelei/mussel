@@ -245,11 +245,73 @@
         "summary": "查询书签树",
         "description": "查询书签树",
         "operationId": "bookmarkTree",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/GenericResult"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/bookmark/sort": {
+      "post": {
+        "tags": [
+          "书签管理"
+        ],
+        "summary": "书签排序",
+        "description": "书签排序",
+        "operationId": "bookmarkSort",
         "requestBody": {
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/BookmarkDomain"
+                "type": "array",
+                "items": {
+                  "type": "integer",
+                  "format": "int64"
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/GenericResult"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/bookmark/sortAndTree": {
+      "post": {
+        "tags": [
+          "书签管理"
+        ],
+        "summary": "书签排序&返回树",
+        "description": "书签排序&返回树",
+        "operationId": "bookmarkSortAndTree",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "integer",
+                  "format": "int64"
+                }
               }
             }
           },

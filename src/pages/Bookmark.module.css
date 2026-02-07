@@ -9,6 +9,20 @@
 .groupTitle {
     color: gray;
     font-size: 1rem;
+    margin-right: 5px;
+}
+
+.groupOperateSort {
+    color: gray;
+}
+
+.groupOperateSortOk {
+    color: darkgreen;
+    margin-left: 5px;
+}
+
+.groupOperateSortCancel {
+    color: darkred;
 }
 
 .list {
@@ -26,7 +40,7 @@
     justify-content: center;
     border-radius: 4px;
     padding: 1rem 0;
-    transition: all 100ms ease-in-out;
+    /*transition: all 100ms ease-in-out;*/
     cursor: pointer;
 
     & span {
@@ -37,7 +51,7 @@
 
 .listItem:hover {
     background-color: rgba(33, 150, 243, 0.9);
-    transform: translateY(-2px);
+    /*transform: translateY(-2px);*/
 
     & span {
         color: white;
