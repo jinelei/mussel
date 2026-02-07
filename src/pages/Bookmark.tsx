@@ -43,29 +43,26 @@ const SortableCard = ({item}: { item: CardItem }) => {
         transition,
         isDragging
     } = useSortable({
-        id: item.id, // 唯一标识（必须）
+        id: item.id,
         data: {
             type: 'card',
             item
         }
     });
 
-    // 拖拽时的样式（半透明+提升层级）
     const style = {
         transform: CSS.Transform.toString(transform),
         transition,
         opacity: isDragging ? 0.5 : 1,
         marginBottom: 16,
         cursor: 'grab',
-        // 拖拽时提升z-index，避免被遮挡
         zIndex: isDragging ? 1000 : 1,
-        // 防止拖拽时卡片变形
         boxShadow: isDragging ? '0 4px 12px rgba(0,0,0,0.15)' : 'none'
     };
 
     return (
         <Card
-            ref={setNodeRef} // 绑定拖拽节点
+            ref={setNodeRef}
             title={item.title}
             style={style}
             headStyle={{paddingRight: 16}}
@@ -73,8 +70,8 @@ const SortableCard = ({item}: { item: CardItem }) => {
             extra={
                 <MenuOutlined
                     style={{cursor: 'grab'}}
-                    {...attributes} // 绑定拖拽属性
-                    {...listeners} // 绑定拖拽事件
+                    {...attributes}
+                    {...listeners}
                 />
             }
         >
@@ -101,20 +98,13 @@ const Bookmark: React.FC = () => {
 
     const handleDragEnd = (event: DragEndEvent) => {
         const {active, over} = event;
-
-        // 拖拽到自身位置，不处理
         if (active.id === over?.id) return;
-
-        // 更新卡片顺序
         setCardItems(prevItems => {
             const oldIndex = prevItems.findIndex(item => item.id === active.id);
             const newIndex = prevItems.findIndex(item => item.id === over?.id);
 
-            // 数组重排（原生实现，无需额外依赖）
             const newItems = [...prevItems];
             [newItems[oldIndex], newItems[newIndex]] = [newItems[newIndex], newItems[oldIndex]];
-
-            console.log('排序后的卡片:', newItems.map(item => item.id));
             return newItems;
         });
     };
@@ -235,16 +225,13 @@ const Bookmark: React.FC = () => {
                 </Typography.Title>
                 <Divider/>
 
-                {/* DndContext 提供拖拽上下文 */}
                 <DndContext
-                    collisionDetection={closestCorners} // 碰撞检测策略
-                    // keyboardCoordinates={sortableKeyboardCoordinates} // 支持键盘操作
-                    onDragEnd={handleDragEnd} // 拖拽结束回调
+                    collisionDetection={closestCorners}
+                    onDragEnd={handleDragEnd}
                 >
-                    {/* SortableContext 管理可排序列表 */}
                     <SortableContext
-                        items={cardItems.map(item => item.id)} // 可排序项ID列表
-                        strategy={verticalListSortingStrategy} // 垂直排序策略
+                        items={cardItems.map(item => item.id)}
+                        strategy={verticalListSortingStrategy}
                     >
                         <div style={{padding: 24}}>
                             {cardItems.map(item => (
@@ -254,7 +241,6 @@ const Bookmark: React.FC = () => {
                     </SortableContext>
                 </DndContext>
 
-                {/* 显示当前排序 */}
                 <Space direction="vertical" style={{marginTop: 24, width: '100%', padding: '0 24px'}}>
                     <Typography.Text strong>当前排序ID：</Typography.Text>
                     <Typography.Text>
