@@ -1,23 +1,19 @@
 import React, {useEffect, useState} from 'react';
 import {useNavigate} from "react-router-dom";
 import {
-    Form, Input, Button, Typography, Layout,
-    Card, Divider, message, ConfigProvider
+    Form, Input, Button, Typography,
+    Card, Divider, message
 } from 'antd';
 import type {FormProps} from 'antd';
 import {
     UserOutlined, LockOutlined, EyeTwoTone,
     EyeInvisibleOutlined
 } from '@ant-design/icons';
-import zhCN from 'antd/locale/zh_CN';
 import 'antd/dist/reset.css';
 import {Service} from "../api";
 import {useDispatch} from "react-redux";
 import {clearToken, setPermissions, setRoles, setToken, setUserName, store} from '../store';
-
-
-const {Title} = Typography;
-const {Content} = Layout;
+import styles from './Login.module.css';
 
 interface LoginFormValues {
     username: string;
@@ -60,6 +56,17 @@ const Login: React.FC = () => {
         }
     };
 
+    const rules = {
+        username: [
+            {required: true, message: '请输入用户名/手机号！'},
+            {min: 3, message: '用户名长度不能少于3位！'}
+        ],
+        password: [
+            {required: true, message: '请输入密码！'},
+            {min: 6, message: '密码长度不能少于6位！'}
+        ]
+    }
+
     useEffect(() => {
         if (store.getState().auth.token) {
             navigate('/');
@@ -67,91 +74,47 @@ const Login: React.FC = () => {
     })
 
     return (
-        <ConfigProvider locale={zhCN}>
-            <Layout style={{
-                minHeight: 'clamp(600px, 100dvh, 100vh)',
-                height: 'auto',
-                overflowY: 'hidden',
-                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-            }}>
-                <Content>
-                    <Card styles={{header: {border: 0}}} style={{
-                        width: 'clamp(20rem, 80vw, 500px)',
-                        boxShadow: '0 10px 30px rgba(0,0,0,0.2)',
-                        borderRadius: 12,
-                        marginTop: '5rem',
-                        overflow: 'hidden'
-                    }}>
-                        {/* 登录页头部 */}
-                        <div style={{
-                            textAlign: 'center',
-                            padding: '1rem 0',
-                            marginBottom: '1rem'
-                        }}>
-                            <Title level={2} style={{margin: 0, color: '#1890ff'}}>
-                                自留地
-                            </Title>
-                        </div>
+        <div className={styles.container}>
+            <Card className={styles.card}>
+                <Typography className={styles.title}>自留地</Typography>
+                <Divider className={styles.divider}/>
+                <Form<LoginFormValues>
+                    form={form}
+                    name="loginForm"
+                    onFinish={onFinish}
+                    autoComplete="off"
+                    className={styles.form}
+                >
+                    <Form.Item name="username" className={styles.item} rules={rules.username}>
+                        <Input
+                            prefix={<UserOutlined/>}
+                            placeholder="请输入用户名/手机号"
+                            autoFocus
+                        />
+                    </Form.Item>
 
-                        <Divider style={{margin: '0 0 2rem 0'}}/>
+                    <Form.Item name="password" className={styles.item} rules={rules.password}>
+                        <Input.Password
+                            prefix={<LockOutlined/>}
+                            placeholder="请输入密码"
+                            iconRender={(visible) => (visible ? <EyeTwoTone/> : <EyeInvisibleOutlined/>)}
+                        />
+                    </Form.Item>
 
-                        {/* 登录表单（绑定类型） */}
-                        <Form<LoginFormValues>
-                            form={form}
-                            name="loginForm"
-                            onFinish={onFinish}
-                            autoComplete="off"
+                    <Form.Item className={styles.operation}>
+                        <Button
+                            type="primary"
+                            htmlType="submit"
+                            block
+                            loading={loading}
+                            className={styles.login}
                         >
-                            <Form.Item
-                                name="username"
-                                rules={[
-                                    {required: true, message: '请输入用户名/手机号！'},
-                                    {min: 3, message: '用户名长度不能少于3位！'}
-                                ]}
-                                style={{margin: '2rem 0'}}
-                            >
-                                <Input
-                                    prefix={<UserOutlined className="site-form-item-icon"/>}
-                                    placeholder="请输入用户名/手机号"
-                                    autoFocus
-                                />
-                            </Form.Item>
-
-                            <Form.Item
-                                name="password"
-                                rules={[
-                                    {required: true, message: '请输入密码！'},
-                                    {min: 6, message: '密码长度不能少于6位！'}
-                                ]}
-                                style={{margin: '2rem 0'}}
-                            >
-                                <Input.Password
-                                    prefix={<LockOutlined className="site-form-item-icon"/>}
-                                    placeholder="请输入密码"
-                                    iconRender={(visible) => (visible ? <EyeTwoTone/> : <EyeInvisibleOutlined/>)}
-                                />
-                            </Form.Item>
-
-                            <Form.Item style={{margin: '1rem 0'}}>
-                                <Button
-                                    type="primary"
-                                    htmlType="submit"
-                                    block
-                                    loading={loading}
-                                    size="large"
-                                    style={{height: 48, borderRadius: 8}}
-                                >
-                                    登录
-                                </Button>
-                            </Form.Item>
-                        </Form>
-                    </Card>
-                </Content>
-            </Layout>
-        </ConfigProvider>
+                            登录
+                        </Button>
+                    </Form.Item>
+                </Form>
+            </Card>
+        </div>
     )
 };
 
