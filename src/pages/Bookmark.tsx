@@ -13,14 +13,12 @@ import {
     Select, Typography
 } from "antd";
 import styles from './Bookmark.module.css';
-import DynamicIcon from "../components/DynamicIcon.tsx";
 import {useDispatch} from "react-redux";
 import {setLoading} from "../store";
-import {DragOutlined, EditOutlined, PlusOutlined} from "@ant-design/icons";
+import {PlusOutlined} from "@ant-design/icons";
 import {
     horizontalListSortingStrategy,
     SortableContext,
-    useSortable
 } from "@dnd-kit/sortable";
 import {closestCorners, DndContext, type DragEndEvent} from "@dnd-kit/core";
 
@@ -28,72 +26,8 @@ const {Search} = Input;
 
 type SearchProps = GetProps<typeof Input.Search>;
 
-import {CSS} from '@dnd-kit/utilities';
 import dayjs from "dayjs";
-
-const SortableCard = ({
-                          item,
-                          classNameContainer,
-                          classNameContainerDrag,
-                          classNameIcon,
-                          classNameTitle,
-                          classNameDrag,
-                          classNameEdit,
-                          onEdit,
-                          onClick
-                      }: {
-    item: BookmarkDomain,
-    classNameContainer: string,
-    classNameContainerDrag: string,
-    classNameIcon: string,
-    classNameTitle: string,
-    classNameDrag: string,
-    classNameEdit: string,
-    onClick: () => void,
-    onEdit: () => void
-}) => {
-    const {
-        attributes,
-        listeners,
-        setNodeRef,
-        transform,
-        transition,
-        isDragging
-    } = useSortable({
-        id: item.id as number,
-        data: {
-            type: 'custom-div',
-            item
-        }
-    });
-
-    const style = {
-        transform: CSS.Transform.toString(transform),
-        transition,
-        opacity: isDragging ? 0.5 : 1,
-        zIndex: isDragging ? 1000 : 1,
-        boxShadow: isDragging ? '0 4px 16px rgba(0,0,0,0.15)' : '0 1px 2px rgba(0,0,0,0.08)',
-    };
-
-    return (
-        <Flex gap={16} align='center' justify='center'
-              onClick={onClick}
-              ref={setNodeRef}
-              style={style}
-              className={isDragging ? classNameContainerDrag : classNameContainer}
-        >
-            <DragOutlined className={classNameDrag} style={{cursor: 'grab'}}
-                          {...attributes}
-                          {...listeners}
-            ></DragOutlined>
-            <Flex>
-                <DynamicIcon className={classNameIcon} iconName={item.icon} size={'1rem'}/>
-                <Typography.Text className={classNameTitle}>{item.name}</Typography.Text>
-            </Flex>
-            <EditOutlined className={classNameEdit} onClick={onEdit}> </EditOutlined>
-        </Flex>
-    );
-};
+import SortableBookmark from "../components/SortableBookmark.tsx";
 
 const Bookmark: React.FC = () => {
     const location = useLocation();
@@ -187,7 +121,8 @@ const Bookmark: React.FC = () => {
         }).finally(() => dispatch(setLoading(false)));
     };
 
-    const showModal = (id: number | undefined) => {
+    const showModal = (e: React.MouseEvent<HTMLElement>, id: number | undefined) => {
+        e.stopPropagation();
         setOperateType(!!id ? 'update' : 'create');
         if (id) {
             Service.bookmarkGet({id}).then(res => {
@@ -195,7 +130,8 @@ const Bookmark: React.FC = () => {
                     form.setFieldsValue({...res.data});
                     setIsModalOpen(true);
                 } else {
-                    message.error("获取书签详情失败").then(() => {});
+                    message.error("获取书签详情失败").then(() => {
+                    });
                 }
             })
         } else {
@@ -210,7 +146,8 @@ const Bookmark: React.FC = () => {
                 message.open({
                     content: res.code === 200 ? '删除成功' : '删除失败',
                     type: res.code === 200 ? 'success' : 'error'
-                }).then(()=>{});
+                }).then(() => {
+                });
             }).finally(() => {
             setIsModalOpen(false);
             fetchList();
@@ -224,7 +161,8 @@ const Bookmark: React.FC = () => {
                     message.open({
                         content: res.code === 200 ? '更新成功' : '更新失败',
                         type: res.code === 200 ? 'success' : 'error'
-                    }).then(()=>{});
+                    }).then(() => {
+                    });
                 }).finally(() => {
                 setIsModalOpen(false);
                 fetchList();
@@ -290,13 +228,12 @@ const Bookmark: React.FC = () => {
         }
     };
 
-    const onNavItemClick = (item: BookmarkDomain) => {
+    const onNavItemClick = (_: React.MouseEvent<HTMLElement>, item: BookmarkDomain) => {
         if (!item.url) {
             message.error("敬请期待").then(_ => {
             });
         } else if (item.url.startsWith('http')) {
-            // window.open(item.url, '_blank');
-            navigate(item.url);
+            window.open(item.url, '_blank');
         } else if (item.url.startsWith('/')) {
             navigate(item.url)
         } else {
@@ -341,11 +278,11 @@ const Bookmark: React.FC = () => {
                 />
             </Flex>
             {bookmarks?.map(it => {
-                return (<Flex vertical className={styles.group} key={'category_' + it.id}>
+                return (<Flex vertical align='center' className={styles.group} key={'category_' + it.id}>
                     <Flex align="center" justify="space-between" key={'category_item_' + it.id}>
                         <Typography.Text className={styles.groupTitle}>{it.name}</Typography.Text>
                     </Flex>
-                    <Flex className={styles.list} key={'category_list_' + it.id}>
+                    <Flex gap={16} wrap="wrap" justify='center' align='center' className={styles.list} key={'category_list_' + it.id}>
                         <DndContext
                             collisionDetection={closestCorners}
                             onDragEnd={handleDragEnd}
@@ -355,15 +292,16 @@ const Bookmark: React.FC = () => {
                                 strategy={horizontalListSortingStrategy}
                             >
                                 {(it.children || []).map(item => (
-                                    <SortableCard onEdit={() => showModal(item?.id as number)}
-                                                  onClick={() => onNavItemClick(item)}
-                                                  key={item.id} item={item}
-                                                  classNameContainer={styles.dragContainer}
-                                                  classNameContainerDrag={styles.dragContainerDrag}
-                                                  classNameIcon={styles.dragIcon}
-                                                  classNameTitle={styles.dragTitle}
-                                                  classNameDrag={styles.dragDrag}
-                                                  classNameEdit={styles.dragEdit}
+                                    <SortableBookmark
+                                        onEdit={(e: React.MouseEvent<HTMLElement, MouseEvent>) => showModal(e, item?.id as number)}
+                                        onClick={(e: React.MouseEvent<HTMLElement, MouseEvent>) => onNavItemClick(e, item)}
+                                        key={item.id} item={item}
+                                        classNameContainer={styles.dragContainer}
+                                        classNameContainerDrag={styles.dragContainerDrag}
+                                        classNameIcon={styles.dragIcon}
+                                        classNameTitle={styles.dragTitle}
+                                        classNameDrag={styles.dragDrag}
+                                        classNameEdit={styles.dragEdit}
                                     />
                                 ))}
                             </SortableContext>
@@ -433,7 +371,7 @@ const Bookmark: React.FC = () => {
                 </Form>
             </Modal>
             <FloatButton
-                onClick={() => showModal(undefined)}
+                onClick={(e) => showModal(e, undefined)}
                 shape="circle"
                 type="primary"
                 icon={<PlusOutlined/>}
