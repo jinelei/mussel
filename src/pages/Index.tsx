@@ -1,5 +1,5 @@
 import React, {useEffect, useRef, useState} from "react";
-import {Input, message, Typography} from 'antd';
+import {Flex, Input, message, Typography} from 'antd';
 import dayjs from 'dayjs';
 import type {GetProps} from 'antd';
 import {type BookmarkDomain, Service} from "../api";
@@ -104,15 +104,15 @@ const Index: React.FC = () => {
     }, [location.pathname]);
 
     return (
-        <div className={styles.container}>
-            <div
-                className={`${styles.containerBackground} ${isSearchFocused ? styles.containerBackgroundBlur : styles.containerBackground}`}></div>
-            <p className={styles.time}
-               onClick={() => copyToClipboard(formattedTime)}
-            >{formattedTime}</p>
-            <p className={styles.date}
-               onClick={() => copyToClipboard(formattedDate)}
-            >{formattedDate}</p>
+        <Flex vertical align='center' justify='flex-start' className={styles.container}>
+            {/*<div*/}
+            {/*    className={`${styles.containerBackground} ${isSearchFocused ? styles.containerBackgroundBlur : styles.containerBackground}`}></div>*/}
+            <Typography.Text className={styles.time}
+                             onClick={() => copyToClipboard(formattedTime)}
+            >{formattedTime}</Typography.Text>
+            <Typography.Text className={styles.date}
+                             onClick={() => copyToClipboard(formattedDate)}
+            >{formattedDate}</Typography.Text>
             <Search
                 ref={searchInputRef}
                 placeholder="请输入"
@@ -126,29 +126,28 @@ const Index: React.FC = () => {
                 onFocus={() => setIsSearchFocused(true)}
                 onBlur={() => setIsSearchFocused(false)}
             />
-            <div className={styles.container}>
+            <Flex vertical>
                 {bookmarks?.map(it => {
                     return (
-                        <div className={`${styles.group} ${isSearchFocused ? styles.groupBlur : ''}`}>
+                        <Flex vertical className={`${styles.group} ${isSearchFocused ? styles.groupBlur : ''}`}>
                             <Typography.Text className={styles.groupTitle}>{it.name}</Typography.Text>
-                            <div className={styles.list}>
+                            <Flex className={styles.list}>
                                 {(it.children || []).map(iit => {
-                                    return <div className={styles.listItem}
-                                                style={{
-                                                    color: `${iit.color}`,
-                                                    pointerEvents: `${isSearchFocused ? 'none' : 'auto'}`
-                                                }}
-                                                onClick={() => onNavItemClick(iit)}>
+                                    return <Flex className={styles.listItem} align='center' justify='flex-start'
+                                                 style={{
+                                                     color: `${iit.color}`,
+                                                     pointerEvents: `${isSearchFocused ? 'none' : 'auto'}`
+                                                 }}
+                                                 onClick={() => onNavItemClick(iit)}>
                                         <DynamicIcon iconName={iit.icon} size={'1rem'}/>
                                         <Typography.Text>{iit.name}</Typography.Text>
-                                    </div>
+                                    </Flex>
                                 })}
-                            </div>
-                        </div>)
+                            </Flex>
+                        </Flex>)
                 })}
-            </div>
-            <Footer className={styles.footer}></Footer>
-        </div>
+            </Flex>
+        </Flex>
     )
 }
 

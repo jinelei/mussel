@@ -1,11 +1,11 @@
-import {useEffect, useMemo, useState} from "react";
+import {useEffect, useMemo, useRef, useState} from "react";
 import {BookmarkDomain, Service} from "../api";
 import {useLocation} from "react-router-dom";
 import {
     Button,
     Flex,
     FloatButton,
-    Form,
+    Form, type GetProps,
     Input,
     message,
     Modal,
@@ -16,7 +16,7 @@ import styles from './Bookmark.module.css';
 import DynamicIcon from "../components/DynamicIcon.tsx";
 import {useDispatch} from "react-redux";
 import {setLoading} from "../store";
-import {CheckOutlined, CloseOutlined, DragOutlined, PlusOutlined} from "@ant-design/icons";
+import {CheckOutlined, CloseOutlined, DragOutlined, EditOutlined, PlusOutlined} from "@ant-design/icons";
 import {
     horizontalListSortingStrategy,
     SortableContext,
@@ -24,7 +24,12 @@ import {
 } from "@dnd-kit/sortable";
 import {closestCorners, DndContext, type DragEndEvent} from "@dnd-kit/core";
 
+const {Search} = Input;
+
+type SearchProps = GetProps<typeof Input.Search>;
+
 import {CSS} from '@dnd-kit/utilities';
+import dayjs from "dayjs";
 
 const SortableCard = ({item, className}: { item: BookmarkDomain, className: string }) => {
     const {
@@ -57,11 +62,13 @@ const SortableCard = ({item, className}: { item: BookmarkDomain, className: stri
             ref={setNodeRef}
             style={style}
             className={className}
-            {...attributes}
-            {...listeners}
         >
             <DynamicIcon iconName={item.icon} size={'1rem'}/>
             <Typography.Text>{item.name}</Typography.Text>
+            <DragOutlined
+                {...attributes}
+                {...listeners}
+            ></DragOutlined>
         </div>
     );
 };
@@ -74,6 +81,13 @@ const Bookmark: React.FC = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [operateType, setOperateType] = useState<('create' | 'update')>('create');
     const [form] = Form.useForm();
+
+    const [value, setValue] = useState<string>();
+    const [currentTime, setCurrentTime] = useState(dayjs());
+    const [isSearchFocused, setIsSearchFocused] = useState(false);
+    const formattedTime = currentTime.format('HH:mm:ss');
+    const formattedDate = currentTime.format('YYYY年MM月DD日');
+    const searchInputRef = useRef<React.ElementRef<typeof Input>>(null);
 
     const [sortBookmark, setSortBookmark] = useState<number>();
     const [cardItems, setCardItems] = useState<BookmarkDomain[]>([]);
@@ -212,6 +226,47 @@ const Bookmark: React.FC = () => {
         }
     }
 
+    const onSearch: SearchProps['onSearch'] = (value) => {
+        const keyword = encodeURIComponent(value.trim());
+        if (keyword) {
+            const encodedAction = encodeURIComponent(JSON.stringify({
+                pluginId: "Send_Message",
+                payload: {text: decodeURIComponent(keyword)}
+            }));
+            const url = `https://www.doubao.com/chat/url-action?action=${encodedAction}`;
+            try {
+                setTimeout(() => {
+                    searchInputRef.current?.blur();
+                    setValue('');
+                }, 100);
+            } catch (error) {
+                console.error('失焦操作失败:', error);
+            }
+            window.open(url, '_blank');
+        }
+    }
+
+    const copyToClipboard = async (text: string) => {
+        try {
+            if (navigator.clipboard && window.isSecureContext) {
+                await navigator.clipboard.writeText(text);
+            } else {
+                const textArea = document.createElement('textarea');
+                textArea.value = text;
+                textArea.style.position = 'fixed';
+                textArea.style.opacity = '0';
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+            }
+            message.success("复制成功")
+        } catch (err) {
+            console.error('复制失败：', err);
+            message.error('❌ 复制失败，请手动复制');
+        }
+    };
+
     useEffect(() => {
         // Service.bookmarkSort(cardItems.map(i => i.id as number))
         //     .then(res => {
@@ -227,8 +282,36 @@ const Bookmark: React.FC = () => {
         fetchList();
     }, [location.pathname]);
 
+    useEffect(() => {
+        const timer = setInterval(() => {
+            setCurrentTime(dayjs());
+        }, 1000);
+        return () => clearInterval(timer);
+    }, [currentTime]);
+
     return (
         <Flex gap="middle" align="flex-start" justify="center" vertical className={styles.container}>
+            <Flex vertical align='center' justify='center' className={styles.searchContainer}>
+                <Typography.Text className={styles.time}
+                                 onClick={() => copyToClipboard(formattedTime)}
+                >{formattedTime}</Typography.Text>
+                <Typography.Text className={styles.date}
+                                 onClick={() => copyToClipboard(formattedDate)}
+                >{formattedDate}</Typography.Text>
+                <Search
+                    ref={searchInputRef}
+                    placeholder="请输入"
+                    allowClear
+                    enterButton
+                    size="large"
+                    className={styles.search}
+                    value={value}
+                    onChange={e => setValue(e.target.value)}
+                    onSearch={onSearch}
+                    onFocus={() => setIsSearchFocused(true)}
+                    onBlur={() => setIsSearchFocused(false)}
+                />
+            </Flex>
             {bookmarks?.map(it => {
                 return (<div className={styles.group}>
                     <Flex align="center" justify="space-between">

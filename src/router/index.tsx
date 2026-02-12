@@ -8,7 +8,6 @@ import Index from "../pages/Index.tsx";
 import BaseLayout from "../layouts/BaseLayout";
 import Login from "../pages/Login";
 import Memo from "../pages/Memo.tsx";
-import EmptyLayout from "../layouts/EmptyLayout.tsx";
 import {FaBook, FaHome} from "react-icons/fa";
 import Bookmark from "../pages/Bookmark.tsx";
 import AuthorizedGuard from "../components/AuthorizedGuard.tsx";
@@ -35,7 +34,7 @@ export interface AuthRouteHandle {
 const originRoutes: RouteObject[] = [
     {
         path: '/',
-        element: <EmptyLayout/>,
+        element: <BaseLayout/>,
         handle: {
             showInMenu: true,
         },
