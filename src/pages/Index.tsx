@@ -3,7 +3,6 @@ import {Flex, Input, message, Typography} from 'antd';
 import dayjs from 'dayjs';
 import type {GetProps} from 'antd';
 import {type BookmarkDomain, Service} from "../api";
-import Footer from "./Footer.tsx";
 import {useLocation, useNavigate} from "react-router-dom";
 import styles from './Index.module.css';
 
@@ -74,7 +73,7 @@ const Index: React.FC = () => {
             message.error("敬请期待").then(_ => {
             });
         } else if (item.url.startsWith('http')) {
-            window.open(item.url, '_blank');
+            navigate(item.url)
         } else if (item.url.startsWith('/')) {
             navigate(item.url);
         } else {

@@ -6,12 +6,13 @@ import * as AntdIcons from '@ant-design/icons';
 
 interface DynamicIconProps {
     iconName?: string | undefined;
+    className?: string | undefined;
     size?: number | string;
     style?: CSSProperties;
     onClick?: () => void;
 }
 
-const DynamicIcon: React.FC<DynamicIconProps> = ({iconName, size = 16, style, onClick}) => {
+const DynamicIcon: React.FC<DynamicIconProps> = ({iconName, className, size = 16, style, onClick}) => {
     const getIconComponentName = (name: string | undefined) => {
         if (!name) {
             return undefined;
@@ -36,7 +37,7 @@ const DynamicIcon: React.FC<DynamicIconProps> = ({iconName, size = 16, style, on
 
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-expect-error
-    return <IconComponent style={mergedStyle} onClick={onClick}></IconComponent>;
+    return <IconComponent className={className} style={mergedStyle} onClick={onClick}></IconComponent>;
 };
 
 export default DynamicIcon;

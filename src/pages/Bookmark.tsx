@@ -1,6 +1,6 @@
-import {useEffect, useMemo, useRef, useState} from "react";
+import React, {useEffect, useMemo, useRef, useState} from "react";
 import {BookmarkDomain, Service} from "../api";
-import {useLocation} from "react-router-dom";
+import {useLocation, useNavigate} from "react-router-dom";
 import {
     Button,
     Flex,
@@ -16,7 +16,7 @@ import styles from './Bookmark.module.css';
 import DynamicIcon from "../components/DynamicIcon.tsx";
 import {useDispatch} from "react-redux";
 import {setLoading} from "../store";
-import {CheckOutlined, CloseOutlined, DragOutlined, EditOutlined, PlusOutlined} from "@ant-design/icons";
+import {DragOutlined, EditOutlined, PlusOutlined} from "@ant-design/icons";
 import {
     horizontalListSortingStrategy,
     SortableContext,
@@ -31,7 +31,27 @@ type SearchProps = GetProps<typeof Input.Search>;
 import {CSS} from '@dnd-kit/utilities';
 import dayjs from "dayjs";
 
-const SortableCard = ({item, className}: { item: BookmarkDomain, className: string }) => {
+const SortableCard = ({
+                          item,
+                          classNameContainer,
+                          classNameContainerDrag,
+                          classNameIcon,
+                          classNameTitle,
+                          classNameDrag,
+                          classNameEdit,
+                          onEdit,
+                          onClick
+                      }: {
+    item: BookmarkDomain,
+    classNameContainer: string,
+    classNameContainerDrag: string,
+    classNameIcon: string,
+    classNameTitle: string,
+    classNameDrag: string,
+    classNameEdit: string,
+    onClick: () => void,
+    onEdit: () => void
+}) => {
     const {
         attributes,
         listeners,
@@ -53,23 +73,25 @@ const SortableCard = ({item, className}: { item: BookmarkDomain, className: stri
         opacity: isDragging ? 0.5 : 1,
         zIndex: isDragging ? 1000 : 1,
         boxShadow: isDragging ? '0 4px 16px rgba(0,0,0,0.15)' : '0 1px 2px rgba(0,0,0,0.08)',
-        backgroundColor: 'rgba(37,128,38,0.5)',
-        cursor: 'grab'
     };
 
     return (
-        <div
-            ref={setNodeRef}
-            style={style}
-            className={className}
+        <Flex gap={16} align='center' justify='center'
+              onClick={onClick}
+              ref={setNodeRef}
+              style={style}
+              className={isDragging ? classNameContainerDrag : classNameContainer}
         >
-            <DynamicIcon iconName={item.icon} size={'1rem'}/>
-            <Typography.Text>{item.name}</Typography.Text>
-            <DragOutlined
-                {...attributes}
-                {...listeners}
+            <DragOutlined className={classNameDrag} style={{cursor: 'grab'}}
+                          {...attributes}
+                          {...listeners}
             ></DragOutlined>
-        </div>
+            <Flex>
+                <DynamicIcon className={classNameIcon} iconName={item.icon} size={'1rem'}/>
+                <Typography.Text className={classNameTitle}>{item.name}</Typography.Text>
+            </Flex>
+            <EditOutlined className={classNameEdit} onClick={onEdit}> </EditOutlined>
+        </Flex>
     );
 };
 
@@ -84,25 +106,55 @@ const Bookmark: React.FC = () => {
 
     const [value, setValue] = useState<string>();
     const [currentTime, setCurrentTime] = useState(dayjs());
-    const [isSearchFocused, setIsSearchFocused] = useState(false);
+    // const [isSearchFocused, setIsSearchFocused] = useState(false);
     const formattedTime = currentTime.format('HH:mm:ss');
     const formattedDate = currentTime.format('YYYY年MM月DD日');
     const searchInputRef = useRef<React.ElementRef<typeof Input>>(null);
 
-    const [sortBookmark, setSortBookmark] = useState<number>();
-    const [cardItems, setCardItems] = useState<BookmarkDomain[]>([]);
+    const navigate = useNavigate();
 
     const handleDragEnd = async (event: DragEndEvent) => {
         const {active, over} = event;
         if (active.id === over?.id) return;
-        setCardItems(prevItems => {
-            const oldIndex = prevItems.findIndex(item => item.id === active.id);
-            const newIndex = prevItems.findIndex(item => item.id === over?.id);
-
-            const newItems = [...prevItems];
-            [newItems[oldIndex], newItems[newIndex]] = [newItems[newIndex], newItems[oldIndex]];
-            return newItems;
+        const parentId = active?.data?.current?.item?.parentId;
+        if (parentId !== over?.data?.current?.item?.parentId) {
+            return;
+        }
+        const find = bookmarks?.filter(it => it?.id === parentId).find(() => true);
+        const children = find?.children || [];
+        const oldIndex = children?.findIndex(item => item.id === active.id);
+        const newIndex = children?.findIndex(item => item.id === over?.id);
+        if (
+            oldIndex < 0 ||
+            newIndex < 0 ||
+            oldIndex >= children.length ||
+            newIndex >= children.length ||
+            oldIndex === newIndex
+        ) {
+            return;
+        }
+        const newArray = [...children];
+        const [movedItem] = newArray.splice(oldIndex, 1);
+        newArray.splice(newIndex, 0, movedItem);
+        const map = bookmarks?.map(it => {
+            if (it.id === parentId) {
+                return {...find, children: newArray}
+            } else {
+                return it;
+            }
         });
+        setBookmarks(map);
+        setTimeout(() => {
+            // 这里仅仅更新排序,不做重新刷新
+            Service.bookmarkSort(newArray.map(it => it.id as number))
+                .then(res => {
+                    message.open({
+                        type: res.code === 200 ? 'success' : 'error',
+                        content: res.message
+                    })
+                }).finally(() => {
+            })
+        }, 500);
     };
 
     const folderList = useMemo(() => {
@@ -129,11 +181,6 @@ const Bookmark: React.FC = () => {
             .then(res => {
                 if (200 === res.code) {
                     setBookmarks(res.data);
-                    const result = res.data.filter((it: BookmarkDomain) => it.name === '收藏');
-                    if (result.length == 1) {
-                        console.log("result", result[0].children);
-                        setCardItems(result[0].children);
-                    }
                 }
             }).catch(reason => {
             console.warn(reason)
@@ -148,7 +195,7 @@ const Bookmark: React.FC = () => {
                     form.setFieldsValue({...res.data});
                     setIsModalOpen(true);
                 } else {
-                    message.error("获取书签详情失败");
+                    message.error("获取书签详情失败").then(() => {});
                 }
             })
         } else {
@@ -163,7 +210,7 @@ const Bookmark: React.FC = () => {
                 message.open({
                     content: res.code === 200 ? '删除成功' : '删除失败',
                     type: res.code === 200 ? 'success' : 'error'
-                });
+                }).then(()=>{});
             }).finally(() => {
             setIsModalOpen(false);
             fetchList();
@@ -177,7 +224,7 @@ const Bookmark: React.FC = () => {
                     message.open({
                         content: res.code === 200 ? '更新成功' : '更新失败',
                         type: res.code === 200 ? 'success' : 'error'
-                    });
+                    }).then(()=>{});
                 }).finally(() => {
                 setIsModalOpen(false);
                 fetchList();
@@ -201,30 +248,6 @@ const Bookmark: React.FC = () => {
         form.resetFields();
         setIsModalOpen(false);
     };
-
-    const onSortStart = (id: number | undefined, children: BookmarkDomain[] | undefined) => {
-        setSortBookmark(id as number);
-        setCardItems(children || []);
-    }
-
-    const onSortEnd = (type: 'ok' | 'cancel') => {
-        if (type === 'ok') {
-            Service.bookmarkSort(cardItems.map(it => it.id as number))
-                .then(res => {
-                    message.open({
-                        type: res.code === 200 ? 'success' : 'error',
-                        content: res.message
-                    })
-                }).finally(() => {
-                setSortBookmark(undefined);
-                setCardItems([]);
-                fetchList();
-            })
-        } else {
-            setSortBookmark(undefined);
-            setCardItems([]);
-        }
-    }
 
     const onSearch: SearchProps['onSearch'] = (value) => {
         const keyword = encodeURIComponent(value.trim());
@@ -267,15 +290,20 @@ const Bookmark: React.FC = () => {
         }
     };
 
-    useEffect(() => {
-        // Service.bookmarkSort(cardItems.map(i => i.id as number))
-        //     .then(res => {
-        //         message.open({
-        //             type: res.code === 200 ? 'success' : 'error',
-        //             content: res.code === 200 ? "排序成功" : "排序失败"
-        //         })
-        //     })
-    }, [cardItems]);
+    const onNavItemClick = (item: BookmarkDomain) => {
+        if (!item.url) {
+            message.error("敬请期待").then(_ => {
+            });
+        } else if (item.url.startsWith('http')) {
+            // window.open(item.url, '_blank');
+            navigate(item.url);
+        } else if (item.url.startsWith('/')) {
+            navigate(item.url)
+        } else {
+            message.error("敬请期待").then(_ => {
+            });
+        }
+    }
 
     useEffect(() => {
         fetchFolder();
@@ -290,7 +318,7 @@ const Bookmark: React.FC = () => {
     }, [currentTime]);
 
     return (
-        <Flex gap="middle" align="flex-start" justify="center" vertical className={styles.container}>
+        <Flex align="flex-start" justify="center" vertical className={styles.container}>
             <Flex vertical align='center' justify='center' className={styles.searchContainer}>
                 <Typography.Text className={styles.time}
                                  onClick={() => copyToClipboard(formattedTime)}
@@ -308,56 +336,40 @@ const Bookmark: React.FC = () => {
                     value={value}
                     onChange={e => setValue(e.target.value)}
                     onSearch={onSearch}
-                    onFocus={() => setIsSearchFocused(true)}
-                    onBlur={() => setIsSearchFocused(false)}
+                    // onFocus={() => setIsSearchFocused(true)}
+                    // onBlur={() => setIsSearchFocused(false)}
                 />
             </Flex>
             {bookmarks?.map(it => {
-                return (<div className={styles.group}>
-                    <Flex align="center" justify="space-between">
+                return (<Flex vertical className={styles.group} key={'category_' + it.id}>
+                    <Flex align="center" justify="space-between" key={'category_item_' + it.id}>
                         <Typography.Text className={styles.groupTitle}>{it.name}</Typography.Text>
-                        {
-                            sortBookmark === it.id
-                                ?
-                                <div>
-                                    <CloseOutlined onClick={() => onSortEnd("cancel")}
-                                                   className={styles.groupOperateSortCancel}/>
-                                    <CheckOutlined onClick={() => onSortEnd("ok")}
-                                                   className={styles.groupOperateSortOk}/>
-                                </div>
-                                :
-                                <DragOutlined onClick={() => onSortStart(it.id, it.children)}
-                                              className={styles.groupOperateSort}/>
-                        }
                     </Flex>
-                    <div className={styles.list}>
-                        {sortBookmark === it.id
-                            ?
-                            <DndContext
-                                collisionDetection={closestCorners}
-                                onDragEnd={handleDragEnd}
+                    <Flex className={styles.list} key={'category_list_' + it.id}>
+                        <DndContext
+                            collisionDetection={closestCorners}
+                            onDragEnd={handleDragEnd}
+                        >
+                            <SortableContext
+                                items={(it.children || []).map(item => item.id as number)}
+                                strategy={horizontalListSortingStrategy}
                             >
-                                <SortableContext
-                                    items={cardItems.map(item => item.id as number)}
-                                    strategy={horizontalListSortingStrategy}
-                                >
-                                    {cardItems.map(item => (
-                                        <SortableCard className={styles.listItem} key={item.id} item={item}/>
-                                    ))}
-                                </SortableContext>
-                            </DndContext>
-                            :
-                            (it.children || []).map(iit => {
-                                return <div onClick={() => showModal(iit?.id as number)}
-                                            className={styles.listItem}
-                                            style={{color: `${iit.color}`}}>
-                                    <DynamicIcon iconName={iit.icon} size={'1rem'}/>
-                                    <Typography.Text>{iit.name}</Typography.Text>
-                                </div>
-                            })
-                        }
-                    </div>
-                </div>)
+                                {(it.children || []).map(item => (
+                                    <SortableCard onEdit={() => showModal(item?.id as number)}
+                                                  onClick={() => onNavItemClick(item)}
+                                                  key={item.id} item={item}
+                                                  classNameContainer={styles.dragContainer}
+                                                  classNameContainerDrag={styles.dragContainerDrag}
+                                                  classNameIcon={styles.dragIcon}
+                                                  classNameTitle={styles.dragTitle}
+                                                  classNameDrag={styles.dragDrag}
+                                                  classNameEdit={styles.dragEdit}
+                                    />
+                                ))}
+                            </SortableContext>
+                        </DndContext>
+                    </Flex>
+                </Flex>)
             })}
             <Modal
                 className={styles.modalContainer}
