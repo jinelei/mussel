@@ -4,7 +4,6 @@ import {
 } from 'react-router-dom';
 import About from '../pages/About';
 import NotFound from '../pages/NotFound';
-import Index from "../pages/Index.tsx";
 import BaseLayout from "../layouts/BaseLayout";
 import Login from "../pages/Login";
 import Memo from "../pages/Memo.tsx";
@@ -49,7 +48,7 @@ const originRoutes: RouteObject[] = [
                     roles: [],
                     permissions: ['PAGE_/'],
                 },
-                element: <AuthorizedGuard><Index/></AuthorizedGuard>,
+                element: <AuthorizedGuard><Bookmark/></AuthorizedGuard>,
             },
         ],
     },
@@ -72,27 +71,6 @@ const originRoutes: RouteObject[] = [
                 },
                 element: <AuthorizedGuard><Memo/></AuthorizedGuard>,
             }
-        ]
-    },
-    {
-        path: '/bookmark',
-        element: <BaseLayout/>,
-        handle: {
-            showInMenu: true,
-        },
-        children: [
-            {
-                index: true,
-                handle: {
-                    title: '书签',
-                    icon: <FaBook/>,
-                    showInMenu: true,
-                    requireLogin: true,
-                    roles: [],
-                    permissions: ['PAGE_/bookmark'],
-                },
-                element: <AuthorizedGuard><Bookmark/></AuthorizedGuard>,
-            },
         ]
     },
     {
