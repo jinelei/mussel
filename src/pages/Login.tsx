@@ -2,7 +2,7 @@ import React, {useEffect, useState} from 'react';
 import {useNavigate} from "react-router-dom";
 import {
     Form, Input, Button, Typography,
-    Card, Divider, message
+    Divider, message, Flex
 } from 'antd';
 import type {FormProps} from 'antd';
 import {
@@ -74,9 +74,9 @@ const Login: React.FC = () => {
     })
 
     return (
-        <div className={styles.container}>
-            <Card className={styles.card}>
-                <Typography className={styles.title}>自留地</Typography>
+        <Flex className={styles.container} align='center' justify='center'>
+            <Flex className={styles.card}>
+                <Typography className={styles.title}>JINELEI</Typography>
                 <Divider className={styles.divider}/>
                 <Form<LoginFormValues>
                     form={form}
@@ -88,7 +88,7 @@ const Login: React.FC = () => {
                     <Form.Item name="username" className={styles.item} rules={rules.username}>
                         <Input
                             prefix={<UserOutlined/>}
-                            placeholder="请输入用户名/手机号"
+                            placeholder="请输入用户名"
                             autoFocus
                         />
                     </Form.Item>
@@ -113,8 +113,8 @@ const Login: React.FC = () => {
                         </Button>
                     </Form.Item>
                 </Form>
-            </Card>
-        </div>
+            </Flex>
+        </Flex>
     )
 };
 

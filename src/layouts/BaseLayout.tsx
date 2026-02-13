@@ -3,10 +3,10 @@ import {FaSignOutAlt} from 'react-icons/fa';
 
 import {clearToken, type RootState, store} from "../store";
 import {useDispatch, useSelector} from "react-redux";
-import {Flex, Spin, Typography} from "antd";
+import {Dropdown, Flex, type MenuProps, Space, Spin, Typography} from "antd";
 import {useEffect, useState} from "react";
 import {authorizedRoutes, type MenuItem} from "../router";
-import {LoadingOutlined, MoonOutlined} from "@ant-design/icons";
+import {DownOutlined, LoadingOutlined, MoonOutlined, SettingOutlined, UserOutlined} from "@ant-design/icons";
 
 import styles from './BaseLayout.module.css';
 import Footer from "../pages/Footer.tsx";
@@ -17,6 +17,45 @@ const BaseLayout = () => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const isLoading = useSelector(state => (state as RootState)?.global?.loading);
+
+    const items: MenuProps['items'] = [
+        {
+            label: (
+                <Flex gap={8} align='center' justify='flex-start'
+                      onClick={() => navigate("/personal")}>
+                    <UserOutlined></UserOutlined>
+                    <Typography.Text>个人设置</Typography.Text>
+                </Flex>
+            ),
+            key: '0',
+        },
+        {
+            label: (
+                <Flex gap={8} align='center' justify='flex-start'
+                      onClick={() => navigate("/setting")}>
+                    <SettingOutlined></SettingOutlined>
+                    <Typography.Text>系统设置</Typography.Text>
+                </Flex>
+            ),
+            key: '1',
+        },
+        {
+            type: 'divider',
+        },
+        {
+            label: (
+                <Flex gap={8} align='center' justify='flex-start'
+                      onClick={() => {
+                          dispatch(clearToken());
+                          navigate("/login", {replace: true});
+                      }}>
+                    <FaSignOutAlt/>
+                    <Typography.Text>退出</Typography.Text>
+                </Flex>
+            ),
+            key: '3',
+        },
+    ];
 
     useEffect(() => {
         let menuItems = authorizedRoutes();
@@ -38,12 +77,14 @@ const BaseLayout = () => {
                         </Link>
                     ))}
                     <Flex align='center'>
-                        <Typography.Text
-                            className={styles.username}>{store.getState().auth.userInfo.username}</Typography.Text>
-                        <FaSignOutAlt onClick={() => {
-                            dispatch(clearToken());
-                            navigate("/login", {replace: true});
-                        }}/>
+                        <Dropdown menu={{items}} trigger={['click']}>
+                            <div onClick={(e) => e.preventDefault()}>
+                                <Space>
+                                    {store.getState().auth.userInfo.username}
+                                    <DownOutlined/>
+                                </Space>
+                            </div>
+                        </Dropdown>
                     </Flex>
                 </Flex>
             </Flex>
