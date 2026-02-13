@@ -20,14 +20,18 @@ import {
     horizontalListSortingStrategy,
     SortableContext,
 } from "@dnd-kit/sortable";
-import {closestCorners, DndContext, type DragEndEvent} from "@dnd-kit/core";
+import {closestCorners, DndContext, type DragEndEvent, PointerSensor, useSensor, useSensors} from "@dnd-kit/core";
+import dayjs from "dayjs";
+import SortableBookmark from "../components/SortableBookmark.tsx";
 
 const {Search} = Input;
 
 type SearchProps = GetProps<typeof Input.Search>;
 
-import dayjs from "dayjs";
-import SortableBookmark from "../components/SortableBookmark.tsx";
+enum OperateType {
+    CREATE,
+    UPDATE
+}
 
 const Bookmark: React.FC = () => {
     const location = useLocation();
@@ -35,17 +39,26 @@ const Bookmark: React.FC = () => {
     const [bookmarks, setBookmarks] = useState<BookmarkDomain[]>();
     const [bookmarkFolder, setBookmarkFolder] = useState<BookmarkDomain[]>();
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [operateType, setOperateType] = useState<('create' | 'update')>('create');
+    const [operateType, setOperateType] = useState<OperateType>(OperateType.CREATE);
     const [form] = Form.useForm();
 
     const [value, setValue] = useState<string>();
     const [currentTime, setCurrentTime] = useState(dayjs());
-    // const [isSearchFocused, setIsSearchFocused] = useState(false);
     const formattedTime = currentTime.format('HH:mm:ss');
     const formattedDate = currentTime.format('YYYY年MM月DD日');
     const searchInputRef = useRef<React.ElementRef<typeof Input>>(null);
 
     const navigate = useNavigate();
+
+    const sensors = useSensors(
+        useSensor(PointerSensor, {
+            // 移动端常用配置：长按 200ms 激活拖拽，防止滚动误触
+            activationConstraint: {
+                delay: 200,
+                tolerance: 5,
+            },
+        })
+    );
 
     const handleDragEnd = async (event: DragEndEvent) => {
         const {active, over} = event;
@@ -123,7 +136,7 @@ const Bookmark: React.FC = () => {
 
     const showModal = (e: React.MouseEvent<HTMLElement>, id: number | undefined) => {
         e.stopPropagation();
-        setOperateType(!!id ? 'update' : 'create');
+        setOperateType(!!id ? OperateType.UPDATE : OperateType.CREATE);
         if (id) {
             Service.bookmarkGet({id}).then(res => {
                 if (200 === res.code) {
@@ -155,7 +168,7 @@ const Bookmark: React.FC = () => {
     }
 
     const handleOk = () => {
-        if (operateType === 'update') {
+        if (operateType === OperateType.UPDATE) {
             Service.bookmarkUpdate({...form.getFieldsValue()})
                 .then(res => {
                     message.open({
@@ -282,8 +295,10 @@ const Bookmark: React.FC = () => {
                     <Flex align="center" justify="space-between" key={'category_item_' + it.id}>
                         <Typography.Text className={styles.groupTitle}>{it.name}</Typography.Text>
                     </Flex>
-                    <Flex gap={16} wrap="wrap" justify='center' align='center' className={styles.list} key={'category_list_' + it.id}>
+                    <Flex gap={16} wrap="wrap" justify='center' align='center' className={styles.list}
+                          key={'category_list_' + it.id}>
                         <DndContext
+                            sensors={sensors}
                             collisionDetection={closestCorners}
                             onDragEnd={handleDragEnd}
                         >
@@ -312,8 +327,8 @@ const Bookmark: React.FC = () => {
             <Modal
                 className={styles.modalContainer}
                 maskClosable={false}
-                title={operateType === 'update' ? '修改书签' : "添加书签"}
-                okText={operateType === 'update' ? '更新' : "添加"}
+                title={operateType === OperateType.UPDATE ? '修改书签' : "添加书签"}
+                okText={operateType === OperateType.CREATE ? '更新' : "添加"}
                 cancelText={'取消'}
                 open={isModalOpen}
                 footer={
@@ -327,12 +342,12 @@ const Bookmark: React.FC = () => {
                         >
                             <Button type={"primary"}
                                     style={{
-                                        display: operateType === 'update' ? 'inline-flex' : 'none',
+                                        display: operateType === OperateType.UPDATE ? 'inline-flex' : 'none',
                                     }} danger>删除</Button>
                         </Popconfirm>
                         <Button onClick={handleCancel}>取消</Button>
                         <Button onClick={handleOk}
-                                type={"primary"}>{operateType === 'update' ? '更新' : "添加"}</Button>
+                                type={"primary"}>{operateType === OperateType.UPDATE ? '更新' : "添加"}</Button>
                     </>
                 }
             >
@@ -340,7 +355,7 @@ const Bookmark: React.FC = () => {
                     form={form}
                     className={styles.modalForm}
                 >
-                    <Form.Item name="id" label="ID" rules={[{required: operateType === 'create'}]}
+                    <Form.Item name="id" label="ID" rules={[{required: operateType === OperateType.CREATE}]}
                                style={{display: 'none'}}
                     >
                         <Input/>

@@ -3,7 +3,7 @@ import React from "react";
 import type {BookmarkDomain} from "../api";
 import {useSortable} from "@dnd-kit/sortable";
 import {Flex, Typography} from "antd";
-import {DragOutlined, EditOutlined} from "@ant-design/icons";
+import {EditOutlined} from "@ant-design/icons";
 import DynamicIcon from "./DynamicIcon.tsx";
 
 interface SortableBookmarkProps {
@@ -12,7 +12,6 @@ interface SortableBookmarkProps {
     classNameContainerDrag: string,
     classNameIcon: string,
     classNameTitle: string,
-    classNameDrag: string,
     classNameEdit: string,
     onClick: (e: React.MouseEvent<HTMLElement, MouseEvent>) => void,
     onEdit: (e: React.MouseEvent<HTMLElement, MouseEvent>) => void
@@ -24,7 +23,6 @@ const SortableBookmark: React.FC<SortableBookmarkProps> = ({
                                                                classNameContainerDrag,
                                                                classNameIcon,
                                                                classNameTitle,
-                                                               classNameDrag,
                                                                classNameEdit,
                                                                onEdit,
                                                                onClick
@@ -47,9 +45,6 @@ const SortableBookmark: React.FC<SortableBookmarkProps> = ({
     const style = {
         transform: CSS.Transform.toString(transform),
         transition,
-        opacity: isDragging ? 0.5 : 1,
-        zIndex: isDragging ? 1000 : 1,
-        boxShadow: isDragging ? '0 4px 16px rgba(0,0,0,0.15)' : '0 1px 2px rgba(0,0,0,0.08)',
     };
 
     return (
@@ -58,13 +53,11 @@ const SortableBookmark: React.FC<SortableBookmarkProps> = ({
               ref={setNodeRef}
               style={style}
               className={isDragging ? classNameContainerDrag : classNameContainer}
+              {...attributes}
+              {...listeners}
         >
-            <DragOutlined className={classNameDrag} style={{cursor: 'grab'}}
-                          {...attributes}
-                          {...listeners}
-            ></DragOutlined>
-            <Flex>
-                <DynamicIcon className={classNameIcon} iconName={item.icon} size={'1rem'}/>
+            <Flex gap={8}>
+                <DynamicIcon className={classNameIcon} iconName={item.icon}/>
                 <Typography.Text className={classNameTitle}>{item.name}</Typography.Text>
             </Flex>
             <EditOutlined className={classNameEdit} onClick={onEdit}> </EditOutlined>
