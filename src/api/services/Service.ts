@@ -2,12 +2,17 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { CreateRequest } from '../models/CreateRequest';
-import type { DeleteRequest } from '../models/DeleteRequest';
+import type { BookmarkCreateRequest } from '../models/BookmarkCreateRequest';
+import type { BookmarkDeleteRequest } from '../models/BookmarkDeleteRequest';
+import type { BookmarkGetRequest } from '../models/BookmarkGetRequest';
+import type { BookmarkListRequest } from '../models/BookmarkListRequest';
+import type { BookmarkUpdateRequest } from '../models/BookmarkUpdateRequest';
 import type { GenericResult } from '../models/GenericResult';
-import type { GetRequest } from '../models/GetRequest';
-import type { ListRequest } from '../models/ListRequest';
-import type { UpdateRequest } from '../models/UpdateRequest';
+import type { MemoCreateRequest } from '../models/MemoCreateRequest';
+import type { MemoDeleteRequest } from '../models/MemoDeleteRequest';
+import type { MemoUpdateRequest } from '../models/MemoUpdateRequest';
+import type { PageableRequest } from '../models/PageableRequest';
+import type { PageableResult } from '../models/PageableResult';
 import type { CancelablePromise } from '../core/CancelablePromise';
 import { OpenAPI } from '../core/OpenAPI';
 import { request as __request } from '../core/request';
@@ -47,55 +52,81 @@ export class Service {
     /**
      * 更新备忘
      * 根据id更新备忘
-     * @param req
+     * @param requestBody
      * @returns GenericResult OK
      * @throws ApiError
      */
     public static memoUpdate(
-        req: UpdateRequest,
+        requestBody: MemoUpdateRequest,
     ): CancelablePromise<GenericResult> {
         return __request(OpenAPI, {
             method: 'POST',
             url: '/memo/update',
-            query: {
-                'req': req,
-            },
+            body: requestBody,
+            mediaType: 'application/json',
+        });
+    }
+    /**
+     * 查询备忘标签
+     * 查询备忘标签
+     * @returns GenericResult OK
+     * @throws ApiError
+     */
+    public static memoTags(): CancelablePromise<GenericResult> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/memo/tags',
+        });
+    }
+    /**
+     * 查询备忘分页
+     * 查询备忘分页
+     * @param requestBody
+     * @returns PageableResult OK
+     * @throws ApiError
+     */
+    public static memoPage(
+        requestBody: PageableRequest,
+    ): CancelablePromise<PageableResult> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/memo/page',
+            body: requestBody,
+            mediaType: 'application/json',
         });
     }
     /**
      * 删除备忘
      * 根据id删除备忘
-     * @param id
+     * @param requestBody
      * @returns GenericResult OK
      * @throws ApiError
      */
     public static memoDelete(
-        id: number,
+        requestBody: MemoDeleteRequest,
     ): CancelablePromise<GenericResult> {
         return __request(OpenAPI, {
             method: 'POST',
-            url: '/memo/delete/{id}',
-            path: {
-                'id': id,
-            },
+            url: '/memo/delete',
+            body: requestBody,
+            mediaType: 'application/json',
         });
     }
     /**
      * 新增备忘
      * 新增备忘
-     * @param req
+     * @param requestBody
      * @returns GenericResult OK
      * @throws ApiError
      */
     public static memoCreate(
-        req: CreateRequest,
+        requestBody: MemoCreateRequest,
     ): CancelablePromise<GenericResult> {
         return __request(OpenAPI, {
             method: 'POST',
             url: '/memo/create',
-            query: {
-                'req': req,
-            },
+            body: requestBody,
+            mediaType: 'application/json',
         });
     }
     /**
@@ -106,7 +137,7 @@ export class Service {
      * @throws ApiError
      */
     public static bookmarkUpdate(
-        requestBody: UpdateRequest,
+        requestBody: BookmarkUpdateRequest,
     ): CancelablePromise<GenericResult> {
         return __request(OpenAPI, {
             method: 'POST',
@@ -145,23 +176,6 @@ export class Service {
         });
     }
     /**
-     * 书签排序&返回树
-     * 书签排序&返回树
-     * @param requestBody
-     * @returns GenericResult OK
-     * @throws ApiError
-     */
-    public static bookmarkSortAndTree(
-        requestBody: Array<number>,
-    ): CancelablePromise<GenericResult> {
-        return __request(OpenAPI, {
-            method: 'POST',
-            url: '/bookmark/sortAndTree',
-            body: requestBody,
-            mediaType: 'application/json',
-        });
-    }
-    /**
      * 我收藏的书签
      * 我收藏的书签
      * @returns GenericResult OK
@@ -181,7 +195,7 @@ export class Service {
      * @throws ApiError
      */
     public static bookmarkList(
-        requestBody: ListRequest,
+        requestBody: BookmarkListRequest,
     ): CancelablePromise<GenericResult> {
         return __request(OpenAPI, {
             method: 'POST',
@@ -198,7 +212,7 @@ export class Service {
      * @throws ApiError
      */
     public static bookmarkGet(
-        requestBody: GetRequest,
+        requestBody: BookmarkGetRequest,
     ): CancelablePromise<GenericResult> {
         return __request(OpenAPI, {
             method: 'POST',
@@ -215,7 +229,7 @@ export class Service {
      * @throws ApiError
      */
     public static bookmarkDelete(
-        requestBody: DeleteRequest,
+        requestBody: BookmarkDeleteRequest,
     ): CancelablePromise<GenericResult> {
         return __request(OpenAPI, {
             method: 'POST',
@@ -232,7 +246,7 @@ export class Service {
      * @throws ApiError
      */
     public static bookmarkCreate(
-        requestBody: CreateRequest,
+        requestBody: BookmarkCreateRequest,
     ): CancelablePromise<GenericResult> {
         return __request(OpenAPI, {
             method: 'POST',

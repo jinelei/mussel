@@ -2,7 +2,13 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export type DeleteRequest = {
+/**
+ * 书签查询ID请求
+ */
+export type BookmarkGetRequest = {
+    /**
+     * 书签ID
+     */
     id: number;
 };
 

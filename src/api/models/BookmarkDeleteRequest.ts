@@ -2,12 +2,13 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export type UpdateRequest = {
+/**
+ * 书签删除请求
+ */
+export type BookmarkDeleteRequest = {
+    /**
+     * 书签ID
+     */
     id: number;
-    title: string;
-    subTitle: string;
-    content: string;
-    orderNumber: number;
-    tagIds?: Array<number>;
 };
 

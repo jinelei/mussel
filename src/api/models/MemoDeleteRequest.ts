@@ -2,7 +2,13 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export type GetRequest = {
+/**
+ * 备忘删除请求
+ */
+export type MemoDeleteRequest = {
+    /**
+     * 备忘ID
+     */
     id: number;
 };
 

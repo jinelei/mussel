@@ -116,16 +116,16 @@
         "summary": "更新备忘",
         "description": "根据id更新备忘",
         "operationId": "memoUpdate",
-        "parameters": [
-          {
-            "name": "req",
-            "in": "query",
-            "required": true,
-            "schema": {
-              "$ref": "#/components/schemas/UpdateRequest"
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MemoUpdateRequest"
+              }
             }
-          }
-        ],
+          },
+          "required": true
+        },
         "responses": {
           "200": {
             "description": "OK",
@@ -140,7 +140,61 @@
         }
       }
     },
-    "/memo/delete/{id}": {
+    "/memo/tags": {
+      "post": {
+        "tags": [
+          "备忘管理"
+        ],
+        "summary": "查询备忘标签",
+        "description": "查询备忘标签",
+        "operationId": "memoTags",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/GenericResult"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/memo/page": {
+      "post": {
+        "tags": [
+          "备忘管理"
+        ],
+        "summary": "查询备忘分页",
+        "description": "查询备忘分页",
+        "operationId": "memoPage",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PageableRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/PageableResult"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/memo/delete": {
       "post": {
         "tags": [
           "备忘管理"
@@ -148,17 +202,16 @@
         "summary": "删除备忘",
         "description": "根据id删除备忘",
         "operationId": "memoDelete",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int64"
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MemoDeleteRequest"
+              }
             }
-          }
-        ],
+          },
+          "required": true
+        },
         "responses": {
           "200": {
             "description": "OK",
@@ -181,16 +234,16 @@
         "summary": "新增备忘",
         "description": "新增备忘",
         "operationId": "memoCreate",
-        "parameters": [
-          {
-            "name": "req",
-            "in": "query",
-            "required": true,
-            "schema": {
-              "$ref": "#/components/schemas/CreateRequest"
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MemoCreateRequest"
+              }
             }
-          }
-        ],
+          },
+          "required": true
+        },
         "responses": {
           "200": {
             "description": "OK",
@@ -217,7 +270,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/UpdateRequest"
+                "$ref": "#/components/schemas/BookmarkUpdateRequest"
               }
             }
           },
@@ -295,42 +348,6 @@
         }
       }
     },
-    "/bookmark/sortAndTree": {
-      "post": {
-        "tags": [
-          "书签管理"
-        ],
-        "summary": "书签排序&返回树",
-        "description": "书签排序&返回树",
-        "operationId": "bookmarkSortAndTree",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "array",
-                "items": {
-                  "type": "integer",
-                  "format": "int64"
-                }
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/GenericResult"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/bookmark/myFavoriteBookmarks": {
       "post": {
         "tags": [
@@ -365,7 +382,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/ListRequest"
+                "$ref": "#/components/schemas/BookmarkListRequest"
               }
             }
           },
@@ -397,7 +414,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/GetRequest"
+                "$ref": "#/components/schemas/BookmarkGetRequest"
               }
             }
           },
@@ -429,7 +446,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/DeleteRequest"
+                "$ref": "#/components/schemas/BookmarkDeleteRequest"
               }
             }
           },
@@ -461,7 +478,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/CreateRequest"
+                "$ref": "#/components/schemas/BookmarkCreateRequest"
               }
             }
           },
@@ -502,31 +519,38 @@
           }
         }
       },
-      "UpdateRequest": {
+      "MemoUpdateRequest": {
         "type": "object",
+        "description": "备忘更新请求",
         "properties": {
           "id": {
             "type": "integer",
-            "format": "int64"
+            "format": "int64",
+            "description": "备忘ID"
           },
           "title": {
             "type": "string",
+            "description": "备忘标题",
             "minLength": 1
           },
           "subTitle": {
             "type": "string",
+            "description": "副备忘标题",
             "minLength": 1
           },
           "content": {
             "type": "string",
+            "description": "备忘内容",
             "minLength": 1
           },
           "orderNumber": {
             "type": "integer",
-            "format": "int32"
+            "format": "int32",
+            "description": "书签排序"
           },
           "tagIds": {
             "type": "array",
+            "description": "备忘关联标签列表",
             "items": {
               "type": "integer",
               "format": "int64"
@@ -541,52 +565,95 @@
           "title"
         ]
       },
-      "CreateRequest": {
+      "MemoPageRequest": {
         "type": "object",
+        "description": "备忘分页请求",
+        "properties": {
+          "tagId": {
+            "type": "integer",
+            "format": "int64",
+            "description": "备忘关联标签"
+          }
+        }
+      },
+      "PageableRequest": {
+        "type": "object",
+        "description": "分页请求对象",
+        "properties": {
+          "pageNo": {
+            "type": "integer",
+            "format": "int32",
+            "description": "分页页码"
+          },
+          "pageSize": {
+            "type": "integer",
+            "format": "int32",
+            "description": "分页大小"
+          },
+          "query": {
+            "$ref": "#/components/schemas/MemoPageRequest",
+            "description": "查询条件"
+          }
+        }
+      },
+      "MemoResponse": {
+        "type": "object",
+        "description": "备忘详情响应",
         "properties": {
           "title": {
-            "type": "string",
-            "minLength": 1
+            "type": "string"
           },
           "subTitle": {
             "type": "string",
-            "minLength": 1
+            "description": "副备忘标题"
           },
           "content": {
             "type": "string",
-            "minLength": 1
+            "description": "备忘内容"
           },
-          "orderNumber": {
-            "type": "integer",
-            "format": "int32"
+          "tags": {
+            "type": "array",
+            "description": "备忘关联标签对象列表",
+            "items": {
+              "$ref": "#/components/schemas/MemoTagDomain"
+            }
           },
           "tagIds": {
             "type": "array",
+            "description": "备忘关联标签列表",
             "items": {
               "type": "integer",
               "format": "int64"
             }
+          },
+          "orderNumber": {
+            "type": "integer",
+            "format": "int32",
+            "description": "书签排序"
+          },
+          "createTime": {
+            "type": "string",
+            "format": "date-time",
+            "description": "创建时间"
+          },
+          "updateTime": {
+            "type": "string",
+            "format": "date-time",
+            "description": "更新时间"
           }
         },
         "required": [
-          "content",
-          "subTitle",
           "title"
         ]
       },
-      "BookmarkDomain": {
+      "MemoTagDomain": {
         "type": "object",
-        "description": "书签领域对象",
+        "description": "备忘标签领域对象",
         "properties": {
-          "id": {
+          "ID": {
             "type": "integer",
             "format": "int64",
             "description": "主键ID"
-          },
-          "parentId": {
-            "type": "integer",
-            "format": "int64",
-            "description": "父级ID"
           },
           "createTime": {
             "type": "string",
@@ -603,6 +670,161 @@
             "format": "int32",
             "description": "排序值"
           },
+          "title": {
+            "type": "string",
+            "description": "备忘标签标题"
+          },
+          "icon": {
+            "type": "string",
+            "description": "备忘标签图标"
+          }
+        }
+      },
+      "PageableResult": {
+        "type": "object",
+        "description": "分页响应对象",
+        "properties": {
+          "code": {
+            "type": "integer",
+            "format": "int32",
+            "description": "错误代码"
+          },
+          "message": {
+            "type": "string",
+            "description": "错误信息"
+          },
+          "pageNo": {
+            "type": "integer",
+            "format": "int32",
+            "description": "分页页码"
+          },
+          "pageSize": {
+            "type": "integer",
+            "format": "int32",
+            "description": "分页大小"
+          },
+          "total": {
+            "type": "integer",
+            "format": "int64",
+            "description": "总计"
+          },
+          "data": {
+            "type": "array",
+            "description": "响应数据",
+            "items": {
+              "$ref": "#/components/schemas/MemoResponse"
+            }
+          }
+        }
+      },
+      "MemoDeleteRequest": {
+        "type": "object",
+        "description": "备忘删除请求",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64",
+            "description": "备忘ID"
+          }
+        },
+        "required": [
+          "id"
+        ]
+      },
+      "MemoCreateRequest": {
+        "type": "object",
+        "description": "备忘创建请求",
+        "properties": {
+          "title": {
+            "type": "string",
+            "description": "备忘标题",
+            "minLength": 1
+          },
+          "subTitle": {
+            "type": "string",
+            "description": "副备忘标题",
+            "minLength": 1
+          },
+          "content": {
+            "type": "string",
+            "description": "备忘内容",
+            "minLength": 1
+          },
+          "orderNumber": {
+            "type": "integer",
+            "format": "int32",
+            "description": "书签排序"
+          },
+          "tagIds": {
+            "type": "array",
+            "description": "备忘关联标签列表",
+            "items": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        },
+        "required": [
+          "content",
+          "subTitle",
+          "title"
+        ]
+      },
+      "BookmarkUpdateRequest": {
+        "type": "object",
+        "description": "书签更新请求",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "书签名称",
+            "minLength": 1
+          },
+          "type": {
+            "type": "string",
+            "description": "书签类型",
+            "enum": [
+              "FOLDER",
+              "ITEM"
+            ]
+          },
+          "url": {
+            "type": "string",
+            "description": "书签地址",
+            "minLength": 1
+          },
+          "icon": {
+            "type": "string",
+            "description": "书签图标",
+            "minLength": 1
+          },
+          "color": {
+            "type": "string",
+            "description": "书签颜色",
+            "minLength": 1
+          },
+          "parentId": {
+            "type": "integer",
+            "format": "int64",
+            "description": "父级ID"
+          }
+        },
+        "required": [
+          "color",
+          "icon",
+          "name",
+          "type",
+          "url"
+        ]
+      },
+      "BookmarkListRequest": {
+        "type": "object",
+        "description": "书签列表请求",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64",
+            "description": "书签ID"
+          },
           "name": {
             "type": "string",
             "description": "书签名称"
@@ -618,32 +840,45 @@
           "url": {
             "type": "string",
             "description": "书签地址"
-          },
-          "icon": {
-            "type": "string",
-            "description": "书签图标"
-          },
-          "color": {
-            "type": "string",
-            "description": "书签颜色"
-          },
-          "children": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/BookmarkDomain"
-            }
           }
         }
       },
-      "ListRequest": {
+      "BookmarkGetRequest": {
         "type": "object",
+        "description": "书签查询ID请求",
         "properties": {
           "id": {
             "type": "integer",
-            "format": "int64"
-          },
+            "format": "int64",
+            "description": "书签ID"
+          }
+        },
+        "required": [
+          "id"
+        ]
+      },
+      "BookmarkDeleteRequest": {
+        "type": "object",
+        "description": "书签删除请求",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64",
+            "description": "书签ID"
+          }
+        },
+        "required": [
+          "id"
+        ]
+      },
+      "BookmarkCreateRequest": {
+        "type": "object",
+        "description": "书签创建请求",
+        "properties": {
           "name": {
-            "type": "string"
+            "type": "string",
+            "description": "书签名称",
+            "minLength": 1
           },
           "type": {
             "type": "string",
@@ -654,32 +889,32 @@
             ]
           },
           "url": {
-            "type": "string"
-          }
-        }
-      },
-      "GetRequest": {
-        "type": "object",
-        "properties": {
-          "id": {
+            "type": "string",
+            "description": "书签地址",
+            "minLength": 1
+          },
+          "icon": {
+            "type": "string",
+            "description": "书签图标",
+            "minLength": 1
+          },
+          "color": {
+            "type": "string",
+            "description": "书签颜色",
+            "minLength": 1
+          },
+          "parentId": {
             "type": "integer",
-            "format": "int64"
+            "format": "int64",
+            "description": "父级ID"
           }
         },
         "required": [
-          "id"
-        ]
-      },
-      "DeleteRequest": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "integer",
-            "format": "int64"
-          }
-        },
-        "required": [
-          "id"
+          "color",
+          "icon",
+          "name",
+          "type",
+          "url"
         ]
       }
     }
