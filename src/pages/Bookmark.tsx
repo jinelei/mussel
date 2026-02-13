@@ -23,15 +23,11 @@ import {
 import {closestCorners, DndContext, type DragEndEvent, PointerSensor, useSensor, useSensors} from "@dnd-kit/core";
 import dayjs from "dayjs";
 import SortableBookmark from "../components/SortableBookmark.tsx";
+import {OperateType} from "../enums/OperateType.ts";
 
 const {Search} = Input;
 
 type SearchProps = GetProps<typeof Input.Search>;
-
-enum OperateType {
-    CREATE,
-    UPDATE
-}
 
 const Bookmark: React.FC = () => {
     const location = useLocation();
@@ -315,7 +311,6 @@ const Bookmark: React.FC = () => {
                                         classNameContainerDrag={styles.dragContainerDrag}
                                         classNameIcon={styles.dragIcon}
                                         classNameTitle={styles.dragTitle}
-                                        classNameDrag={styles.dragDrag}
                                         classNameEdit={styles.dragEdit}
                                     />
                                 ))}
