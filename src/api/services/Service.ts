@@ -6,13 +6,16 @@ import type { BookmarkCreateRequest } from '../models/BookmarkCreateRequest';
 import type { BookmarkDeleteRequest } from '../models/BookmarkDeleteRequest';
 import type { BookmarkGetRequest } from '../models/BookmarkGetRequest';
 import type { BookmarkListRequest } from '../models/BookmarkListRequest';
+import type { BookmarkListResult } from '../models/BookmarkListResult';
+import type { BookmarkSingleResult } from '../models/BookmarkSingleResult';
 import type { BookmarkUpdateRequest } from '../models/BookmarkUpdateRequest';
 import type { GenericResult } from '../models/GenericResult';
 import type { MemoCreateRequest } from '../models/MemoCreateRequest';
 import type { MemoDeleteRequest } from '../models/MemoDeleteRequest';
 import type { MemoUpdateRequest } from '../models/MemoUpdateRequest';
 import type { PageableRequest } from '../models/PageableRequest';
-import type { PageableResult } from '../models/PageableResult';
+import type { StringResult } from '../models/StringResult';
+import type { UserInfoSingleResult } from '../models/UserInfoSingleResult';
 import type { CancelablePromise } from '../core/CancelablePromise';
 import { OpenAPI } from '../core/OpenAPI';
 import { request as __request } from '../core/request';
@@ -40,10 +43,10 @@ export class Service {
     /**
      * 用户信息
      * 获取当前登录用户相关信息
-     * @returns GenericResult OK
+     * @returns UserInfoSingleResult OK
      * @throws ApiError
      */
-    public static getUserInfo(): CancelablePromise<GenericResult> {
+    public static getUserInfo(): CancelablePromise<UserInfoSingleResult> {
         return __request(OpenAPI, {
             method: 'POST',
             url: '/user/info',
@@ -53,7 +56,7 @@ export class Service {
      * 更新备忘
      * 根据id更新备忘
      * @param requestBody
-     * @returns GenericResult OK
+     * @returns GenericResult 更新成功
      * @throws ApiError
      */
     public static memoUpdate(
@@ -69,7 +72,7 @@ export class Service {
     /**
      * 查询备忘标签
      * 查询备忘标签
-     * @returns GenericResult OK
+     * @returns GenericResult 查询成功
      * @throws ApiError
      */
     public static memoTags(): CancelablePromise<GenericResult> {
@@ -82,12 +85,12 @@ export class Service {
      * 查询备忘分页
      * 查询备忘分页
      * @param requestBody
-     * @returns PageableResult OK
+     * @returns GenericResult 查询成功
      * @throws ApiError
      */
     public static memoPage(
         requestBody: PageableRequest,
-    ): CancelablePromise<PageableResult> {
+    ): CancelablePromise<GenericResult> {
         return __request(OpenAPI, {
             method: 'POST',
             url: '/memo/page',
@@ -99,7 +102,7 @@ export class Service {
      * 删除备忘
      * 根据id删除备忘
      * @param requestBody
-     * @returns GenericResult OK
+     * @returns GenericResult 删除成功
      * @throws ApiError
      */
     public static memoDelete(
@@ -116,7 +119,7 @@ export class Service {
      * 新增备忘
      * 新增备忘
      * @param requestBody
-     * @returns GenericResult OK
+     * @returns GenericResult 新增成功
      * @throws ApiError
      */
     public static memoCreate(
@@ -133,12 +136,12 @@ export class Service {
      * 更新书签
      * 根据id更新书签
      * @param requestBody
-     * @returns GenericResult OK
+     * @returns StringResult OK
      * @throws ApiError
      */
     public static bookmarkUpdate(
         requestBody: BookmarkUpdateRequest,
-    ): CancelablePromise<GenericResult> {
+    ): CancelablePromise<StringResult> {
         return __request(OpenAPI, {
             method: 'POST',
             url: '/bookmark/update',
@@ -149,10 +152,10 @@ export class Service {
     /**
      * 查询书签树
      * 查询书签树
-     * @returns GenericResult OK
+     * @returns BookmarkListResult OK
      * @throws ApiError
      */
-    public static bookmarkTree(): CancelablePromise<GenericResult> {
+    public static bookmarkTree(): CancelablePromise<BookmarkListResult> {
         return __request(OpenAPI, {
             method: 'POST',
             url: '/bookmark/tree',
@@ -162,12 +165,12 @@ export class Service {
      * 书签排序
      * 书签排序
      * @param requestBody
-     * @returns GenericResult OK
+     * @returns StringResult OK
      * @throws ApiError
      */
     public static bookmarkSort(
         requestBody: Array<number>,
-    ): CancelablePromise<GenericResult> {
+    ): CancelablePromise<StringResult> {
         return __request(OpenAPI, {
             method: 'POST',
             url: '/bookmark/sort',
@@ -178,10 +181,10 @@ export class Service {
     /**
      * 我收藏的书签
      * 我收藏的书签
-     * @returns GenericResult OK
+     * @returns BookmarkListResult OK
      * @throws ApiError
      */
-    public static myFavoriteBookmarks(): CancelablePromise<GenericResult> {
+    public static myFavoriteBookmarks(): CancelablePromise<BookmarkListResult> {
         return __request(OpenAPI, {
             method: 'POST',
             url: '/bookmark/myFavoriteBookmarks',
@@ -191,12 +194,12 @@ export class Service {
      * 查询书签列表
      * 查询书签列表
      * @param requestBody
-     * @returns GenericResult OK
+     * @returns BookmarkListResult OK
      * @throws ApiError
      */
     public static bookmarkList(
         requestBody: BookmarkListRequest,
-    ): CancelablePromise<GenericResult> {
+    ): CancelablePromise<BookmarkListResult> {
         return __request(OpenAPI, {
             method: 'POST',
             url: '/bookmark/list',
@@ -208,12 +211,12 @@ export class Service {
      * 查询书签列表
      * 查询书签列表
      * @param requestBody
-     * @returns GenericResult OK
+     * @returns BookmarkSingleResult OK
      * @throws ApiError
      */
     public static bookmarkGet(
         requestBody: BookmarkGetRequest,
-    ): CancelablePromise<GenericResult> {
+    ): CancelablePromise<BookmarkSingleResult> {
         return __request(OpenAPI, {
             method: 'POST',
             url: '/bookmark/get',
@@ -225,12 +228,12 @@ export class Service {
      * 删除书签
      * 根据id删除书签
      * @param requestBody
-     * @returns GenericResult OK
+     * @returns StringResult OK
      * @throws ApiError
      */
     public static bookmarkDelete(
         requestBody: BookmarkDeleteRequest,
-    ): CancelablePromise<GenericResult> {
+    ): CancelablePromise<StringResult> {
         return __request(OpenAPI, {
             method: 'POST',
             url: '/bookmark/delete',
@@ -242,12 +245,12 @@ export class Service {
      * 新增书签
      * 新增书签
      * @param requestBody
-     * @returns GenericResult OK
+     * @returns StringResult OK
      * @throws ApiError
      */
     public static bookmarkCreate(
         requestBody: BookmarkCreateRequest,
-    ): CancelablePromise<GenericResult> {
+    ): CancelablePromise<StringResult> {
         return __request(OpenAPI, {
             method: 'POST',
             url: '/bookmark/create',

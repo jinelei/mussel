@@ -1,5 +1,5 @@
 import React, {useEffect, useMemo, useRef, useState} from "react";
-import {BookmarkDomain, Service} from "../api";
+import {BookmarkResponse, Service} from "../api";
 import {useLocation, useNavigate} from "react-router-dom";
 import {
     Button,
@@ -32,8 +32,8 @@ type SearchProps = GetProps<typeof Input.Search>;
 const Bookmark: React.FC = () => {
     const location = useLocation();
     const dispatch = useDispatch();
-    const [bookmarks, setBookmarks] = useState<BookmarkDomain[]>();
-    const [bookmarkFolder, setBookmarkFolder] = useState<BookmarkDomain[]>();
+    const [bookmarks, setBookmarks] = useState<BookmarkResponse[]>();
+    const [bookmarkFolder, setBookmarkFolder] = useState<BookmarkResponse[]>();
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [operateType, setOperateType] = useState<OperateType>(OperateType.CREATE);
     const [form] = Form.useForm();
@@ -108,7 +108,7 @@ const Bookmark: React.FC = () => {
     }, [bookmarkFolder]);
 
     const fetchFolder = () => {
-        Service.bookmarkList({type: BookmarkDomain.type.FOLDER})
+        Service.bookmarkList({type: BookmarkResponse.type.FOLDER})
             .then(res => {
                 if (200 === res.code) {
                     setBookmarkFolder(res.data);
@@ -237,7 +237,7 @@ const Bookmark: React.FC = () => {
         }
     };
 
-    const onNavItemClick = (_: React.MouseEvent<HTMLElement>, item: BookmarkDomain) => {
+    const onNavItemClick = (_: React.MouseEvent<HTMLElement>, item: BookmarkResponse) => {
         if (!item.url) {
             message.error("敬请期待").then(_ => {
             });
@@ -350,7 +350,7 @@ const Bookmark: React.FC = () => {
                     form={form}
                     className={styles.modalForm}
                 >
-                    <Form.Item name="id" label="ID" rules={[{required: operateType === OperateType.CREATE}]}
+                    <Form.Item name="id" label="id" rules={[{required: operateType === OperateType.CREATE}]}
                                style={{display: 'none'}}
                     >
                         <Input/>

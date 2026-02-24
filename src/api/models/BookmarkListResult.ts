@@ -2,11 +2,11 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { MemoResponse } from './MemoResponse';
+import type { BookmarkResponse } from './BookmarkResponse';
 /**
- * 分页响应对象
+ * 书签列表返回结果
  */
-export type PageableResult = {
+export type BookmarkListResult = {
     /**
      * 错误代码
      */
@@ -16,20 +16,12 @@ export type PageableResult = {
      */
     message?: string;
     /**
-     * 分页页码
-     */
-    pageNo?: number;
-    /**
-     * 分页大小
-     */
-    pageSize?: number;
-    /**
      * 总计
      */
     total?: number;
     /**
      * 响应数据
      */
-    data?: Array<MemoResponse>;
+    data?: Array<BookmarkResponse>;
 };
 
