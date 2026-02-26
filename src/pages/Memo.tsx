@@ -60,6 +60,7 @@ flowchart TD
 
 const Memo: React.FC = () => {
     // const [tags, setTags] = useState([]);
+    const [memos, setMemos] = useState([]);
     const [selectedDate, setSelectedDate] = useState<Date>(() => {
         const now = new Date();
         return new Date(now.getFullYear(), now.getMonth(), now.getDate());
@@ -84,7 +85,20 @@ const Memo: React.FC = () => {
             })
     }
 
+    const fetchMemos = () => {
+        Service.memoPage({})
+            .then(res => {
+                if (200 === res.code) {
+                    console.log('memos', res.data);
+                    setMemos(res.data);
+                } else {
+                    message.error({content: res.message});
+                }
+            })
+    }
+
     useEffect(() => {
+        fetchMemos();
         fetchMemoTags();
     }, [location.pathname]);
 
