@@ -1,13 +1,13 @@
 import {CSS} from '@dnd-kit/utilities';
 import React from "react";
-import type {BookmarkDomain} from "../api";
+import type {BookmarkResponse} from "../api";
 import {useSortable} from "@dnd-kit/sortable";
 import {Flex, Typography} from "antd";
 import {EditOutlined} from "@ant-design/icons";
 import DynamicIcon from "./DynamicIcon.tsx";
 
 interface SortableBookmarkProps {
-    item: BookmarkDomain,
+    item: BookmarkResponse,
     classNameContainer: string,
     classNameContainerDrag: string,
     classNameIcon: string,

@@ -40,9 +40,9 @@ const Login: React.FC = () => {
                     dispatch(clearToken());
                     message.error('获取用户信息失败');
                 } else {
-                    dispatch(setUserName(userInfo.data.username));
-                    dispatch(setRoles(userInfo.data.roles));
-                    dispatch(setPermissions(userInfo.data.permissions));
+                    dispatch(setUserName(userInfo.data?.username));
+                    dispatch(setRoles(userInfo.data?.roles));
+                    dispatch(setPermissions(userInfo.data?.permissions));
                     message.success('登录成功！');
                     navigate('/', {replace: true});
                 }
