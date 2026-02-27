@@ -150,7 +150,7 @@ const Bookmark: React.FC = () => {
     };
 
     const handleDelete = () => {
-        Service.bookmarkDelete({...form.getFieldsValue()})
+        Service.bookmarkDelete({id: form.getFieldValue("id")})
             .then(res => {
                 message.open({
                     content: res.code === 200 ? '删除成功' : '删除失败',

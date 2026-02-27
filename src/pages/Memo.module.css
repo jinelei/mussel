@@ -5,6 +5,7 @@
 
 .leftContainer {
     width: 20rem;
+    padding: 1rem;
 }
 
 .rightContainer {
@@ -34,14 +35,18 @@
 
 .calendar {
     margin-top: 1rem;
-    padding: 1rem;
     background-color: white;
     color: black;
     text-align: center;
 
+
     & button {
-        background-color: white;
-        text-align: center;
+        /*border: red 1px solid;*/
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 4px;
+        background-color: #fdfdfd;
     }
 }
 
