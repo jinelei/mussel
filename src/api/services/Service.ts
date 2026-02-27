@@ -102,8 +102,8 @@ export class Service {
         });
     }
     /**
-     * 查询备忘列表
-     * 查询备忘列表
+     * 查询备忘详情
+     * 查询备忘详情
      * @param requestBody
      * @returns MemoSingleResult OK
      * @throws ApiError
@@ -196,18 +196,6 @@ export class Service {
             url: '/bookmark/sort',
             body: requestBody,
             mediaType: 'application/json',
-        });
-    }
-    /**
-     * 我收藏的书签
-     * 我收藏的书签
-     * @returns BookmarkListResult OK
-     * @throws ApiError
-     */
-    public static myFavoriteBookmarks(): CancelablePromise<BookmarkListResult> {
-        return __request(OpenAPI, {
-            method: 'POST',
-            url: '/bookmark/myFavoriteBookmarks',
         });
     }
     /**

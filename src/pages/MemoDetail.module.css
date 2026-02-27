@@ -4,6 +4,33 @@
     padding: 1rem;
 }
 
+.title {
+    font-size: 2rem;
+    font-weight: bolder;
+}
+
+.subTitle {
+    font-size: 1.1rem;
+    color: gray;
+}
+
+.time {
+    font-size: 0.8rem;
+    color: gray;
+}
+
+.tag {
+    border: #e0e0e0 1px solid;
+    background-color: #f0f0f0;
+    padding: 2px 5px;
+    border-radius: 5px;
+    font-size: 0.8rem;
+
+    &:before {
+        content: '#';
+    }
+}
+
 @media (max-width: 768px) {
 }
 

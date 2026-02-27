@@ -5,11 +5,12 @@
 
 .leftContainer {
     width: 20rem;
-    padding: 1rem;
+    /*padding: 1rem;*/
 }
 
 .rightContainer {
     flex-grow: 1;
+    /*padding: 1rem;*/
 }
 
 .tagContainer {
@@ -18,9 +19,8 @@
 }
 
 .tag {
-    padding: 5px 10px;
-    border-radius: 5px;
-    color: black;
+    margin-right: 5px;
+    color: gray;
     font-size: 0.8rem;
 
     &:before {
@@ -29,8 +29,7 @@
 }
 
 .tagActive {
-    background-color: lightgray;
-    color: white;
+    color: darkred;
 }
 
 .calendar {
@@ -51,22 +50,21 @@
 }
 
 .memoContainer {
-    width: 100%;
     padding: 1rem;
     margin: 5px 10px;
     border-radius: 5px;
-    background-color: rgba(211, 211, 211, 0.47);
+    background-color: rgba(211, 211, 211, 0.2);
 }
 
 .memoTitle {
-    font-size: 1rem;
+    font-size: 1.0rem;
     color: black;
 }
 
 .memoSubTitle {
     font-size: 0.8rem;
     color: gray;
-    margin-left: 5px;
+    margin-left: 1rem;
 }
 
 .memoTime {

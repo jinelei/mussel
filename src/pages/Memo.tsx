@@ -80,7 +80,7 @@ const Memo: React.FC = () => {
 
     // @ts-ignore
     return (
-        <Flex gap={16} className={styles.container}>
+        <Flex className={styles.container}>
             <Flex gap={8} vertical align='center' justify='flex-start' className={styles.leftContainer}>
                 <Input.Search></Input.Search>
                 <Calendar
@@ -105,6 +105,11 @@ const Memo: React.FC = () => {
                         <Flex align="center">
                             <Typography.Text className={styles.memoTitle}>{it.title}</Typography.Text>
                             <Typography.Text className={styles.memoSubTitle}>{it.subTitle}</Typography.Text>
+                        </Flex>
+                        <Flex wrap={true}>
+                            {it.tags?.map(iit => {
+                                return <Typography.Text className={styles.tag}>{iit.title}</Typography.Text>
+                            })}
                         </Flex>
                         <Flex>
                             <Typography.Text

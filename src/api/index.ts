@@ -22,7 +22,6 @@ export type { MemoPageRequest } from './models/MemoPageRequest';
 export type { MemoPageResult } from './models/MemoPageResult';
 export type { MemoResponse } from './models/MemoResponse';
 export type { MemoSingleResult } from './models/MemoSingleResult';
-export type { MemoTagDomain } from './models/MemoTagDomain';
 export type { MemoTagListResult } from './models/MemoTagListResult';
 export type { MemoTagResponse } from './models/MemoTagResponse';
 export type { MemoUpdateRequest } from './models/MemoUpdateRequest';

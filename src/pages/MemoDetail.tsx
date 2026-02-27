@@ -9,7 +9,7 @@ import 'highlight.js/styles/github-dark.css';
 import 'katex/dist/katex.min.css';
 import 'dayjs/locale/zh-cn';
 import styles from './MemoDetail.module.css';
-import {Flex, message} from "antd";
+import {Flex, message, Typography} from "antd";
 import dayjs from "dayjs";
 import {type MemoResponse, Service} from "../api";
 import {useParams} from "react-router-dom";
@@ -41,6 +41,15 @@ const MemoDetail: React.FC = () => {
             <Flex gap={8} vertical align='center' justify='flex-start' className={styles.leftContainer}>
             </Flex>
             <Flex gap={8} vertical flex={1} className={styles.rightContainer}>
+                <Typography.Text className={styles.title}>{memo?.title}</Typography.Text>
+                <Typography.Text className={styles.subTitle}>{memo?.subTitle}</Typography.Text>
+                <Typography.Text
+                    className={styles.time}>{memo?.updateTime ? dayjs(memo?.updateTime).format("YYYY-MM-DD HH:mm:ss") : ''}</Typography.Text>
+                <Flex gap={8}>
+                    {memo?.tags?.map(it => {
+                        return <Typography.Text className={styles.tag}> {it.title}</Typography.Text>
+                    })}
+                </Flex>
                 <ReactMarkdown
                     remarkPlugins={[
                         remarkGfm,

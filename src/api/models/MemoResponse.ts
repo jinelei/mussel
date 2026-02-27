@@ -2,7 +2,7 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { MemoTagDomain } from './MemoTagDomain';
+import type { MemoTagResponse } from './MemoTagResponse';
 /**
  * 备忘响应对象
  */
@@ -38,10 +38,6 @@ export type MemoResponse = {
     /**
      * 备忘关联标签对象列表
      */
-    tags?: Array<MemoTagDomain>;
-    /**
-     * 备忘关联标签列表
-     */
-    tagIds?: Array<number>;
+    tags?: Array<MemoTagResponse>;
 };
 

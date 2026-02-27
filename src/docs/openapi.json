@@ -199,8 +199,8 @@
         "tags": [
           "备忘管理"
         ],
-        "summary": "查询备忘列表",
-        "description": "查询备忘列表",
+        "summary": "查询备忘详情",
+        "description": "查询备忘详情",
         "operationId": "memoGet",
         "requestBody": {
           "content": {
@@ -373,28 +373,6 @@
               "*/*": {
                 "schema": {
                   "$ref": "#/components/schemas/StringResult"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/bookmark/myFavoriteBookmarks": {
-      "post": {
-        "tags": [
-          "书签管理"
-        ],
-        "summary": "我收藏的书签",
-        "description": "我收藏的书签",
-        "operationId": "myFavoriteBookmarks",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/BookmarkListResult"
                 }
               }
             }
@@ -802,50 +780,8 @@
             "type": "array",
             "description": "备忘关联标签对象列表",
             "items": {
-              "$ref": "#/components/schemas/MemoTagDomain"
+              "$ref": "#/components/schemas/MemoTagResponse"
             }
-          },
-          "tagIds": {
-            "type": "array",
-            "description": "备忘关联标签列表",
-            "items": {
-              "type": "integer",
-              "format": "int64"
-            }
-          }
-        }
-      },
-      "MemoTagDomain": {
-        "type": "object",
-        "description": "备忘标签领域对象",
-        "properties": {
-          "id": {
-            "type": "integer",
-            "format": "int64",
-            "description": "主键ID"
-          },
-          "createTime": {
-            "type": "string",
-            "format": "date-time",
-            "description": "创建时间"
-          },
-          "updateTime": {
-            "type": "string",
-            "format": "date-time",
-            "description": "更新时间"
-          },
-          "orderNumber": {
-            "type": "integer",
-            "format": "int32",
-            "description": "排序值"
-          },
-          "title": {
-            "type": "string",
-            "description": "备忘标签标题"
-          },
-          "icon": {
-            "type": "string",
-            "description": "备忘标签图标"
           }
         }
       },
