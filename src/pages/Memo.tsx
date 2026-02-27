@@ -1,15 +1,9 @@
 import React, {useEffect, useState} from 'react';
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
-import remarkMath from 'remark-math';
-import rehypeKatex from 'rehype-katex';
-import rehypeHighlight from 'rehype-highlight';
-import rehypeMermaidjs from 'rehype-mermaidjs';
 import 'highlight.js/styles/github-dark.css';
 import 'katex/dist/katex.min.css';
 import 'dayjs/locale/zh-cn';
 import styles from './Memo.module.css';
-import {Flex, Input, message, Typography} from "antd";
+import {Divider, Flex, Input, message, Typography} from "antd";
 import {Calendar} from "react-calendar";
 import dayjs from "dayjs";
 import {type MemoResponse, type MemoTagResponse, Service} from "../api";
@@ -20,44 +14,6 @@ type ValuePiece = Date | null;
 type Value = ValuePiece | [ValuePiece, ValuePiece];
 
 dayjs.locale('zh-cn');
-
-// 测试用的高级 Markdown 内容
-const markdownContent = `
-# React Markdown 高级示例
-
-## 1. GFM 扩展语法
-- 任务列表：
-  - [x] 完成 React 集成
-  - [ ] 测试 Mermaid 流程图
-- 删除线：~~这是删除的内容~~
-- 表格：
-| 名称 | 功能 | 星级 |
-|------|------|------|
-| react-markdown | 基础渲染 | ⭐⭐⭐⭐⭐ |
-| marked | 性能高 | ⭐⭐⭐⭐ |
-
-## 2. 代码高亮
-\`\`\`javascript
-const handleClick = () => {
-  console.log('React Markdown');
-};
-\`\`\`
-
-## 3. LaTex 数学公式
-行内公式：$E=mc^2$
-块级公式：
-$$
-\\sum_{i=1}^n i = \\frac{n(n+1)}{2}
-$$
-
-## 4. Mermaid 流程图
-\`\`\`mermaid
-flowchart TD
-    A[React] --> B[react-markdown]
-    B --> C[remark-gfm]
-    B --> D[rehype-highlight]
-\`\`\`
-`;
 
 const Memo: React.FC = () => {
     const [tags, setTags] = useState<MemoTagResponse[] | undefined>([]);
@@ -124,7 +80,7 @@ const Memo: React.FC = () => {
 
     // @ts-ignore
     return (
-        <Flex gap={48}>
+        <Flex gap={16} className={styles.container}>
             <Flex gap={8} vertical align='center' justify='flex-start' className={styles.leftContainer}>
                 <Input.Search></Input.Search>
                 <Calendar
@@ -134,7 +90,8 @@ const Memo: React.FC = () => {
                     formatDay={(_, date) => dayjs(date).format('DD')}
                     formatShortWeekday={(_, date) => dayjs(date).format('dd')}
                     value={selectedDate}/>
-                <Flex gap={16} className={styles.tagContainer}>
+                <Divider/>
+                <Flex gap={4} className={styles.tagContainer} align="flex-start" justify="flex-start" wrap={true}>
                     {tags?.map(it => {
                         return <Typography.Text onClick={_ => handleSelectTag(it)}
                                                 className={`${styles.tag} ${it.id === currentTag?.id ? styles.tagActive : ''}`}
@@ -142,7 +99,7 @@ const Memo: React.FC = () => {
                     })}
                 </Flex>
             </Flex>
-            <Flex gap={8} vertical flex={1}>
+            <Flex gap={8} vertical flex={1} className={styles.rightContainer}>
                 {memos?.map(it => {
                     return <Flex vertical className={styles.memoContainer} onClick={_ => handleSelectMemo(it)}>
                         <Flex align="center">
@@ -155,39 +112,6 @@ const Memo: React.FC = () => {
                         </Flex>
                     </Flex>
                 })}
-                <ReactMarkdown
-                    remarkPlugins={[
-                        remarkGfm,
-                        remarkMath,
-                        [rehypeMermaidjs, {
-                            mermaid: {theme: 'light'},
-                            strategy: 'inline-svg'
-                        }]
-                    ]}
-                    rehypePlugins={[
-                        rehypeKatex,
-                        rehypeHighlight
-                    ]}
-                    components={{
-                        // @ts-ignore
-                        code({node, inline, className, children, ...props}) {
-                            const match = /language-(\w+)/.exec(className || '');
-                            return !inline && match ? (
-                                <pre style={{padding: '10px', borderRadius: '8px'}}>
-                <code className={className} {...props}>
-                  {children}
-                </code>
-              </pre>
-                            ) : (
-                                <code className={className} {...props}>
-                                    {children}
-                                </code>
-                            );
-                        }
-                    }}
-                >
-                    {markdownContent}
-                </ReactMarkdown>
             </Flex>
         </Flex>
     );

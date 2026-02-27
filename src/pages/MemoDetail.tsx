@@ -8,7 +8,7 @@ import rehypeMermaidjs from 'rehype-mermaidjs';
 import 'highlight.js/styles/github-dark.css';
 import 'katex/dist/katex.min.css';
 import 'dayjs/locale/zh-cn';
-import styles from './Memo.module.css';
+import styles from './MemoDetail.module.css';
 import {Flex, message} from "antd";
 import dayjs from "dayjs";
 import {type MemoResponse, Service} from "../api";
@@ -37,10 +37,10 @@ const MemoDetail: React.FC = () => {
 
     // @ts-ignore
     return (
-        <Flex gap={48}>
+        <Flex gap={16} className={styles.container}>
             <Flex gap={8} vertical align='center' justify='flex-start' className={styles.leftContainer}>
             </Flex>
-            <Flex gap={8} vertical flex={1}>
+            <Flex gap={8} vertical flex={1} className={styles.rightContainer}>
                 <ReactMarkdown
                     remarkPlugins={[
                         remarkGfm,
