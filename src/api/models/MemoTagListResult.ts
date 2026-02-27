@@ -2,10 +2,11 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
+import type { MemoTagResponse } from './MemoTagResponse';
 /**
- * 通用响应对象
+ * 备忘列表返回结果
  */
-export type GenericResult = {
+export type MemoTagListResult = {
     /**
      * 错误代码
      */
@@ -15,8 +16,12 @@ export type GenericResult = {
      */
     message?: string;
     /**
+     * 总计
+     */
+    total?: number;
+    /**
      * 响应数据
      */
-    data?: any;
+    data?: Array<MemoTagResponse>;
 };
 

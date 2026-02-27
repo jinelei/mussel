@@ -128,11 +128,11 @@
         },
         "responses": {
           "200": {
-            "description": "更新成功",
+            "description": "OK",
             "content": {
-              "application/json": {
+              "*/*": {
                 "schema": {
-                  "$ref": "#/components/schemas/GenericResult"
+                  "$ref": "#/components/schemas/StringResult"
                 }
               }
             }
@@ -150,11 +150,11 @@
         "operationId": "memoTags",
         "responses": {
           "200": {
-            "description": "查询成功",
+            "description": "OK",
             "content": {
-              "application/json": {
+              "*/*": {
                 "schema": {
-                  "$ref": "#/components/schemas/GenericResult"
+                  "$ref": "#/components/schemas/MemoTagListResult"
                 }
               }
             }
@@ -182,11 +182,43 @@
         },
         "responses": {
           "200": {
-            "description": "查询成功",
+            "description": "OK",
             "content": {
-              "application/json": {
+              "*/*": {
                 "schema": {
-                  "$ref": "#/components/schemas/GenericResult"
+                  "$ref": "#/components/schemas/MemoPageResult"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/memo/get": {
+      "post": {
+        "tags": [
+          "备忘管理"
+        ],
+        "summary": "查询备忘列表",
+        "description": "查询备忘列表",
+        "operationId": "memoGet",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MemoGetRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/MemoSingleResult"
                 }
               }
             }
@@ -214,11 +246,11 @@
         },
         "responses": {
           "200": {
-            "description": "删除成功",
+            "description": "OK",
             "content": {
-              "application/json": {
+              "*/*": {
                 "schema": {
-                  "$ref": "#/components/schemas/GenericResult"
+                  "$ref": "#/components/schemas/StringResult"
                 }
               }
             }
@@ -246,11 +278,11 @@
         },
         "responses": {
           "200": {
-            "description": "新增成功",
+            "description": "OK",
             "content": {
-              "application/json": {
+              "*/*": {
                 "schema": {
-                  "$ref": "#/components/schemas/GenericResult"
+                  "$ref": "#/components/schemas/StringResult"
                 }
               }
             }
@@ -592,9 +624,9 @@
           "title"
         ]
       },
-      "GenericResult": {
+      "StringResult": {
         "type": "object",
-        "description": "通用响应对象",
+        "description": "字符串返回结果",
         "properties": {
           "code": {
             "type": "integer",
@@ -606,9 +638,61 @@
             "description": "错误信息"
           },
           "data": {
+            "type": "string",
             "description": "响应数据"
           }
         }
+      },
+      "MemoTagListResult": {
+        "type": "object",
+        "description": "备忘列表返回结果",
+        "properties": {
+          "code": {
+            "type": "integer",
+            "format": "int32",
+            "description": "错误代码"
+          },
+          "message": {
+            "type": "string",
+            "description": "错误信息"
+          },
+          "total": {
+            "type": "integer",
+            "format": "int64",
+            "description": "总计"
+          },
+          "data": {
+            "type": "array",
+            "description": "响应数据",
+            "items": {
+              "$ref": "#/components/schemas/MemoTagResponse"
+            }
+          }
+        }
+      },
+      "MemoTagResponse": {
+        "type": "object",
+        "description": "备忘标签对象",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64",
+            "description": "备忘标签ID"
+          },
+          "title": {
+            "type": "string",
+            "description": "备忘标签标题"
+          },
+          "icon": {
+            "type": "string",
+            "description": "备忘标签图标"
+          }
+        },
+        "required": [
+          "icon",
+          "id",
+          "title"
+        ]
       },
       "MemoPageRequest": {
         "type": "object",
@@ -638,6 +722,163 @@
           "query": {
             "$ref": "#/components/schemas/MemoPageRequest",
             "description": "查询条件"
+          }
+        }
+      },
+      "MemoPageResult": {
+        "type": "object",
+        "description": "备忘分页返回结果",
+        "properties": {
+          "code": {
+            "type": "integer",
+            "format": "int32",
+            "description": "错误代码"
+          },
+          "message": {
+            "type": "string",
+            "description": "错误信息"
+          },
+          "pageNo": {
+            "type": "integer",
+            "format": "int32",
+            "description": "分页页码"
+          },
+          "pageSize": {
+            "type": "integer",
+            "format": "int32",
+            "description": "分页大小"
+          },
+          "total": {
+            "type": "integer",
+            "format": "int64",
+            "description": "总计"
+          },
+          "data": {
+            "type": "array",
+            "description": "响应数据",
+            "items": {
+              "$ref": "#/components/schemas/MemoResponse"
+            }
+          }
+        }
+      },
+      "MemoResponse": {
+        "type": "object",
+        "description": "备忘响应对象",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64",
+            "description": "主键ID"
+          },
+          "createTime": {
+            "type": "string",
+            "format": "date-time",
+            "description": "创建时间"
+          },
+          "updateTime": {
+            "type": "string",
+            "format": "date-time",
+            "description": "更新时间"
+          },
+          "orderNumber": {
+            "type": "integer",
+            "format": "int32",
+            "description": "排序值"
+          },
+          "title": {
+            "type": "string",
+            "description": "备忘标题"
+          },
+          "subTitle": {
+            "type": "string",
+            "description": "备忘副标题"
+          },
+          "content": {
+            "type": "string",
+            "description": "备忘内容"
+          },
+          "tags": {
+            "type": "array",
+            "description": "备忘关联标签对象列表",
+            "items": {
+              "$ref": "#/components/schemas/MemoTagDomain"
+            }
+          },
+          "tagIds": {
+            "type": "array",
+            "description": "备忘关联标签列表",
+            "items": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        }
+      },
+      "MemoTagDomain": {
+        "type": "object",
+        "description": "备忘标签领域对象",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64",
+            "description": "主键ID"
+          },
+          "createTime": {
+            "type": "string",
+            "format": "date-time",
+            "description": "创建时间"
+          },
+          "updateTime": {
+            "type": "string",
+            "format": "date-time",
+            "description": "更新时间"
+          },
+          "orderNumber": {
+            "type": "integer",
+            "format": "int32",
+            "description": "排序值"
+          },
+          "title": {
+            "type": "string",
+            "description": "备忘标签标题"
+          },
+          "icon": {
+            "type": "string",
+            "description": "备忘标签图标"
+          }
+        }
+      },
+      "MemoGetRequest": {
+        "type": "object",
+        "description": "备忘查询ID请求",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64",
+            "description": "备忘ID"
+          }
+        },
+        "required": [
+          "id"
+        ]
+      },
+      "MemoSingleResult": {
+        "type": "object",
+        "description": "备忘单个返回结果",
+        "properties": {
+          "code": {
+            "type": "integer",
+            "format": "int32",
+            "description": "错误代码"
+          },
+          "message": {
+            "type": "string",
+            "description": "错误信息"
+          },
+          "data": {
+            "$ref": "#/components/schemas/MemoResponse",
+            "description": "响应数据"
           }
         }
       },
@@ -739,25 +980,6 @@
           "type",
           "url"
         ]
-      },
-      "StringResult": {
-        "type": "object",
-        "description": "字符串返回结果",
-        "properties": {
-          "code": {
-            "type": "integer",
-            "format": "int32",
-            "description": "错误代码"
-          },
-          "message": {
-            "type": "string",
-            "description": "错误信息"
-          },
-          "data": {
-            "type": "string",
-            "description": "响应数据"
-          }
-        }
       },
       "BookmarkListResult": {
         "type": "object",

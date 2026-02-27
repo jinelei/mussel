@@ -13,6 +13,7 @@ import AuthorizedGuard from "../components/AuthorizedGuard.tsx";
 import Forbidden from "../pages/Forbidden.tsx";
 import type {ReactNode} from "react";
 import {store} from "../store";
+import MemoDetail from "../pages/MemoDetail.tsx";
 
 export interface MenuItem {
     path: string;
@@ -70,6 +71,17 @@ const originRoutes: RouteObject[] = [
                     permissions: ['PAGE_/memo'],
                 },
                 element: <AuthorizedGuard><Memo/></AuthorizedGuard>,
+            }, {
+                path: ':id',
+                handle: {
+                    title: '备忘',
+                    icon: <FaBook/>,
+                    showInMenu: false,
+                    requireLogin: true,
+                    roles: [],
+                    permissions: ['PAGE_/memo_detail'],
+                },
+                element: <AuthorizedGuard><MemoDetail/></AuthorizedGuard>,
             }
         ]
     },

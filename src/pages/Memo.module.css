@@ -3,7 +3,19 @@
 }
 
 .tagContainer {
+}
+
+.tag {
+    padding: 5px 10px;
+    margin-top: 5px;
     background-color: lightgray;
+    border-radius: 5px;
+    color: black;
+}
+
+.tagActive {
+    background-color: gray;
+    color: white;
 }
 
 .calendar {
@@ -17,4 +29,27 @@
         background-color: white;
         text-align: center;
     }
+}
+
+.memoContainer {
+    padding: 1rem;
+    margin: 5px 10px;
+    border-radius: 5px;
+    background-color: rgba(211, 211, 211, 0.47);
+}
+
+.memoTitle {
+    font-size: 1rem;
+    color: black;
+}
+
+.memoSubTitle {
+    font-size: 0.8rem;
+    color: gray;
+    margin-left: 5px;
+}
+
+.memoTime {
+    font-size: 0.8rem;
+    color: gray;
 }

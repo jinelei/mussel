@@ -9,10 +9,11 @@ import 'highlight.js/styles/github-dark.css';
 import 'katex/dist/katex.min.css';
 import 'dayjs/locale/zh-cn';
 import styles from './Memo.module.css';
-import {Flex, Input, message} from "antd";
+import {Flex, Input, message, Typography} from "antd";
 import {Calendar} from "react-calendar";
 import dayjs from "dayjs";
-import {Service} from "../api";
+import {type MemoResponse, type MemoTagResponse, Service} from "../api";
+import {useNavigate} from "react-router-dom";
 
 type ValuePiece = Date | null;
 
@@ -59,12 +60,14 @@ flowchart TD
 `;
 
 const Memo: React.FC = () => {
-    // const [tags, setTags] = useState([]);
-    const [memos, setMemos] = useState([]);
+    const [tags, setTags] = useState<MemoTagResponse[] | undefined>([]);
+    const [currentTag, setCurrentTag] = useState<MemoTagResponse>();
+    const [memos, setMemos] = useState<MemoResponse[] | undefined>([]);
     const [selectedDate, setSelectedDate] = useState<Date>(() => {
         const now = new Date();
         return new Date(now.getFullYear(), now.getMonth(), now.getDate());
     });
+    const navigate = useNavigate();
 
     const handleDateChange = (value: Value) => {
         if (value instanceof Date && !isNaN(value.getTime())) {
@@ -78,21 +81,38 @@ const Memo: React.FC = () => {
         }
     };
 
+    const handleSelectTag = (value: MemoTagResponse | undefined) => {
+        if (currentTag === value) {
+            setCurrentTag(undefined);
+        } else {
+            setCurrentTag(value);
+        }
+        fetchMemos();
+    }
+
+    const handleSelectMemo = (value: MemoResponse) => {
+        if (value?.id) {
+            navigate(`/memo/${value?.id}`);
+        }
+    };
     const fetchMemoTags = () => {
         Service.memoTags()
             .then(res => {
-                console.log('memo tags', res.data);
+                if (200 === res.code) {
+                    setTags(res.data);
+                } else {
+                    message.error({content: res.message}).then();
+                }
             })
     }
 
     const fetchMemos = () => {
-        Service.memoPage({})
+        Service.memoPage({query: {tagId: currentTag?.id}})
             .then(res => {
                 if (200 === res.code) {
-                    console.log('memos', res.data);
                     setMemos(res.data);
                 } else {
-                    message.error({content: res.message});
+                    message.error({content: res.message}).then();
                 }
             })
     }
@@ -115,10 +135,26 @@ const Memo: React.FC = () => {
                     formatShortWeekday={(_, date) => dayjs(date).format('dd')}
                     value={selectedDate}/>
                 <Flex gap={16} className={styles.tagContainer}>
-
+                    {tags?.map(it => {
+                        return <Typography.Text onClick={_ => handleSelectTag(it)}
+                                                className={`${styles.tag} ${it.id === currentTag?.id ? styles.tagActive : ''}`}
+                        >{it.title} </Typography.Text>
+                    })}
                 </Flex>
             </Flex>
             <Flex gap={8} vertical flex={1}>
+                {memos?.map(it => {
+                    return <Flex vertical className={styles.memoContainer} onClick={_ => handleSelectMemo(it)}>
+                        <Flex align="center">
+                            <Typography.Text className={styles.memoTitle}>{it.title}</Typography.Text>
+                            <Typography.Text className={styles.memoSubTitle}>{it.subTitle}</Typography.Text>
+                        </Flex>
+                        <Flex>
+                            <Typography.Text
+                                className={styles.memoTime}>{it.updateTime ? dayjs(it.updateTime).format("YYYY-MM-DD HH:mm:ss") : ''}</Typography.Text>
+                        </Flex>
+                    </Flex>
+                })}
                 <ReactMarkdown
                     remarkPlugins={[
                         remarkGfm,

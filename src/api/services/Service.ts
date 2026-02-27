@@ -9,9 +9,12 @@ import type { BookmarkListRequest } from '../models/BookmarkListRequest';
 import type { BookmarkListResult } from '../models/BookmarkListResult';
 import type { BookmarkSingleResult } from '../models/BookmarkSingleResult';
 import type { BookmarkUpdateRequest } from '../models/BookmarkUpdateRequest';
-import type { GenericResult } from '../models/GenericResult';
 import type { MemoCreateRequest } from '../models/MemoCreateRequest';
 import type { MemoDeleteRequest } from '../models/MemoDeleteRequest';
+import type { MemoGetRequest } from '../models/MemoGetRequest';
+import type { MemoPageResult } from '../models/MemoPageResult';
+import type { MemoSingleResult } from '../models/MemoSingleResult';
+import type { MemoTagListResult } from '../models/MemoTagListResult';
 import type { MemoUpdateRequest } from '../models/MemoUpdateRequest';
 import type { PageableRequest } from '../models/PageableRequest';
 import type { StringResult } from '../models/StringResult';
@@ -56,12 +59,12 @@ export class Service {
      * 更新备忘
      * 根据id更新备忘
      * @param requestBody
-     * @returns GenericResult 更新成功
+     * @returns StringResult OK
      * @throws ApiError
      */
     public static memoUpdate(
         requestBody: MemoUpdateRequest,
-    ): CancelablePromise<GenericResult> {
+    ): CancelablePromise<StringResult> {
         return __request(OpenAPI, {
             method: 'POST',
             url: '/memo/update',
@@ -72,10 +75,10 @@ export class Service {
     /**
      * 查询备忘标签
      * 查询备忘标签
-     * @returns GenericResult 查询成功
+     * @returns MemoTagListResult OK
      * @throws ApiError
      */
-    public static memoTags(): CancelablePromise<GenericResult> {
+    public static memoTags(): CancelablePromise<MemoTagListResult> {
         return __request(OpenAPI, {
             method: 'POST',
             url: '/memo/tags',
@@ -85,12 +88,12 @@ export class Service {
      * 查询备忘分页
      * 查询备忘分页
      * @param requestBody
-     * @returns GenericResult 查询成功
+     * @returns MemoPageResult OK
      * @throws ApiError
      */
     public static memoPage(
         requestBody: PageableRequest,
-    ): CancelablePromise<GenericResult> {
+    ): CancelablePromise<MemoPageResult> {
         return __request(OpenAPI, {
             method: 'POST',
             url: '/memo/page',
@@ -99,15 +102,32 @@ export class Service {
         });
     }
     /**
+     * 查询备忘列表
+     * 查询备忘列表
+     * @param requestBody
+     * @returns MemoSingleResult OK
+     * @throws ApiError
+     */
+    public static memoGet(
+        requestBody: MemoGetRequest,
+    ): CancelablePromise<MemoSingleResult> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/memo/get',
+            body: requestBody,
+            mediaType: 'application/json',
+        });
+    }
+    /**
      * 删除备忘
      * 根据id删除备忘
      * @param requestBody
-     * @returns GenericResult 删除成功
+     * @returns StringResult OK
      * @throws ApiError
      */
     public static memoDelete(
         requestBody: MemoDeleteRequest,
-    ): CancelablePromise<GenericResult> {
+    ): CancelablePromise<StringResult> {
         return __request(OpenAPI, {
             method: 'POST',
             url: '/memo/delete',
@@ -119,12 +139,12 @@ export class Service {
      * 新增备忘
      * 新增备忘
      * @param requestBody
-     * @returns GenericResult 新增成功
+     * @returns StringResult OK
      * @throws ApiError
      */
     public static memoCreate(
         requestBody: MemoCreateRequest,
-    ): CancelablePromise<GenericResult> {
+    ): CancelablePromise<StringResult> {
         return __request(OpenAPI, {
             method: 'POST',
             url: '/memo/create',
