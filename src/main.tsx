@@ -5,6 +5,10 @@ import {router} from './router';
 import {store} from './store';
 import './index.css'
 import {Provider} from "react-redux";
+import {OpenAPI} from "./api";
+
+OpenAPI.BASE = '/api';
+OpenAPI.TOKEN = async () => store.getState().auth.token;
 
 createRoot(document.getElementById('root')!).render(
     <StrictMode>
