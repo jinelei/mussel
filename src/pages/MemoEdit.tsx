@@ -22,6 +22,7 @@ const MemoEdit: React.FC = () => {
     const [memo, setMemo] = useState<MemoResponse | undefined>();
 
     const fetchMemo = () => {
+        console.log(`params.id: ${params.id}`)
         if (params.id !== "new") {
             Service.memoGet({id: parseInt(params.id as string)})
                 .then(res => {
@@ -31,6 +32,8 @@ const MemoEdit: React.FC = () => {
                         message.error({content: res.message}).then();
                     }
                 })
+        } else {
+            setMemo({})
         }
     }
 
@@ -68,6 +71,7 @@ const MemoEdit: React.FC = () => {
     }
 
     useEffect(() => {
+        console.log('memo edit')
         fetchMemo();
     }, [location.pathname]);
 

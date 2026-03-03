@@ -91,7 +91,7 @@ const Memo: React.FC = () => {
         <Flex vertical className={styles.container}>
             <Flex justify="flex-end">
                 <Affix offsetBottom={10}>
-                    <Button type="primary" onClick={(_)=> navigate("/memo/new")}>添加</Button>
+                    <Button type="primary" onClick={(_) => navigate("/memo/new")}>添加</Button>
                 </Affix>
             </Flex>
             <Flex>
@@ -107,7 +107,7 @@ const Memo: React.FC = () => {
                     <Divider/>
                     <Flex gap={4} className={styles.tagContainer} align="flex-start" justify="flex-start" wrap={true}>
                         {tags?.map(it => {
-                            return <Typography.Text onClick={_ => handleSelectTag(it)}
+                            return <Typography.Text onClick={_ => handleSelectTag(it)} key={`tag_${it.id}`}
                                                     className={`${styles.tag} ${it.id === currentTag?.id ? styles.tagActive : ''}`}
                             >{it.title} </Typography.Text>
                         })}
@@ -115,7 +115,7 @@ const Memo: React.FC = () => {
                 </Flex>
                 <Flex gap={8} vertical flex={1} className={styles.rightContainer}>
                     {memos?.map(it => {
-                        return <Flex justify="space-between" className={styles.memoContainer}>
+                        return <Flex justify="space-between" className={styles.memoContainer} key={`memo_${it.id}`}>
                             <Flex flex={1} vertical onClick={_ => handlePreviewMemo(it)}>
                                 <Flex align="center">
                                     <Typography.Text className={styles.memoTitle}>{it.title}</Typography.Text>
@@ -123,7 +123,7 @@ const Memo: React.FC = () => {
                                 </Flex>
                                 <Flex wrap={true}>
                                     {it.tags?.map(iit => {
-                                        return <Typography.Text className={styles.tag}>{iit.title}</Typography.Text>
+                                        return <Typography.Text key={`tag_${it.id}`} className={styles.tag}>{iit.title}</Typography.Text>
                                     })}
                                 </Flex>
                                 <Flex>

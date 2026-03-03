@@ -87,7 +87,7 @@ const BaseLayout = () => {
                     {menuList.map((item) => (
                         <Link to={item.path} key={item.path}>
                             <Typography.Text
-                                className={location.pathname === item.path ? styles.navActive : styles.nav}>{item.title}</Typography.Text>
+                                className={(item.path === '/' ? location.pathname === item.path : location.pathname.startsWith(item.path)) ? styles.navActive : styles.nav}>{item.title}</Typography.Text>
                         </Link>
                     ))}
                     <Flex align='center'>
