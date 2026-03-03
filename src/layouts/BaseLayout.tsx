@@ -72,7 +72,15 @@ const BaseLayout = () => {
         <Flex vertical justify='start' align='center' className={styles.container}>
             <Flex justify={'space-between'} align='center' className={styles.titleContainer}>
                 <Flex>
-                    <Typography.Text className={styles.title}>JINELEI</Typography.Text>
+                    <Typography.Text className={styles.title}>
+                        <span className={styles.word}>J</span>
+                        <span className={styles.word}>I</span>
+                        <span className={styles.word}>N</span>
+                        <span className={styles.word}>E</span>
+                        <span className={styles.word}>L</span>
+                        <span className={styles.word}>E</span>
+                        <span className={styles.word}>I</span>
+                    </Typography.Text>
                     <MoonOutlined/>
                 </Flex>
                 <Flex>
