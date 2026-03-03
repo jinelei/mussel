@@ -72,6 +72,18 @@
     color: gray;
 }
 
+.editIcon {
+    padding: 10px;
+    border-radius: 5px;
+    transition: all 200ms ease-in-out;
+
+    &:hover {
+        color: darkred;
+        background-color: white;
+        box-shadow: 0 0 2px 2px #c0c0c0;
+    }
+}
+
 @media (max-width: 768px) {
     .leftContainer {
         display: none;

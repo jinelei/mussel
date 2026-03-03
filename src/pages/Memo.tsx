@@ -3,11 +3,12 @@ import 'highlight.js/styles/github-dark.css';
 import 'katex/dist/katex.min.css';
 import 'dayjs/locale/zh-cn';
 import styles from './Memo.module.css';
-import {Divider, Flex, Input, message, Typography} from "antd";
+import {Affix, Button, Divider, Flex, Input, message, Typography} from "antd";
 import {Calendar} from "react-calendar";
 import dayjs from "dayjs";
 import {type MemoResponse, type MemoTagResponse, Service} from "../api";
 import {useNavigate} from "react-router-dom";
+import {EditOutlined} from "@ant-design/icons";
 
 type ValuePiece = Date | null;
 
@@ -46,11 +47,18 @@ const Memo: React.FC = () => {
         fetchMemos();
     }
 
-    const handleSelectMemo = (value: MemoResponse) => {
+    const handlePreviewMemo = (value: MemoResponse) => {
         if (value?.id) {
-            navigate(`/memo/${value?.id}`);
+            navigate(`/memo/preview/${value?.id}`);
         }
     };
+
+    const handleEditwMemo = (value: MemoResponse) => {
+        if (value?.id) {
+            navigate(`/memo/edit/${value?.id}`);
+        }
+    };
+
     const fetchMemoTags = () => {
         Service.memoTags()
             .then(res => {
@@ -80,43 +88,55 @@ const Memo: React.FC = () => {
 
     // @ts-ignore
     return (
-        <Flex className={styles.container}>
-            <Flex gap={8} vertical align='center' justify='flex-start' className={styles.leftContainer}>
-                <Input.Search></Input.Search>
-                <Calendar
-                    className={styles.calendar}
-                    onChange={handleDateChange}
-                    showNavigation={false}
-                    formatDay={(_, date) => dayjs(date).format('DD')}
-                    formatShortWeekday={(_, date) => dayjs(date).format('dd')}
-                    value={selectedDate}/>
-                <Divider/>
-                <Flex gap={4} className={styles.tagContainer} align="flex-start" justify="flex-start" wrap={true}>
-                    {tags?.map(it => {
-                        return <Typography.Text onClick={_ => handleSelectTag(it)}
-                                                className={`${styles.tag} ${it.id === currentTag?.id ? styles.tagActive : ''}`}
-                        >{it.title} </Typography.Text>
+        <Flex vertical className={styles.container}>
+            <Flex justify="flex-end">
+                <Affix offsetBottom={10}>
+                    <Button type="primary" onClick={(_)=> navigate("/memo/new")}>添加</Button>
+                </Affix>
+            </Flex>
+            <Flex>
+                <Flex gap={8} vertical align='center' justify='flex-start' className={styles.leftContainer}>
+                    <Input.Search></Input.Search>
+                    <Calendar
+                        className={styles.calendar}
+                        onChange={handleDateChange}
+                        showNavigation={false}
+                        formatDay={(_, date) => dayjs(date).format('DD')}
+                        formatShortWeekday={(_, date) => dayjs(date).format('dd')}
+                        value={selectedDate}/>
+                    <Divider/>
+                    <Flex gap={4} className={styles.tagContainer} align="flex-start" justify="flex-start" wrap={true}>
+                        {tags?.map(it => {
+                            return <Typography.Text onClick={_ => handleSelectTag(it)}
+                                                    className={`${styles.tag} ${it.id === currentTag?.id ? styles.tagActive : ''}`}
+                            >{it.title} </Typography.Text>
+                        })}
+                    </Flex>
+                </Flex>
+                <Flex gap={8} vertical flex={1} className={styles.rightContainer}>
+                    {memos?.map(it => {
+                        return <Flex justify="space-between" className={styles.memoContainer}>
+                            <Flex flex={1} vertical onClick={_ => handlePreviewMemo(it)}>
+                                <Flex align="center">
+                                    <Typography.Text className={styles.memoTitle}>{it.title}</Typography.Text>
+                                    <Typography.Text className={styles.memoSubTitle}>{it.subTitle}</Typography.Text>
+                                </Flex>
+                                <Flex wrap={true}>
+                                    {it.tags?.map(iit => {
+                                        return <Typography.Text className={styles.tag}>{iit.title}</Typography.Text>
+                                    })}
+                                </Flex>
+                                <Flex>
+                                    <Typography.Text
+                                        className={styles.memoTime}>{it.updateTime ? dayjs(it.updateTime).format("YYYY-MM-DD HH:mm:ss") : ''}</Typography.Text>
+                                </Flex>
+                            </Flex>
+                            <Flex onClick={_ => handleEditwMemo(it)}>
+                                <EditOutlined className={styles.editIcon}/>
+                            </Flex>
+                        </Flex>
                     })}
                 </Flex>
-            </Flex>
-            <Flex gap={8} vertical flex={1} className={styles.rightContainer}>
-                {memos?.map(it => {
-                    return <Flex vertical className={styles.memoContainer} onClick={_ => handleSelectMemo(it)}>
-                        <Flex align="center">
-                            <Typography.Text className={styles.memoTitle}>{it.title}</Typography.Text>
-                            <Typography.Text className={styles.memoSubTitle}>{it.subTitle}</Typography.Text>
-                        </Flex>
-                        <Flex wrap={true}>
-                            {it.tags?.map(iit => {
-                                return <Typography.Text className={styles.tag}>{iit.title}</Typography.Text>
-                            })}
-                        </Flex>
-                        <Flex>
-                            <Typography.Text
-                                className={styles.memoTime}>{it.updateTime ? dayjs(it.updateTime).format("YYYY-MM-DD HH:mm:ss") : ''}</Typography.Text>
-                        </Flex>
-                    </Flex>
-                })}
             </Flex>
         </Flex>
     );

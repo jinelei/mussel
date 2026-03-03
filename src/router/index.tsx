@@ -15,6 +15,7 @@ import type {ReactNode} from "react";
 import {store} from "../store";
 import MemoDetail from "../pages/MemoDetail.tsx";
 import {WarningOutlined} from "@ant-design/icons";
+import MemoEdit from "../pages/MemoEdit.tsx";
 
 export interface MenuItem {
     path: string;
@@ -73,7 +74,18 @@ const originRoutes: RouteObject[] = [
                 },
                 element: <AuthorizedGuard><Memo/></AuthorizedGuard>,
             }, {
-                path: ':id',
+                path: 'edit/:id',
+                handle: {
+                    title: '备忘',
+                    icon: <FaBook/>,
+                    showInMenu: false,
+                    requireLogin: true,
+                    roles: [],
+                    permissions: ['PAGE_/memo_edit'],
+                },
+                element: <AuthorizedGuard><MemoEdit/></AuthorizedGuard>,
+            }, {
+                path: 'preview/:id',
                 handle: {
                     title: '备忘',
                     icon: <FaBook/>,

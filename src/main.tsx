@@ -11,11 +11,9 @@ import axios from "axios";
 axios.interceptors.response.use(
     (response) => {
         if (response?.status === 401 || response?.data?.code === 401) {
-            console.error("未登录")
             store.dispatch({type: 'auth/clearToken'});
             window.location.href = '/login';
         } else if (response?.status === 403 || response?.data?.code === 403) {
-            console.error("无权限访问")
             alert('无权限访问');
         }
         return response;
@@ -23,18 +21,15 @@ axios.interceptors.response.use(
     (error) => {
         const {response} = error;
         if (response?.status === 401 || response?.data?.code === 401) {
-            console.error("未登录")
             store.dispatch({type: 'auth/clearToken'});
             window.location.href = '/login';
         } else if (response?.status === 403 || response?.data?.code === 403) {
-            console.error("无权限访问")
             alert('无权限访问');
         }
         return Promise.reject(error);
     }
 );
 
-console.log("interceptors", axios.interceptors.response);
 OpenAPI.BASE = '/api';
 OpenAPI.TOKEN = async () => store.getState().auth.token;
 
