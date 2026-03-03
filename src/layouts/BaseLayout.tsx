@@ -3,10 +3,16 @@ import {FaSignOutAlt} from 'react-icons/fa';
 
 import {clearToken, type RootState, store} from "../store";
 import {useDispatch, useSelector} from "react-redux";
-import {Dropdown, Flex, type MenuProps, Space, Spin, Typography} from "antd";
+import {Dropdown, Flex, type MenuProps, Spin, Typography} from "antd";
 import {useEffect, useState} from "react";
 import {authorizedRoutes, type MenuItem} from "../router";
-import {DownOutlined, LoadingOutlined, MoonOutlined, SettingOutlined, UserOutlined} from "@ant-design/icons";
+import {
+    DownOutlined,
+    LoadingOutlined,
+    MoonOutlined,
+    SettingOutlined,
+    UserOutlined
+} from "@ant-design/icons";
 
 import styles from './BaseLayout.module.css';
 import Footer from "../pages/Footer.tsx";
@@ -78,12 +84,13 @@ const BaseLayout = () => {
                     ))}
                     <Flex align='center'>
                         <Dropdown menu={{items}} trigger={['click']}>
-                            <div onClick={(e) => e.preventDefault()}>
-                                <Space>
-                                    {store.getState().auth.userInfo.username}
-                                    <DownOutlined/>
-                                </Space>
-                            </div>
+                            <Flex justify="center" align="center" className={styles.userContainer} onClick={(e) => {
+                                e.preventDefault();
+                            }}>
+                                <Typography.Text
+                                    className={styles.username}> {store.getState().auth.userInfo.username} </Typography.Text>
+                                <DownOutlined className={styles.dropdownIcon}/>
+                            </Flex>
                         </Dropdown>
                     </Flex>
                 </Flex>
