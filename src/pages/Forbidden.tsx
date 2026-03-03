@@ -1,6 +1,6 @@
 import {Result, Button} from 'antd';
 import {HomeOutlined} from '@ant-design/icons';
-import {useNavigate} from 'react-router-dom'; // 若使用 react-router 路由
+import {useNavigate} from 'react-router-dom';
 
 const Forbidden = () => {
     const navigate = useNavigate();

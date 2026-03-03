@@ -10,7 +10,6 @@ import axios from "axios";
 
 axios.interceptors.response.use(
     (response) => {
-        console.log('response', response)
         if (response?.status === 401 || response?.data?.code === 401) {
             console.error("未登录")
             store.dispatch({type: 'auth/clearToken'});

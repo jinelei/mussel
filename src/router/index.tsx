@@ -14,6 +14,7 @@ import Forbidden from "../pages/Forbidden.tsx";
 import type {ReactNode} from "react";
 import {store} from "../store";
 import MemoDetail from "../pages/MemoDetail.tsx";
+import {WarningOutlined} from "@ant-design/icons";
 
 export interface MenuItem {
     path: string;
@@ -116,19 +117,43 @@ const originRoutes: RouteObject[] = [
     },
     {
         path: '/403',
+        element: <BaseLayout/>,
         handle: {
             showInMenu: false,
             requireLogin: true,
         },
-        element: <AuthorizedGuard><Forbidden/></AuthorizedGuard>,
+        children: [
+            {
+                index: true,
+                handle: {
+                    title: '403',
+                    icon: <WarningOutlined/>,
+                    showInMenu: false,
+                    requireLogin: false,
+                },
+                element: <Forbidden/>,
+            }
+        ]
     },
     {
         path: '*',
+        element: <BaseLayout/>,
         handle: {
             showInMenu: false,
             requireLogin: true,
         },
-        element: <AuthorizedGuard><NotFound/></AuthorizedGuard>
+        children: [
+            {
+                index: true,
+                handle: {
+                    title: '404',
+                    icon: <WarningOutlined/>,
+                    showInMenu: false,
+                    requireLogin: false,
+                },
+                element: <NotFound/>,
+            }
+        ]
     },
 ];
 

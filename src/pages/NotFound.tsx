@@ -1,6 +1,6 @@
 import {Result, Button, Space} from 'antd';
 import {HomeOutlined, ReloadOutlined} from '@ant-design/icons';
-import {useNavigate} from 'react-router-dom'; // 若使用 react-router 路由
+import {useNavigate} from 'react-router-dom';
 
 // 404 页面组件
 const NotFound = () => {
@@ -8,7 +8,7 @@ const NotFound = () => {
 
     // 返回主页方法
     const goToHome = () => {
-        navigate('/'); // 跳转到主页路由，可根据你的实际路由调整
+        navigate('/');
     };
 
     return (
