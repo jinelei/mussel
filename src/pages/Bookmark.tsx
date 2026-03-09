@@ -371,7 +371,7 @@ const Bookmark: React.FC = () => {
                         <Select placeholder="请选择书签类型"
                                 options={[
                                     {label: '文件夹', value: 'FOLDER'},
-                                    {label: '书签', value: 'ITEM'},
+                                    {label: '书签', value: 'BOOKMARK'},
                                 ]}
                         />
                     </Form.Item>

@@ -37,7 +37,7 @@ export namespace BookmarkUpdateRequest {
      */
     export enum type {
         FOLDER = 'FOLDER',
-        ITEM = 'ITEM',
+        BOOKMARK = 'BOOKMARK',
     }
 }
 

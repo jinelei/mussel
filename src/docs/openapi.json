@@ -885,7 +885,7 @@
             "description": "书签类型",
             "enum": [
               "FOLDER",
-              "ITEM"
+              "BOOKMARK"
             ]
           },
           "url": {
@@ -977,7 +977,7 @@
             "description": "书签类型",
             "enum": [
               "FOLDER",
-              "ITEM"
+              "BOOKMARK"
             ]
           },
           "url": {
@@ -1019,7 +1019,7 @@
             "description": "书签类型",
             "enum": [
               "FOLDER",
-              "ITEM"
+              "BOOKMARK"
             ]
           },
           "url": {
@@ -1089,7 +1089,7 @@
             "description": "书签类型",
             "enum": [
               "FOLDER",
-              "ITEM"
+              "BOOKMARK"
             ]
           },
           "url": {

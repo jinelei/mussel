@@ -53,7 +53,7 @@ export namespace BookmarkResponse {
      */
     export enum type {
         FOLDER = 'FOLDER',
-        ITEM = 'ITEM',
+        BOOKMARK = 'BOOKMARK',
     }
 }
 

@@ -29,7 +29,7 @@ export namespace BookmarkListRequest {
      */
     export enum type {
         FOLDER = 'FOLDER',
-        ITEM = 'ITEM',
+        BOOKMARK = 'BOOKMARK',
     }
 }
 
