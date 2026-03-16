@@ -6,6 +6,7 @@ import path from 'path';
 export default defineConfig({
     plugins: [react()],
     server: {
+        allowedHosts: ['local.jinelei.com'],
         proxy: {
             '/api': {
                 target: 'http://192.168.3.36:8082',

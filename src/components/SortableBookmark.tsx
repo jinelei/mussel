@@ -57,7 +57,7 @@ const SortableBookmark: React.FC<SortableBookmarkProps> = ({
               {...listeners}
         >
             <Flex gap={8}>
-                <DynamicIcon className={classNameIcon} iconName={item.icon}/>
+                <DynamicIcon className={classNameIcon} icon={item.icon}/>
                 <Typography.Text className={classNameTitle}>{item.name}</Typography.Text>
             </Flex>
             <EditOutlined className={classNameEdit} onClick={onEdit}> </EditOutlined>

@@ -5,14 +5,15 @@ import {CSSProperties} from 'react';
 import * as AntdIcons from '@ant-design/icons';
 
 interface DynamicIconProps {
-    iconName?: string | undefined;
+    icon?: string | undefined;
     className?: string | undefined;
     size?: number | string;
     style?: CSSProperties;
     onClick?: () => void;
 }
 
-const DynamicIcon: React.FC<DynamicIconProps> = ({iconName, className, size = 16, style, onClick}) => {
+const DynamicIcon: React.FC<DynamicIconProps> = ({icon, className, size = 16, style, onClick}) => {
+    const isRawIcon = typeof icon === 'string' && (icon.startsWith('data:') || icon.startsWith('http'));
     const getIconComponentName = (name: string | undefined) => {
         if (!name) {
             return undefined;
@@ -27,7 +28,7 @@ const DynamicIcon: React.FC<DynamicIconProps> = ({iconName, className, size = 16
         }
         return name;
     }
-    const componentName = getIconComponentName(iconName);
+    const componentName = getIconComponentName(icon);
     const IconComponent = componentName ? AntdIcons[componentName as keyof typeof AntdIcons] || AntdIcons.QuestionCircleFilled : AntdIcons.QuestionCircleFilled;
     const mergedStyle: CSSProperties = {
         fontSize: typeof size === 'number' ? `${size}px` : size,
@@ -35,9 +36,11 @@ const DynamicIcon: React.FC<DynamicIconProps> = ({iconName, className, size = 16
         ...style
     }
 
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-expect-error
-    return <IconComponent className={className} style={mergedStyle} onClick={onClick}></IconComponent>;
+    return isRawIcon
+        ? <img className={className} style={mergedStyle} onClick={onClick} src={icon} alt="icon"/>
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-expect-error
+        : <IconComponent className={className} style={mergedStyle} onClick={onClick}></IconComponent>;
 };
 
 export default DynamicIcon;

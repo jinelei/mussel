@@ -120,7 +120,8 @@ const Bookmark: React.FC = () => {
 
     const fetchList = () => {
         dispatch(setLoading(true));
-        Service.bookmarkTree()
+        // Service.bookmarkTree()
+        Service.bookmarkList({})
             .then(res => {
                 if (200 === res.code) {
                     setBookmarks(res.data);
