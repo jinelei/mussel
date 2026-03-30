@@ -37,7 +37,7 @@ const Bookmark: React.FC = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [operateType, setOperateType] = useState<OperateType>(OperateType.CREATE);
     const [form] = Form.useForm();
-
+    const [isFocus, setIsFocus] = useState(false);
     const [value, setValue] = useState<string>();
     const [currentTime, setCurrentTime] = useState(dayjs());
     const formattedTime = currentTime.format('HH:mm:ss');
@@ -265,129 +265,132 @@ const Bookmark: React.FC = () => {
     }, [currentTime]);
 
     return (
-        <Flex align="flex-start" justify="center" vertical className={styles.container}>
-            <Flex vertical align='center' justify='center' className={styles.searchContainer}>
-                <Typography.Text className={styles.time}
-                                 onClick={() => copyToClipboard(formattedTime)}
-                >{formattedTime}</Typography.Text>
-                <Typography.Text className={styles.date}
-                                 onClick={() => copyToClipboard(formattedDate)}
-                >{formattedDate}</Typography.Text>
-                <Search
-                    ref={searchInputRef}
-                    placeholder="请输入"
-                    allowClear
-                    enterButton
-                    size="large"
-                    className={styles.search}
-                    value={value}
-                    onChange={e => setValue(e.target.value)}
-                    onSearch={onSearch}
-                    // onFocus={() => setIsSearchFocused(true)}
-                    // onBlur={() => setIsSearchFocused(false)}
+        <>
+            <div className={isFocus ? `${styles.background} ${styles.backgroundBlur}` : styles.background}></div>
+            <Flex align="center" justify="center" vertical className={styles.container}>
+                <Flex vertical align='center' justify='center' className={styles.searchContainer}>
+                    <Typography.Text className={styles.time}
+                                     onClick={() => copyToClipboard(formattedTime)}
+                    >{formattedTime}</Typography.Text>
+                    <Typography.Text className={styles.date}
+                                     onClick={() => copyToClipboard(formattedDate)}
+                    >{formattedDate}</Typography.Text>
+                    <Search
+                        ref={searchInputRef}
+                        placeholder="请输入"
+                        allowClear
+                        enterButton
+                        size="large"
+                        className={styles.search}
+                        value={value}
+                        onChange={e => setValue(e.target.value)}
+                        onSearch={onSearch}
+                        onFocus={() => setIsFocus(true)}
+                        onBlur={() => setIsFocus(false)}
+                    />
+                </Flex>
+                {bookmarks?.map(it => {
+                    return (<Flex vertical align='center' className={styles.group} key={'category_' + it.id}>
+                        <Flex align="center" justify="space-between" key={'category_item_' + it.id}>
+                            <Typography.Text className={styles.groupTitle}>{it.name}</Typography.Text>
+                        </Flex>
+                        <Flex gap={16} wrap="wrap" justify='center' align='center' className={styles.list}
+                              key={'category_list_' + it.id}>
+                            <DndContext
+                                sensors={sensors}
+                                collisionDetection={closestCorners}
+                                onDragEnd={handleDragEnd}
+                            >
+                                <SortableContext
+                                    items={(it.children || []).map(item => item.id as number)}
+                                    strategy={horizontalListSortingStrategy}
+                                >
+                                    {(it.children || []).map(item => (
+                                        <SortableBookmark
+                                            onEdit={(e: React.MouseEvent<HTMLElement, MouseEvent>) => showModal(e, item?.id as number)}
+                                            onClick={(e: React.MouseEvent<HTMLElement, MouseEvent>) => onNavItemClick(e, item)}
+                                            key={item.id} item={item}
+                                            classNameContainer={styles.dragContainer}
+                                            classNameContainerDrag={styles.dragContainerDrag}
+                                            classNameIcon={styles.dragIcon}
+                                            classNameTitle={styles.dragTitle}
+                                            classNameEdit={styles.dragEdit}
+                                        />
+                                    ))}
+                                </SortableContext>
+                            </DndContext>
+                        </Flex>
+                    </Flex>)
+                })}
+                <Modal
+                    className={styles.modalContainer}
+                    maskClosable={false}
+                    title={operateType === OperateType.UPDATE ? '修改书签' : "添加书签"}
+                    okText={operateType === OperateType.CREATE ? '更新' : "添加"}
+                    cancelText={'取消'}
+                    open={isModalOpen}
+                    footer={
+                        <>
+                            <Popconfirm
+                                title="确认删除"
+                                description="删除后将不可恢复!"
+                                okText="确定"
+                                cancelText="取消"
+                                onConfirm={handleDelete}
+                            >
+                                <Button type={"primary"}
+                                        style={{
+                                            display: operateType === OperateType.UPDATE ? 'inline-flex' : 'none',
+                                        }} danger>删除</Button>
+                            </Popconfirm>
+                            <Button onClick={handleCancel}>取消</Button>
+                            <Button onClick={handleOk}
+                                    type={"primary"}>{operateType === OperateType.UPDATE ? '更新' : "添加"}</Button>
+                        </>
+                    }
+                >
+                    <Form
+                        form={form}
+                        className={styles.modalForm}
+                    >
+                        <Form.Item name="id" label="id" rules={[{required: operateType === OperateType.CREATE}]}
+                                   style={{display: 'none'}}
+                        >
+                            <Input/>
+                        </Form.Item>
+                        <Form.Item name="name" label="名称" rules={[{required: true}]}>
+                            <Input/>
+                        </Form.Item>
+                        <Form.Item name="url" label="地址" rules={[{required: true}]}>
+                            <Input/>
+                        </Form.Item>
+                        <Form.Item name="icon" label="图标" rules={[{required: true}]}>
+                            <Input/>
+                        </Form.Item>
+                        <Form.Item name="color" label="颜色" rules={[{required: true}]}>
+                            <Input/>
+                        </Form.Item>
+                        <Form.Item name="type" label="类型" rules={[{required: true}]}>
+                            <Select placeholder="请选择书签类型"
+                                    options={[
+                                        {label: '文件夹', value: 'FOLDER'},
+                                        {label: '书签', value: 'BOOKMARK'},
+                                    ]}
+                            />
+                        </Form.Item>
+                        <Form.Item name="parentId" label="所属上级" rules={[{required: false}]}>
+                            <Select placeholder="请选择上级" options={folderList}/>
+                        </Form.Item>
+                    </Form>
+                </Modal>
+                <FloatButton
+                    onClick={(e) => showModal(e, undefined)}
+                    shape="circle"
+                    type="primary"
+                    icon={<PlusOutlined/>}
                 />
             </Flex>
-            {bookmarks?.map(it => {
-                return (<Flex vertical align='center' className={styles.group} key={'category_' + it.id}>
-                    <Flex align="center" justify="space-between" key={'category_item_' + it.id}>
-                        <Typography.Text className={styles.groupTitle}>{it.name}</Typography.Text>
-                    </Flex>
-                    <Flex gap={16} wrap="wrap" justify='center' align='center' className={styles.list}
-                          key={'category_list_' + it.id}>
-                        <DndContext
-                            sensors={sensors}
-                            collisionDetection={closestCorners}
-                            onDragEnd={handleDragEnd}
-                        >
-                            <SortableContext
-                                items={(it.children || []).map(item => item.id as number)}
-                                strategy={horizontalListSortingStrategy}
-                            >
-                                {(it.children || []).map(item => (
-                                    <SortableBookmark
-                                        onEdit={(e: React.MouseEvent<HTMLElement, MouseEvent>) => showModal(e, item?.id as number)}
-                                        onClick={(e: React.MouseEvent<HTMLElement, MouseEvent>) => onNavItemClick(e, item)}
-                                        key={item.id} item={item}
-                                        classNameContainer={styles.dragContainer}
-                                        classNameContainerDrag={styles.dragContainerDrag}
-                                        classNameIcon={styles.dragIcon}
-                                        classNameTitle={styles.dragTitle}
-                                        classNameEdit={styles.dragEdit}
-                                    />
-                                ))}
-                            </SortableContext>
-                        </DndContext>
-                    </Flex>
-                </Flex>)
-            })}
-            <Modal
-                className={styles.modalContainer}
-                maskClosable={false}
-                title={operateType === OperateType.UPDATE ? '修改书签' : "添加书签"}
-                okText={operateType === OperateType.CREATE ? '更新' : "添加"}
-                cancelText={'取消'}
-                open={isModalOpen}
-                footer={
-                    <>
-                        <Popconfirm
-                            title="确认删除"
-                            description="删除后将不可恢复!"
-                            okText="确定"
-                            cancelText="取消"
-                            onConfirm={handleDelete}
-                        >
-                            <Button type={"primary"}
-                                    style={{
-                                        display: operateType === OperateType.UPDATE ? 'inline-flex' : 'none',
-                                    }} danger>删除</Button>
-                        </Popconfirm>
-                        <Button onClick={handleCancel}>取消</Button>
-                        <Button onClick={handleOk}
-                                type={"primary"}>{operateType === OperateType.UPDATE ? '更新' : "添加"}</Button>
-                    </>
-                }
-            >
-                <Form
-                    form={form}
-                    className={styles.modalForm}
-                >
-                    <Form.Item name="id" label="id" rules={[{required: operateType === OperateType.CREATE}]}
-                               style={{display: 'none'}}
-                    >
-                        <Input/>
-                    </Form.Item>
-                    <Form.Item name="name" label="名称" rules={[{required: true}]}>
-                        <Input/>
-                    </Form.Item>
-                    <Form.Item name="url" label="地址" rules={[{required: true}]}>
-                        <Input/>
-                    </Form.Item>
-                    <Form.Item name="icon" label="图标" rules={[{required: true}]}>
-                        <Input/>
-                    </Form.Item>
-                    <Form.Item name="color" label="颜色" rules={[{required: true}]}>
-                        <Input/>
-                    </Form.Item>
-                    <Form.Item name="type" label="类型" rules={[{required: true}]}>
-                        <Select placeholder="请选择书签类型"
-                                options={[
-                                    {label: '文件夹', value: 'FOLDER'},
-                                    {label: '书签', value: 'BOOKMARK'},
-                                ]}
-                        />
-                    </Form.Item>
-                    <Form.Item name="parentId" label="所属上级" rules={[{required: false}]}>
-                        <Select placeholder="请选择上级" options={folderList}/>
-                    </Form.Item>
-                </Form>
-            </Modal>
-            <FloatButton
-                onClick={(e) => showModal(e, undefined)}
-                shape="circle"
-                type="primary"
-                icon={<PlusOutlined/>}
-            />
-        </Flex>
+        </>
     )
 }
 
